@@ -63,7 +63,14 @@
         <div id="contact">
           <div class="section-heading"><h2 data-i18n="contactNav">Contact</h2><span>03</span></div>
           <ul class="contact-list">
-            <li><span>Email</span><a href="mailto:yonghee.kim@sf.snu.ac.kr">yonghee.kim@sf.snu.ac.kr</a></li>
+            <li>
+              <span>Email</span>
+              <div class="email-contact">
+                <button class="contact-button" id="reveal-email" type="button" aria-expanded="false" aria-controls="email-details" data-i18n="showEmail">Show email</button>
+                <div id="email-details" hidden><span id="email-address"></span><button class="contact-button" id="copy-email" type="button" data-i18n="copyEmail">Copy</button></div>
+                <span class="email-status" id="email-status" role="status" aria-live="polite" aria-atomic="true"></span>
+              </div>
+            </li>
             <li><span>GitHub</span><a href="https://github.com/ppapill0n" target="_blank" rel="noreferrer">@ppapill0n ↗</a></li>
             <li><span>Scholar</span><a href="https://scholar.google.com/citations?user=RDdIkIUAAAAJ" target="_blank" rel="noreferrer">Google Scholar ↗</a></li>
             <li><span>Lab</span><a href="https://sf.snu.ac.kr/" target="_blank" rel="noreferrer">Software Foundations Lab ↗</a></li>

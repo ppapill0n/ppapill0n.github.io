@@ -52,6 +52,12 @@ section:not(.intro) { margin-top:6.5rem; }
 .contact-list li { display:grid; grid-template-columns:70px 1fr; gap:1rem; padding:.72rem 0; border-bottom:1px solid var(--line); font-size:.83rem; }
 .contact-list li > span { color:#77837b; }
 .contact-list a { overflow-wrap:anywhere; }
+.email-contact { min-width:0; }
+.contact-button { border:0; padding:0; background:none; color:inherit; font:inherit; text-decoration:underline; text-decoration-color:#8eaa99; text-underline-offset:.2em; cursor:pointer; }
+.contact-button:focus-visible { outline:2px solid var(--green); outline-offset:4px; }
+#email-details:not([hidden]) { display:flex; flex-wrap:wrap; align-items:baseline; gap:.3rem .75rem; margin-top:.35rem; }
+#email-address { overflow-wrap:anywhere; min-width:0; }
+.email-status { display:block; color:var(--muted); font-size:.75rem; }
 footer { display:flex; justify-content:space-between; padding:1.5rem 0 2rem; border-top:1px solid var(--line); color:#859088; font-size:.68rem; }
 @media (max-width:650px) {
   header { height:auto; padding:1.1rem 0; align-items:flex-start; }
