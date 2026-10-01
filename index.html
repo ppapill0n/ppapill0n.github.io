@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Yonghee Kim — PhD student in Computer Science and Engineering at Seoul National University." />
+    <title>Yonghee Kim</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="academic.css" />
+    <script src="academic.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+    <header>
+      <a class="mark" href="./" aria-label="Yonghee Kim, home">YK<span>.</span></a>
+      <nav aria-label="Primary navigation">
+        <a href="#about" data-i18n="aboutNav">About</a>
+        <a href="#publications" data-i18n="publicationsNav">Publications</a>
+        <a href="#contact" data-i18n="contactNav">Contact</a>
+        <div class="language-switch" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><span>/</span><button type="button" data-lang="ko" aria-pressed="false">KO</button></div>
+      </nav>
+    </header>
+    <a class="personal-cue" href="personal/" data-i18n="personalPrompt">Curious beyond research?</a>
+
+    <main id="main">
+      <section class="intro" id="about">
+        <div class="intro-grid">
+          <div class="intro-copy">
+            <p class="overline" data-i18n="role">PhD student · Programming languages</p>
+            <h1>Yonghee Kim<span>.</span></h1>
+            <p class="lead" data-i18n-html="intro">I am a PhD student in the <a href="https://cse.snu.ac.kr/" target="_blank" rel="noreferrer">Department of Computer Science and Engineering</a> at Seoul National University, advised by <a href="https://sf.snu.ac.kr/gil.hur/" target="_blank" rel="noreferrer">Prof. Chung-Kil Hur</a>.</p>
+            <p class="research-goal" data-i18n="research">My goal is to bring formal verification closer to real-world programs. As a long-term research interest, I also hope to explore how formal verification can help us understand and communicate with superintelligent AI.</p>
+            <div class="topics" aria-label="Research interests"><span>Program verification</span><span>Separation logic</span><span>Contextual refinement</span><span>Hybrid verification</span></div>
+          </div>
+          <div class="academic-portrait" role="img" aria-label="Portrait placeholder"><span>YK</span><small data-i18n="portraitPlaceholder">Portrait to be added</small></div>
+        </div>
+      </section>
+
+      <section id="publications">
+        <div class="section-heading"><h2 data-i18n="publicationsNav">Publications</h2><span>01</span></div>
+        <article class="publication">
+          <div class="venue">PLDI <strong>2026</strong></div>
+          <div>
+            <h3>CRIS: The Power of Imagination in Hybrid Verification</h3>
+            <p class="authors">Yonghee Kim, Taeyoung Yoon, Sanghyun Yi, Jaehyung Lee, Soonwon Moon, Yeji Han, Seonho Lee, Taeyoung Rhee, Yujin Im, Donghyun Nam, Jieung Kim, and Chung-Kil Hur</p>
+            <p class="citation" data-i18n="citation">Proc. ACM Program. Lang., Vol. 10, PLDI, Article 239, June 2026</p>
+            <div class="paper-links"><a href="https://doi.org/10.1145/3808317" target="_blank" rel="noreferrer">DOI ↗</a><a href="https://sf.snu.ac.kr/publications/cris.pdf" target="_blank" rel="noreferrer">PDF ↗</a><a href="https://zenodo.org/records/19602795" target="_blank" rel="noreferrer">Artifact ↗</a></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="details-grid">
+        <div>
+          <div class="section-heading"><h2 data-i18n="education">Education</h2><span>02</span></div>
+          <dl class="timeline">
+            <div><dt>2023—</dt><dd data-i18n-html="phd"><strong>PhD, Seoul National University</strong><br />Computer Science and Engineering</dd></div>
+            <div><dt>2016—22</dt><dd data-i18n-html="bs"><strong>B.S., Seoul National University</strong><br />Electrical and Computer Engineering</dd></div>
+            <div><dt>2012—15</dt><dd data-i18n-html="highSchool"><strong>Seoul Science High School</strong><br />Mar. 2012 – Feb. 2015</dd></div>
+          </dl>
+        </div>
+        <div id="contact">
+          <div class="section-heading"><h2 data-i18n="contactNav">Contact</h2><span>03</span></div>
+          <ul class="contact-list">
+            <li><span>Email</span><a href="mailto:yonghee.kim@sf.snu.ac.kr">yonghee.kim@sf.snu.ac.kr</a></li>
+            <li><span>GitHub</span><a href="https://github.com/ppapill0n" target="_blank" rel="noreferrer">@ppapill0n ↗</a></li>
+            <li><span>Lab</span><a href="https://sf.snu.ac.kr/" target="_blank" rel="noreferrer">Software Foundations Lab ↗</a></li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+
+    <footer><span>© <span id="year"></span> Yonghee Kim</span></footer>
+  </body>
+</html>
