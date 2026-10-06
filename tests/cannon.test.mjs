@@ -55,3 +55,17 @@ test('flight sampling at 30/60/120fps produces the same landing code without cla
   }
   assert.equal(new Set(codes).size,1);
 });
+test('cannon tolerance is inclusive ±5 displayed code units, landing only; dial stays exact',()=>{
+  const registry=createRegistry(()=>.5);
+  const cannon=registry.find(g=>g.id==='cannon').rules;
+  const dial=registry.find(g=>g.id==='dial').rules;
+  for(const [target,landed,expected] of [[500,495,true],[500,505,true],[500,494,false],[500,506,false],[1,0,true],[1,6,true],[1,7,false],[1000,995,true],[1000,1005,true],[1000,994,false],[1000,1006,false]]){
+    assert.equal(canEnter(target,{value:landed,stopped:true},cannon),expected);
+    assert.equal(canEnter(target,{value:landed,stopped:false},cannon),false);
+  }
+  assert.equal(canEnter(1,{value:null,stopped:true},cannon),false);
+  assert.equal(canEnter(1,{value:undefined,stopped:true},cannon),false);
+  assert.equal(canEnter(500,{value:landingCode(50.549),stopped:true},cannon),true);
+  assert.equal(canEnter(500,{value:landingCode(50.55),stopped:true},cannon),false);
+  for(const delta of [-5,-1,0,1,5])assert.equal(canEnter(500,{value:500+delta,stopped:true},dial),delta===0);
+});
