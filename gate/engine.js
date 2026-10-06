@@ -1,5 +1,6 @@
 export const defaultRules = Object.freeze({ requireStopped: true });
 export const formatValue = value => String(value).padStart(4, '0');
+export const canEnter = (target, state, rules = defaultRules) => target !== null && state.value === target && (!rules.requireStopped || state.stopped);
 export function createGate(rules = defaultRules, random = Math.random) {
   let target = null;
   return {
@@ -12,7 +13,7 @@ export function createGate(rules = defaultRules, random = Math.random) {
       return { target, start };
     },
     canEnter(state) {
-      return target !== null && state.value === target && (!rules.requireStopped || state.stopped);
+      return canEnter(target, state, rules);
     }
   };
 }

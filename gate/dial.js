@@ -10,16 +10,18 @@ export class InertiaDial {
     this.inputs = new Map();
     this.pointers = new Map();
     this.frame = null;
+    this.events = new AbortController();
+    const listen = (target, name, handler) => target.addEventListener(name, handler, { signal:this.events.signal });
     const scope = element.closest('main');
-    scope.addEventListener('keydown', event => this.key(event));
-    scope.addEventListener('focusout', event => { if (!scope.contains(event.relatedTarget)) this.stop(); });
-    window.addEventListener('keyup', event => this.release(`key:${event.code || event.key}`));
-    window.addEventListener('blur', () => this.stop());
-    window.addEventListener('pagehide', () => this.stop());
-    document.addEventListener('visibilitychange', () => { if (document.hidden) this.stop(); });
+    listen(scope, 'keydown', event => this.key(event));
+    listen(scope, 'focusout', event => { if (!scope.contains(event.relatedTarget)) this.stop(); });
+    listen(window, 'keyup', event => this.release(`key:${event.code || event.key}`));
+    listen(window, 'blur', () => this.stop());
+    listen(window, 'pagehide', () => this.stop());
+    listen(document, 'visibilitychange', () => { if (document.hidden) this.stop(); });
     buttons.forEach(button => {
       const direction = Number(button.dataset.direction);
-      button.addEventListener('pointerdown', event => {
+      listen(button, 'pointerdown', event => {
         if (event.button !== 0 || this.pointers.has(event.pointerId)) return;
         event.preventDefault();
         button.focus({ preventScroll:true });
@@ -28,9 +30,9 @@ export class InertiaDial {
         this.press(`pointer:${event.pointerId}`, direction);
       });
       for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) {
-        button.addEventListener(name, event => this.releasePointer(event.pointerId));
+        listen(button, name, event => this.releasePointer(event.pointerId));
       }
-      button.addEventListener('contextmenu', event => event.preventDefault());
+      listen(button, 'contextmenu', event => event.preventDefault());
     });
   }
   direction() {
@@ -95,5 +97,6 @@ export class InertiaDial {
     this.holdTime = 0;
     this.snap();
   }
+  destroy() { this.stop(); this.events.abort(); }
   reset(value) { this.stop(); this.position = wrap(Math.round(value)); this.emit(); }
 }

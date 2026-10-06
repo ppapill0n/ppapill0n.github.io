@@ -1,33 +1,32 @@
-import { createGate, formatValue } from './engine.js';
-import { InertiaDial } from './dial.js';
-const gate = createGate();
-const element = document.querySelector('#dial');
+import { canEnter, formatValue } from './engine.js';
+import { createRegistry, chooseGame } from './registry.js';
+const registry = createRegistry();
+const root = document.querySelector('#game');
 const enter = document.querySelector('#enter');
 const status = document.querySelector('#state');
-function render(state) {
-  const value = formatValue(state.value);
-  document.querySelector('#value').textContent = value;
-  element.setAttribute('aria-valuenow', state.value);
-  element.setAttribute('aria-valuetext', value);
-  element.style.setProperty('--rotation', `${state.value * 360 / 10000}deg`);
-  enter.disabled = !gate.canEnter(state);
-  const message = !state.stopped ? 'Moving.' : gate.canEnter(state) ? 'Target matched. Ready to enter.' : 'Stopped.';
-  if (status.textContent !== message) status.textContent = message;
-}
-const dial = new InertiaDial(element, render, document.querySelectorAll('[data-direction]'));
-function newTarget() {
-  const { target, start } = gate.next();
-  document.querySelector('#target').textContent = formatValue(target);
-  dial.reset(start);
-}
+let active = null, target = null, generation = 0;
 function tryEnter() {
-  if (gate.canEnter(dial.getState())) window.location.assign('../personal/');
+  if (active && canEnter(target, active.getState())) window.location.assign('../personal/');
 }
-document.querySelector('#new-target').addEventListener('click', newTarget);
+function reset() {
+  const current = ++generation;
+  enter.disabled = true;
+  const previous = active; active = null; previous?.destroy();
+  const game = chooseGame(registry);
+  const challenge = game.next(); target = challenge.target;
+  document.querySelector('#target').textContent = formatValue(target);
+  document.querySelector('main').classList.toggle('cannon-mode', game.id === 'cannon');
+  root.dataset.game = game.id; delete root.dataset.phase;
+  active = game.create(root, state => {
+    if (current !== generation) return;
+    enter.disabled = !canEnter(target, state);
+    const message = !state.stopped ? 'Moving.' : canEnter(target, state) ? 'Target matched. Ready to enter.' : 'Stopped.';
+    if (status.textContent !== message) status.textContent = message;
+  }, tryEnter);
+  active.reset(challenge);
+}
+document.querySelector('#new-target').addEventListener('click', reset);
 document.querySelector('#new-target').disabled = false;
 enter.addEventListener('click', tryEnter);
-element.addEventListener('keydown', event => {
-  if (event.key === 'Enter') { event.preventDefault(); if (!event.repeat) tryEnter(); }
-});
-newTarget();
-window.addEventListener('pageshow', () => dial.stop());
+reset();
+window.addEventListener('pageshow', () => active?.stop());
