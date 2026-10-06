@@ -13,17 +13,17 @@ test('exactly seven symbols, three separate uniform draws, every combination pos
     result.forEach((value,index)=>counts[index][value]++);
     wins+=Number(slotsWin(result,true));bonuses+=Number(slotsBonus(result,true));
     assert.equal(slotsWin(result,false),false);assert.equal(slotsBonus(result,false),false);
-    assert.equal(slotsWin(result,true),a===6&&b===6&&c===6);
+    assert.equal(slotsWin(result,true),a===b&&b===c);
     assert.equal(slotsBonus(result,true),a===b&&b===c&&a!==6);
   }
-  counts.flat().forEach(n=>assert.equal(n,49));assert.equal(wins,1);assert.equal(bonuses,6);
+  counts.flat().forEach(n=>assert.equal(n,49));assert.equal(wins,7);assert.equal(bonuses,6);
 });
-test('all six non-seven triples celebrate only; settled 777 is the only entry state',()=>{
+test('all seven settled triples unlock entry; six non-seven triples also celebrate',()=>{
   const rules=createRegistry().find(game=>game.id==='slots').rules;
   for(let symbol=0;symbol<7;symbol++){
     const result=[symbol,symbol,symbol];
     assert.equal(slotsBonus(result,true),symbol<6);
-    assert.equal(canEnter(777,{value:slotsWin(result,true)?777:0,stopped:true},rules),symbol===6);
+    assert.equal(canEnter(777,{value:slotsWin(result,true)?777:0,stopped:true},rules),true);
   }
   assert.equal(canEnter(777,{value:777,stopped:false},rules),false);
   assert.equal(slotsBonus([0,0,1],true),false);assert.equal(slotsWin([6,6,5],true),false);
@@ -35,7 +35,7 @@ test('fixed 777 formatting and equal registry partitions; repeated slots selecti
   assert.equal(slots.next().target,777);
 });
 test('each reel finishes independently, all outcomes fit the strip, timing is frame-rate independent',()=>{
-  assert.deepEqual(reelDurations,[1600,2200,2800]);
+  assert.deepEqual(reelDurations,[1280,1760,2240]);
   for(let start=0;start<7;start++)for(let end=0;end<7;end++)for(let index=0;index<3;index++){
     assert.equal(reelPosition(start,end,index,0),start);
     const position=reelPosition(start,end,index,reelDurations[index]);
