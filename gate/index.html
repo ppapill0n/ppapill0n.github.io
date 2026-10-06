@@ -11,7 +11,8 @@
   <main aria-label="Dial game">
     <div class="target-row"><div><span class="label">Target code</span><strong id="target" aria-live="polite" aria-atomic="true">----</strong></div><button id="new-target" type="button" aria-label="Generate a new target and reset the dial" disabled><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M19 12a7 7 0 0 0-12-5L4 10m16 4-3 3A7 7 0 0 1 5 12"/></svg></button></div>
     <div class="dial-wrap"><div class="dial-marker" aria-hidden="true">▼</div><div id="dial" role="slider" tabindex="0" aria-label="Inertia dial" aria-valuemin="0" aria-valuemax="9999" aria-valuenow="0" aria-valuetext="0000" aria-describedby="instructions"><div class="dial-face" aria-hidden="true"><span class="dial-tick"></span></div><span class="dial-value" id="value" aria-hidden="true">0000</span></div></div>
-    <p id="instructions" class="sr-only">Drag around the dial or hold an arrow key to accelerate. Opposite arrows brake and reverse the rotation. Release to coast. Match the target and stop completely before activating Enter. Values wrap between 0000 and 9999.</p>
+    <div class="direction-controls" role="group" aria-label="Rotation controls"><button class="direction" data-direction="-1" type="button" aria-label="Hold to rotate left">←</button><button class="direction" data-direction="1" type="button" aria-label="Hold to rotate right">→</button></div>
+    <p id="instructions" class="sr-only">Hold a left or right button, or an arrow key, to accelerate. Opposite arrows brake and reverse the rotation. Release to coast. Match the target and stop completely before activating Enter. Values wrap between 0000 and 9999.</p>
     <p id="state" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
     <button id="enter" type="button" disabled>Enter</button>
   </main>

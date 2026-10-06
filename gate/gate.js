@@ -14,7 +14,7 @@ function render(state) {
   const message = !state.stopped ? 'Moving.' : gate.canEnter(state) ? 'Target matched. Ready to enter.' : 'Stopped.';
   if (status.textContent !== message) status.textContent = message;
 }
-const dial = new InertiaDial(element, render);
+const dial = new InertiaDial(element, render, document.querySelectorAll('[data-direction]'));
 function newTarget() {
   const { target, start } = gate.next();
   document.querySelector('#target').textContent = formatValue(target);
