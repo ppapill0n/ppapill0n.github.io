@@ -1,5 +1,5 @@
 export const wrap = value => ((value % 10000) + 10000) % 10000;
-export const physics = Object.freeze({ initialSpeed:3, acceleration:40, accelerationRamp:120, maxSpeed:3000, braking:1800, friction:8, stopSpeed:0.1 });
+export const physics = Object.freeze({ initialSpeed:360, acceleration:40, accelerationRamp:120, maxSpeed:3000, braking:1800, friction:6, stopSpeed:0.1 });
 export function advance(state, direction, dt) {
   let { position, velocity, holdTime } = state;
   if (!direction) {

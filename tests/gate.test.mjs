@@ -32,7 +32,7 @@ test('progressive speed, exact frame-rate agreement, bounded long holds',()=>{
     for(const fps of [30,60,120]){
       const {dial,run}=fixture();dial.press('key:ArrowRight',1);run(duration,fps);speeds.push(dial.velocity);
     }
-    const expected=3+40*duration+60*duration**2;
+    const expected=360+40*duration+60*duration**2;
     speeds.forEach(v=>assert.ok(Math.abs(v-expected)<1e-7));
     console.log(`${duration}s hold: ${speeds[0].toFixed(2)} units/s`);
   }
@@ -41,17 +41,17 @@ test('progressive speed, exact frame-rate agreement, bounded long holds',()=>{
 test('opposition brakes before reversing, then release coasts to exact rest',()=>{
   const {dial,run}=fixture();dial.press('key:ArrowRight',1);run(3);
   dial.release('key:ArrowRight');dial.press('pointer:1',-1);run(.1);
-  assert.ok(dial.velocity>0&&dial.velocity<663);run(.4);assert.ok(dial.velocity<0);
+  assert.ok(dial.velocity>0&&dial.velocity<1020);run(.6);assert.ok(dial.velocity<0);
   dial.release('pointer:1');const position=dial.position;run(.1);assert.notEqual(dial.position,position);
   run(2);assert.equal(dial.velocity,0);assert.ok(dial.getState().stopped);assert.equal(dial.position,Math.round(dial.position));
 });
-test('short physical pulses reach all 10000 integers in both directions without discrete stepping',()=>{
+test('continuous 100ms pulses reach all integers without fixed stepping',()=>{
   const {dial,run}=fixture();dial.reset(0);
   for(let n=1;n<=10000;n++){
-    dial.press('pulse',1);assert.equal(dial.getState().value,(n-1)%10000);run(.05);dial.release('pulse');run(2);
-    assert.deepEqual(dial.getState(),{value:n%10000,stopped:true});
+    dial.press('pulse',1);assert.equal(dial.getState().value,((n-1)*97)%10000);run(.1);dial.release('pulse');run(2);
+    assert.deepEqual(dial.getState(),{value:(n*97)%10000,stopped:true});
   }
-  dial.press('pulse',-1);run(.05);dial.release('pulse');run(2);assert.equal(dial.getState().value,9999);
+  dial.press('pulse',-1);run(.1);dial.release('pulse');run(2);assert.equal(dial.getState().value,9903);
 });
 test('keyboard/button input equivalence, opposite sources lock entry, reset blocks repeats and clears capture',()=>{
   const key=(target,key,extra={})=>({target,key,code:key,preventDefault(){},...extra});
@@ -67,8 +67,17 @@ test('keyboard/button input equivalence, opposite sources lock entry, reset bloc
 test('pointer cancel/lost capture release only their own input; same-direction sources do not double acceleration',()=>{
   const {dial,buttons,run}=fixture();
   const event=(type,id)=>{const e=new Event(type);Object.assign(e,{pointerId:id,button:0});return e;};
-  buttons[1].dispatchEvent(event('pointerdown',5));dial.press('key:ArrowRight',1);run(1);assert.ok(Math.abs(dial.velocity-103)<1e-7);
+  buttons[1].dispatchEvent(event('pointerdown',5));dial.press('key:ArrowRight',1);run(1);assert.ok(Math.abs(dial.velocity-460)<1e-7);
   buttons[1].dispatchEvent(event('pointercancel',5));assert.equal(dial.inputs.size,1);assert.equal(dial.pointers.size,0);
   buttons[0].dispatchEvent(event('pointerdown',6));buttons[0].dispatchEvent(event('lostpointercapture',6));assert.equal(dial.inputs.size,1);
   dial.release('key:ArrowRight');run(2);assert.ok(dial.getState().stopped);
+});
+
+test('same-frame and 20/50/100/200ms taps retain a substantial impulse',()=>{
+  for(const duration of [0,.02,.05,.1,.2]){
+    const {dial,run}=fixture();dial.press('pointer:1',1);
+    assert.equal(dial.velocity,360);run(duration,1000);dial.release('pointer:1');run(3);
+    console.log(`${duration*1000}ms tap: initial 360 units/s, final ${dial.getState().value} digits`);
+    assert.ok(dial.getState().value>=60);assert.ok(dial.getState().stopped);
+  }
 });
