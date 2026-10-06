@@ -14,8 +14,9 @@ function reset() {
   const previous = active; active = null; previous?.destroy();
   const game = chooseGame(registry); rules = game.rules;
   const challenge = game.next(); target = challenge.target;
-  document.querySelector('#target').textContent = formatValue(target);
+  document.querySelector('#target').textContent = (game.formatTarget ?? formatValue)(target);
   document.querySelector('main').classList.toggle('cannon-mode', game.id === 'cannon');
+  document.querySelector('main').classList.toggle('slots-mode', game.id === 'slots');
   root.dataset.game = game.id; delete root.dataset.phase;
   active = game.create(root, state => {
     if (current !== generation) return;
