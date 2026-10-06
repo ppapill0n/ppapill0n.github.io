@@ -3,31 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>A little detour — Yonghee Kim</title>
-  <link rel="stylesheet" href="../academic.css" />
+  <title>Dial — Yonghee Kim</title>
   <link rel="stylesheet" href="gate.css" />
   <script src="gate.js" type="module"></script>
 </head>
 <body>
-  <header><a class="mark" href="../" aria-label="Yonghee Kim, home">YK<span>.</span></a><div class="language-switch" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><span>/</span><button type="button" data-lang="ko" aria-pressed="false">KO</button></div></header>
-  <main>
-    <p class="overline" data-copy="eyebrow">Beyond research · A little detour</p>
-    <h1 data-copy="title">One more turn.</h1>
-    <p class="lead" data-copy="intro">An unnecessarily difficult door to a very ordinary page.</p>
-    <div class="gate-card">
-      <div class="target-row"><div><span class="label" data-copy="target">Target code</span><strong id="target" aria-live="polite" aria-atomic="true">----</strong></div><button id="new-target" type="button" data-copy="random" disabled>New target ↻</button></div>
-      <div class="dial-wrap"><div class="dial-marker" aria-hidden="true">▼</div><div id="dial" role="slider" tabindex="0" aria-label="Inertia dial" aria-valuemin="0" aria-valuemax="9999" aria-valuenow="0" aria-valuetext="0000" aria-describedby="instructions keyboard"><div class="dial-face" aria-hidden="true"><span class="dial-tick"></span></div><span class="dial-value" id="value" aria-hidden="true">0000</span></div></div>
-      <button id="fine" type="button" aria-pressed="false" data-copy="fine">Fine control</button>
-      <p id="instructions" data-copy="instructions">Drag around the dial. Release to let it coast. Use fine control for the last few digits.</p>
-      <p id="keyboard" class="hint" data-copy="keyboard">Keyboard: focus the dial, then use arrow keys (±1); Shift + arrow (±100). Values wrap from 9999 to 0000.</p>
-      <p id="state" role="status" aria-live="polite" aria-atomic="true"></p>
-      <button id="enter" class="enter" type="button" disabled data-copy="enter">Enter →</button>
-      <p class="hint" data-copy="rule">Match the target, let the dial stop completely, then press Enter.</p>
-    </div>
-    <noscript>This local game needs JavaScript. / 이 게임은 JavaScript가 필요합니다.</noscript>
-    <p class="footnote" data-copy="note">Just a local game, not a password or a security check. Nothing to submit, nothing to remember.</p>
-    <a href="../" class="back" data-copy="back">← Back to research</a>
+  <main aria-label="Dial game">
+    <div class="target-row"><div><span class="label">Target code</span><strong id="target" aria-live="polite" aria-atomic="true">----</strong></div><button id="new-target" type="button" aria-label="Generate a new target and reset the dial" disabled><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M19 12a7 7 0 0 0-12-5L4 10m16 4-3 3A7 7 0 0 1 5 12"/></svg></button></div>
+    <div class="dial-wrap"><div class="dial-marker" aria-hidden="true">▼</div><div id="dial" role="slider" tabindex="0" aria-label="Inertia dial" aria-valuemin="0" aria-valuemax="9999" aria-valuenow="0" aria-valuetext="0000" aria-describedby="instructions"><div class="dial-face" aria-hidden="true"><span class="dial-tick"></span></div><span class="dial-value" id="value" aria-hidden="true">0000</span></div></div>
+    <p id="instructions" class="sr-only">Drag around the dial or hold an arrow key to accelerate. Opposite arrows brake and reverse the rotation. Release to coast. Match the target and stop completely before activating Enter. Values wrap between 0000 and 9999.</p>
+    <p id="state" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+    <button id="enter" type="button" disabled>Enter</button>
   </main>
-  <footer><span>© <span id="year"></span> Yonghee Kim</span></footer>
 </body>
 </html>

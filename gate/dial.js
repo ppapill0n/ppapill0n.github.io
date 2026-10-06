@@ -7,7 +7,6 @@ export class InertiaDial {
     this.velocity = 0;
     this.pointer = null;
     this.keys = new Set();
-    this.fine = false;
     this.frame = null;
     element.addEventListener('pointerdown', event => this.grab(event));
     element.addEventListener('pointermove', event => this.move(event));
@@ -15,8 +14,8 @@ export class InertiaDial {
     element.addEventListener('pointercancel', event => { if (event.pointerId === this.pointer) this.stop(); });
     element.addEventListener('lostpointercapture', event => { if (event.pointerId === this.pointer) this.stop(); });
     element.addEventListener('keydown', event => this.key(event));
-    element.addEventListener('keyup', event => {
-      if (this.keys.delete(event.key)) { event.preventDefault(); this.snap(); }
+    window.addEventListener('keyup', event => {
+      if (this.keys.delete(event.key)) { event.preventDefault(); this.emit(); this.animate(); }
     });
     element.addEventListener('blur', () => this.stop());
     window.addEventListener('blur', () => this.stop());
@@ -46,7 +45,7 @@ export class InertiaDial {
     if (event.pointerId !== this.pointer) return;
     const angle = this.angle(event);
     const delta = Math.atan2(Math.sin(angle - this.lastAngle), Math.cos(angle - this.lastAngle));
-    const amount = delta * (this.fine || event.shiftKey ? 12 : 1200);
+    const amount = delta * 1200;
     const elapsed = Math.max(0.008, (event.timeStamp - this.lastMove) / 1000);
     this.position = wrap(this.position + amount);
     this.velocity = Math.max(-5000, Math.min(5000, amount / elapsed));
@@ -60,30 +59,41 @@ export class InertiaDial {
     if (this.element.hasPointerCapture(event.pointerId)) this.element.releasePointerCapture(event.pointerId);
     if (event.timeStamp - this.lastMove > 120 || Math.abs(this.velocity) < 1) this.velocity = 0;
     if (!this.velocity) this.snap();
-    else {
-      this.lastFrame = performance.now();
-      this.emit();
-      this.frame = requestAnimationFrame(time => this.tick(time));
-    }
+    else { this.emit(); this.animate(); }
+  }
+  animate() {
+    if (this.frame !== null) return;
+    this.lastFrame = performance.now();
+    this.frame = requestAnimationFrame(time => this.tick(time));
   }
   tick(time) {
+    this.frame = null;
     const dt = Math.min(0.05, Math.max(0, (time - this.lastFrame) / 1000));
     this.lastFrame = time;
-    const decay = Math.exp(-6 * dt);
-    this.position = wrap(this.position + this.velocity * (1 - decay) / 6);
-    this.velocity *= decay;
-    if (Math.abs(this.velocity) < 1) { this.velocity = 0; this.snap(); this.frame = null; }
-    else { this.emit(); this.frame = requestAnimationFrame(next => this.tick(next)); }
+    const positive = this.keys.has('ArrowUp') || this.keys.has('ArrowRight');
+    const negative = this.keys.has('ArrowDown') || this.keys.has('ArrowLeft');
+    const direction = Number(positive) - Number(negative);
+    const friction = direction ? 1.6 : 6;
+    const terminal = direction * 2000 / friction;
+    const decay = Math.exp(-friction * dt);
+    this.position = wrap(this.position + terminal * dt + (this.velocity - terminal) * (1 - decay) / friction);
+    this.velocity = terminal + (this.velocity - terminal) * decay;
+    if (!direction && Math.abs(this.velocity) < 1) this.velocity = 0;
+    if (!this.keys.size && !this.velocity) this.snap();
+    else {
+      this.emit();
+      this.frame = requestAnimationFrame(next => this.tick(next));
+    }
   }
   key(event) {
     if (!['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'].includes(event.key)) return;
     event.preventDefault();
-    if (this.pointer !== null) return;
-    if (!this.keys.size) this.stop();
+    if (this.pointer !== null || event.repeat || this.keys.has(event.key)) return;
+    const wasIdle = !this.keys.size && this.velocity === 0;
     this.keys.add(event.key);
-    const sign = ['ArrowUp', 'ArrowRight'].includes(event.key) ? 1 : -1;
-    this.position = wrap(Math.round(this.position) + sign * (event.shiftKey ? 100 : 1));
+    if (wasIdle) this.velocity = ['ArrowUp', 'ArrowRight'].includes(event.key) ? 80 : -80;
     this.emit();
+    this.animate();
   }
   snap() { this.position = wrap(Math.round(this.position)); this.emit(); }
   stop() {

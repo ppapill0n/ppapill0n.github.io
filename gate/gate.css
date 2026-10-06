@@ -1,28 +1,22 @@
-main { max-width:620px; padding-top:3.5rem; }
-h1 { font-size:clamp(2.6rem,7vw,4rem); margin-bottom:1rem; }
-.lead { color:var(--muted); font-size:1.05rem; }
-.gate-card { margin-top:2rem; padding:1.8rem; border:1px solid var(--line); border-radius:1.2rem; background:#fff; text-align:center; }
-.target-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; text-align:left; }
-.label { display:block; font-size:.72rem; color:var(--muted); }
-#target { font:600 2rem/1.4 monospace; letter-spacing:.16em; }
+:root { color-scheme:light; --green:#1d5c43; --muted:#647068; --soft:#e8f0e9; --paper:#fcfcf8; }
+* { box-sizing:border-box; }
+body { margin:0; min-height:100svh; display:grid; place-items:center; background:var(--paper); color:#17251e; font:400 16px/1.6 system-ui,sans-serif; }
+main { width:min(300px,calc(100% - 3rem)); padding:2.5rem 0; }
+.target-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.label { display:block; color:var(--muted); font-size:.75rem; }
+#target { display:block; font:600 2rem/1.4 monospace; letter-spacing:.16em; }
 button { font:inherit; cursor:pointer; }
-.gate-card button { border:1px solid #bfd0c4; border-radius:100px; padding:.5rem 1rem; background:var(--paper); color:var(--green); font-size:.82rem; }
-.gate-card button:hover:not(:disabled) { background:var(--soft); }
+#new-target { display:grid; place-items:center; width:44px; height:44px; border:1px solid #bfd0c4; border-radius:50%; background:transparent; color:var(--green); }
+#new-target:hover:not(:disabled) { background:var(--soft); }
 button:focus-visible, #dial:focus-visible { outline:3px solid var(--green); outline-offset:5px; }
-.dial-wrap { position:relative; width:min(260px,100%); margin:2rem auto 1.4rem; }
-.dial-marker { color:var(--green); font-size:.9rem; margin-bottom:.4rem; }
+.dial-wrap { width:min(260px,100%); margin:2rem auto 2.5rem; }
+.dial-marker { color:var(--green); font-size:.9rem; text-align:center; margin-bottom:.4rem; }
 #dial { position:relative; width:100%; aspect-ratio:1; border-radius:50%; touch-action:none; user-select:none; cursor:grab; background:var(--soft); border:1px solid #bfd0c4; box-shadow:0 9px 0 #d8e2d9,0 18px 24px #17251e12; }
 #dial:active { cursor:grabbing; }
 .dial-face { position:absolute; inset:12px; border:1px dashed #9db6a5; border-radius:50%; transform:rotate(var(--rotation,0deg)); }
 .dial-tick { position:absolute; top:7px; left:calc(50% - 3px); width:6px; height:20px; background:var(--green); border-radius:4px; }
 .dial-value { position:absolute; inset:0; display:grid; place-items:center; font:600 clamp(2rem,9vw,3rem)/1 monospace; color:var(--green); letter-spacing:.08em; pointer-events:none; }
-#fine[aria-pressed="true"] { background:var(--green); color:white; }
-#instructions { font-size:.87rem; margin:1.3rem auto .5rem; max-width:400px; }
-.hint,.footnote { font-size:.75rem; color:var(--muted); }
-#state { min-height:1.7em; color:var(--green); font-size:.85rem; margin:1.2rem 0 .8rem; }
-.gate-card .enter { display:block; width:100%; background:var(--green); color:white; border-color:var(--green); padding:.8rem; font-weight:600; }
-.gate-card .enter:hover:not(:disabled) { background:#12442f; }
-.gate-card button:disabled { opacity:.45; cursor:default; }
-.footnote { margin:1.4rem 0 1rem; }
-.back { font-size:.85rem; }
-@media(max-width:400px) { .gate-card { padding:1.2rem; } .target-row { gap:.5rem; } #new-target { padding:.5rem .7rem; } }
+#enter { display:block; width:100%; border:1px solid var(--green); border-radius:100px; padding:.75rem; background:var(--green); color:white; font-size:.85rem; font-weight:600; }
+#enter:hover:not(:disabled) { background:#12442f; }
+button:disabled { opacity:.45; cursor:default; }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
