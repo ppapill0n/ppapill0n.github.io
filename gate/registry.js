@@ -12,7 +12,8 @@ export function createRegistry(random = Math.random) {
     { id:'cannon', rules:{ ...defaultRules, tolerance:5 }, create:createCannonGame, next:()=>({ target:1 + Math.floor(random() * 1000) }) },
     { id:'slots', create:createSlotsGame, next:()=>({ target:777 }), formatTarget:String },
     { id:'soda', create:createSodaGame, next:()=>({ target:Math.floor(random() * 3001) }) },
-    { id:'cube', create:createCubeGame, next:()=>({ target:1, ...scramble(random) }), hideTarget:true }
+    { id:'cube', create:(root,changed)=>createCubeGame(root,changed), next:()=>({ target:1, ...scramble(random) }), hideTarget:true, cube:true },
+    { id:'cube2', create:(root,changed)=>createCubeGame(root,changed,2), next:()=>({ target:1, ...scramble(random,15,2) }), hideTarget:true, cube:true }
   ];
 }
 export function chooseGame(registry, random = Math.random) { return registry[Math.floor(random() * registry.length)]; }

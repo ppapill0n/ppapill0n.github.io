@@ -1,9 +1,9 @@
-import { FACES, rotate, moveSpec, turnLayer, isSolved } from './cube-engine.js';
+import { FACES, rotate, moveSpec, turnLayer, isSolved, stickerCenter } from './cube-engine.js';
 import { project, view, pickSurface, chooseDrag } from './cube-gestures.js';
 const DURATION=160, THRESHOLD=9;
 const clampPitch=value=>Math.max(-1.45,Math.min(1.45,value));
-export function createCubeGame(root,changed) {
-  root.innerHTML=`<div class="cube-view"><canvas id="cube" width="840" height="680" tabindex="0" aria-label="Drag a cube row or column to turn its layer, including middle slices. Drag the empty space around the cube to rotate the view. U R F D L B turn faces; Shift reverses. Arrow keys rotate the view; Home restores it." aria-describedby="cube-accessible"></canvas></div><p id="cube-accessible" class="sr-only"></p>`;
+export function createCubeGame(root,changed,size=3) {
+  root.innerHTML=`<div class="cube-view"><canvas id="cube" width="840" height="680" tabindex="0" aria-label="Drag a cube row or column to turn its layer, ${size===3?"including middle slices.":"one of the two outer layers."} Drag the empty space around the cube to rotate the view. U R F D L B turn faces; Shift reverses. Arrow keys rotate the view; Home restores it." aria-describedby="cube-accessible"></canvas></div><p id="cube-accessible" class="sr-only"></p>`;
   const canvas=root.querySelector('canvas'),ctx=canvas.getContext('2d'),events=new AbortController();
   let stickers=[],queue=[],current=null,yaw=-.58,pitch=.42,gesture=null,last=null,frame=null,destroyed=false,paused=false;
   const listen=(el,type,fn)=>el.addEventListener(type,fn,{signal:events.signal});
@@ -16,7 +16,7 @@ export function createCubeGame(root,changed) {
   function point(e){const r=canvas.getBoundingClientRect();return {x:(e.clientX-r.left)*420/r.width,y:(e.clientY-r.top)*340/r.height,scale:r.width/420};}
   listen(canvas,'pointerdown',e=>{
     if(e.button!==0||gesture||paused||current||queue.length)return;
-    const p=point(e),hit=pickSurface(p.x,p.y,yaw,pitch);
+    const p=point(e),hit=pickSurface(p.x,p.y,yaw,pitch,size);
     e.preventDefault();canvas.dataset.pointerFocus='true';canvas.focus({preventScroll:true});
     gesture={id:e.pointerId,start:p,previous:p,hit,move:null,preview:0,travel:0};canvas.setPointerCapture(e.pointerId);canvas.style.cursor='grabbing';notify();
   });
@@ -62,13 +62,12 @@ export function createCubeGame(root,changed) {
       const moving=spec&&sticker.p[spec.axis]===spec.layer;
       const transform=v=>moving?rotate(v,spec.axis,angle):v;
       const normal=transform(sticker.n);if(view(normal,yaw,pitch)[2]<=.001)continue;
-      const center=sticker.p.map((v,i)=>v+sticker.n[i]*.505);
-      const points=[[-.47,-.47],[.47,-.47],[.47,.47],[-.47,.47]].map(([x,y])=>{const p=[...center];p[a]+=x;p[b]+=y;return project(transform(p),yaw,pitch);});
-      const label=sticker.p.every((v,i)=>i===axis||v===0)?Object.keys(FACES).find(f=>FACES[f].axis===axis&&FACES[f].sign===sticker.n[axis]):null;
-      polygons.push({points,color:FACES[sticker.color].color,label,center:project(transform(center),yaw,pitch),depth:points.reduce((n,p)=>n+p[2],0)/4});
+      const center=stickerCenter(sticker,size),half=size===2?.72:.47;
+      const points=[[-half,-half],[half,-half],[half,half],[-half,half]].map(([x,y])=>{const p=[...center];p[a]+=x;p[b]+=y;return project(transform(p),yaw,pitch);});
+      polygons.push({points,color:FACES[sticker.color].color,depth:points.reduce((n,p)=>n+p[2],0)/4});
     }
     polygons.sort((a,b)=>a.depth-b.depth);
-    for(const p of polygons){ctx.beginPath();p.points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=p.color;ctx.fill();ctx.lineWidth=3;ctx.lineJoin='round';ctx.strokeStyle='#17251e';ctx.stroke();if(p.label){ctx.font='600 16px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=['#f5f5f0','#ffd434','#f28a25'].includes(p.color)?'#17251e':'white';ctx.fillText(p.label,p.center[0],p.center[1]);}}
+    for(const p of polygons){ctx.beginPath();p.points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=p.color;ctx.fill();ctx.lineWidth=3;ctx.lineJoin='round';ctx.strokeStyle='#17251e';ctx.stroke();}
   }
   function startNext(){return queue.length?{...queue.shift(),from:0,elapsed:0,duration:DURATION}:null;}
   function render(now){

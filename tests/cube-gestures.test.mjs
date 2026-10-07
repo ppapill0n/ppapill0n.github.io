@@ -42,3 +42,13 @@ test('all three inner slices are legal, conserve cubies, reverse exactly, and ha
     for(let i=0;i<3;i++)cube=turnLayer(cube,spec);assert.equal(JSON.stringify(cube),JSON.stringify(initial));
   }
 });
+
+test('2×2 surface picks only outer layers, including seams, from six viewpoints',()=>{
+  for(const [yaw,pitch] of views)for(const sticker of solvedCube(2)){
+    if(project(sticker.n,yaw,pitch)[2]<.08)continue;
+    const point=sticker.p.map((v,i)=>v*.75+sticker.n[i]*.755),screen=project(point,yaw,pitch),hit=pickSurface(screen[0],screen[1],yaw,pitch,2);
+    assert.deepEqual(hit.cubie,sticker.p);assert.deepEqual(hit.normal,sticker.n);
+    for(const c of dragCandidates(hit,yaw,pitch))assert.ok(Math.abs(c.layer)===1);
+  }
+  const p=project([0,0,1.505],-.58,.42),hit=pickSurface(p[0],p[1],-.58,.42,2);assert.deepEqual(hit.cubie,[1,1,1]);
+});

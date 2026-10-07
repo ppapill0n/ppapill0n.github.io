@@ -42,8 +42,20 @@ test('solved predicate accepts all 24 whole-cube orientations and rejects a turn
   }
   assert.equal(seen.size,24);
 });
-test('five uniform game slots; cube hides target and supplies a fresh legal scramble',()=>{
-  const registry=createRegistry();assert.equal(registry.length,5);
-  assert.deepEqual([.1,.3,.5,.7,.9].map(n=>chooseGame(registry,()=>n).id),['dial','cannon','slots','soda','cube']);
+test('six uniform game slots; cube hides target and supplies a fresh legal scramble',()=>{
+  const registry=createRegistry();assert.equal(registry.length,6);
+  assert.deepEqual([.08,.25,.42,.58,.75,.92].map(n=>chooseGame(registry,()=>n).id),['dial','cannon','slots','soda','cube','cube2']);
   const cube=registry.find(g=>g.id==='cube');assert.ok(cube.hideTarget);assert.ok(!isSolved(cube.next().stickers));assert.notEqual(key(cube.next().stickers),key(cube.next().stickers));
+});
+
+test('2×2 has 24 unique stickers, legal scrambles, inverse/four turns and 24 equivalent solved orientations',()=>{
+  const initial=solvedCube(2);assert.equal(initial.length,24);assert.equal(new Set(initial.map(s=>`${s.p}:${s.n}`)).size,24);
+  for(let seed=0;seed<80;seed++){
+    let n=seed+1;const random=()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/2**32;};
+    let {stickers,moves}=scramble(random,15,2);assert.ok(!isSolved(stickers));
+    for(const face of Object.keys(FACES)){assert.equal(key(turn(turn(stickers,face),face,true)),key(stickers));let c=stickers;for(let i=0;i<4;i++)c=turn(c,face);assert.equal(key(c),key(stickers));}
+    for(const m of moves.reverse())stickers=turn(stickers,m.face,!m.inverse);assert.equal(key(stickers),key(initial));
+  }
+  for(const r of [0,.5,.999999])assert.ok(!isSolved(scramble(()=>r,15,2).stickers));
+  const pending=[initial],seen=new Set();while(pending.length){const c=pending.pop();if(seen.has(key(c)))continue;seen.add(key(c));assert.ok(isSolved(c));assert.ok(!isSolved(turn(c,'F')));for(let axis=0;axis<3;axis++)pending.push(c.map(s=>({...s,p:rotate(s.p,axis,Math.PI/2).map(Math.round),n:rotate(s.n,axis,Math.PI/2).map(Math.round)})));}assert.equal(seen.size,24);
 });

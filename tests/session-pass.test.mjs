@@ -27,3 +27,12 @@ test('only explicit valid settled entry issues a pass; navigation waits for a su
   assert.equal(enterPersonal(12,{value:12,stopped:true},undefined,navigate),'entered');assert.equal(navigations,1);assert.equal(readPass().status,'valid');
   globalThis.sessionStorage={setItem(){throw Error('blocked');}};assert.equal(enterPersonal(12,{value:12,stopped:true},undefined,navigate),'unavailable');assert.equal(navigations,1);
 });
+
+test('all six adapters require settled matching state, issue the same hour pass, and reset clears it',async()=>{
+  const {createRegistry}=await import('../gate/registry.js');
+  for(const game of createRegistry(()=>.31)){
+    globalThis.sessionStorage=memory();const {target}=game.next();let visits=0;
+    assert.equal(enterPersonal(target,{value:target,stopped:false},game.rules,()=>visits++),'locked');assert.equal(readPass().status,'missing');
+    assert.equal(enterPersonal(target,{value:target,stopped:true},game.rules,()=>visits++),'entered');assert.equal(visits,1);const record=JSON.parse(sessionStorage.getItem(PASS_KEY));assert.equal(record.expiresAt-record.issuedAt,3600000);assert.ok(clearPass());assert.equal(readPass().status,'missing');
+  }
+});

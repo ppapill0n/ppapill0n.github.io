@@ -10,9 +10,9 @@ export function rotate(v,axis,angle) {
   const result=[...v], a=(axis+1)%3,b=(axis+2)%3,c=Math.cos(angle),s=Math.sin(angle);
   result[a]=v[a]*c-v[b]*s;result[b]=v[a]*s+v[b]*c;return result;
 }
-export function solvedCube() {
+export function solvedCube(size=3) {
   const stickers=[];
-  for(const [face,{axis,sign}] of Object.entries(FACES)) for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++) {
+  for(const [face,{axis,sign}] of Object.entries(FACES)) for(let a=-1;a<=1;a+=size===2?2:1)for(let b=-1;b<=1;b+=size===2?2:1) {
     const p=[0,0,0],n=[0,0,0];p[axis]=sign;p[(axis+1)%3]=a;p[(axis+2)%3]=b;n[axis]=sign;
     stickers.push({p,n,color:face});
   }
@@ -27,13 +27,14 @@ export function turn(stickers,face,inverse=false) {
   return turnLayer(stickers,{axis,layer:sign,angle});
 }
 export function isSolved(stickers) {
-  return Object.values(FACES).every(({axis,sign})=>{
+  const count=stickers.length/6;
+  return [4,9].includes(count) && Object.values(FACES).every(({axis,sign})=>{
     const side=stickers.filter(s=>s.n[axis]===sign);
-    return side.length===9 && side.every(s=>s.color===side[0].color);
+    return side.length===count && side.every(s=>s.color===side[0].color);
   });
 }
-export function scramble(random=Math.random,length=25) {
-  let stickers=solvedCube(),previous=null;const moves=[],faces=Object.keys(FACES);
+export function scramble(random=Math.random,length=25,size=3) {
+  let stickers=solvedCube(size),previous=null;const moves=[],faces=Object.keys(FACES);
   for(let i=0;i<length;i++) {
     const choices=faces.filter(face=>face!==previous);
     const face=choices[Math.floor(random()*choices.length)],inverse=random()<.5;
@@ -41,4 +42,9 @@ export function scramble(random=Math.random,length=25) {
   }
   if(isSolved(stickers)) {moves.push({face:'R',inverse:false});stickers=turn(stickers,'R');}
   return {stickers,moves};
+}
+
+// Keep both puzzles at the same comfortable on-screen size.
+export function stickerCenter(sticker,size=3) {
+  return sticker.p.map((v,i)=>v*(size===2?.75:1)+sticker.n[i]*(size===2?.755:.505));
 }

@@ -1,11 +1,12 @@
 import { rotate } from './cube-engine.js';
 // Black seam picks consistently belong to the row/column on the positive side.
+// A .03 tolerance absorbs subpixel pointer rounding for either cube size.
 const layerAt=v=>{const snapped=Math.abs(Math.abs(v)-.5)<.03?Math.sign(v)*.5:v;return Math.max(-1,Math.min(1,Math.floor(snapped+.5+1e-8)));};
 export const view=(v,yaw,pitch)=>rotate(rotate(v,1,yaw),0,pitch);
 export function project(v,yaw,pitch){const p=view(v,yaw,pitch);return [210+p[0]*60,170-p[1]*60,p[2]];}
 // Orthographic ray / six planes, including the black seams. Picking never falls
 // through a sticker gap into camera orbit, and closest visible face wins at edges.
-export function pickSurface(x,y,yaw,pitch){
+export function pickSurface(x,y,yaw,pitch,size=3){
   const inverse=v=>rotate(rotate(v,0,-pitch),1,-yaw);
   const origin=inverse([(x-210)/60,(170-y)/60,10]),direction=inverse([0,0,-1]);
   let best=null;
@@ -15,7 +16,7 @@ export function pickSurface(x,y,yaw,pitch){
     const t=(sign*1.505-origin[axis])/direction[axis];
     const point=origin.map((v,i)=>v+direction[i]*t);
     if(t<0||point.some((v,i)=>i!==axis&&Math.abs(v)>1.505+1e-8))continue;
-    if(!best||t<best.t)best={point,normal,axis,t,cubie:point.map(layerAt)};
+    if(!best||t<best.t)best={point,normal,axis,t,cubie:point.map(v=>size===2?(v>=-.03?1:-1):layerAt(v))};
   }
   return best;
 }

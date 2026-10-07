@@ -70,7 +70,7 @@ footer { display:flex; justify-content:space-between; padding:1.5rem 0 2rem; bor
   section:not(.intro) { margin-top:4.5rem; }
   .publication { grid-template-columns:1fr; gap:.75rem; padding:1.2rem; }
   .venue strong { display:inline; }
-  .details-grid { grid-template-columns:1fr; gap:0; }
+  .details-grid { grid-template-columns:1fr; gap:1.5rem; }
   footer { flex-direction:column; gap:.3rem; }
 }
 @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
