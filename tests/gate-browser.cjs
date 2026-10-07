@@ -9,7 +9,7 @@ const url=process.env.GATE_URL || 'http://127.0.0.1:8765/gate/';
   async function open(mobile=false,code=2400) {
     const context=await browser.newContext(mobile?{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3}:{viewport:{width:1200,height:900}});
     const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
-    await page.addInitScript(code=>{let n=0;Math.random=()=>n++%2===0?.9:(code+.5)/3001;},code);
+    await page.addInitScript(code=>{let n=0;Math.random=()=>n++%2===0?.7:(code+.5)/3001;},code);
     await page.goto(url);await page.waitForSelector('canvas');return page;
   }
   const volume=async p=>parseFloat(await p.locator('#volume').innerText());
@@ -71,7 +71,7 @@ const url=process.env.GATE_URL || 'http://127.0.0.1:8765/gate/';
   await zero.locator('#enter').click();await zero.waitForURL('**/personal/');
   const max=await open(false,3000);assert.equal(await max.locator('#target').innerText(),'3000');assert.ok(await max.locator('#enter').isDisabled());
   // Smoke-test unchanged mouse controls and explicit submission rules in all three older games.
-  for(const [random,id] of [[0,'dial'],[.3,'cannon'],[.6,'slots']]) {
+  for(const [random,id] of [[0,'dial'],[.3,'cannon'],[.5,'slots']]) {
     await max.evaluate(r=>{Math.random=()=>r;document.querySelector('#new-target').click();},random);
     assert.equal(await max.locator('#game').getAttribute('data-game'),id);
     if(id==='dial'){await max.locator('.direction').last().click();await max.waitForTimeout(1200);assert.ok(await max.locator('#enter').isDisabled());}

@@ -10,10 +10,10 @@ function pour(x,seconds=5,fps=60,y=155) {
   m.release();for(let n=0;n<8*fps;n++) m.advance(1/fps);
   return m;
 }
-test('uniform inclusive 0000–3000; four equal game partitions; same game can recur',()=>{
+test('uniform inclusive 0000–3000; five equal game partitions; same game can recur',()=>{
   for(let n=0;n<=3000;n++) assert.equal(createRegistry(()=>(n+.5)/3001).find(g=>g.id==='soda').next().target,n);
   const registry=createRegistry();
-  assert.deepEqual([0,.25,.5,.75,.999999].map(r=>chooseGame(registry,()=>r).id),['dial','cannon','slots','soda','soda']);
+  assert.deepEqual([0,.2,.4,.6,.8,.999999].map(r=>chooseGame(registry,()=>r).id),['dial','cannon','slots','soda','cube','cube']);
 });
 test('zero is stable indefinitely; matching is exact rounded tenths, only after settling',()=>{
   const m=new SodaPhysics();m.advance(20);assert.equal(m.bottle,450);assert.ok(m.stopped);assert.equal(m.value,0);

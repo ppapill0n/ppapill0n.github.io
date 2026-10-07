@@ -14,6 +14,8 @@ function reset() {
   const previous = active; active = null; previous?.destroy();
   const game = chooseGame(registry); rules = game.rules;
   const challenge = game.next(); target = challenge.target;
+  document.querySelector('#target').parentElement.hidden = !!game.hideTarget;
+  document.querySelector('main').classList.toggle('cube-mode', game.id === 'cube');
   document.querySelector('#target').textContent = (game.formatTarget ?? formatValue)(target);
   document.querySelector('main').classList.toggle('cannon-mode', game.id === 'cannon');
   document.querySelector('main').classList.toggle('slots-mode', game.id === 'slots');
@@ -22,7 +24,7 @@ function reset() {
   active = game.create(root, state => {
     if (current !== generation) return;
     enter.disabled = !canEnter(target, state, rules);
-    const message = !state.stopped ? 'Moving.' : canEnter(target, state, rules) ? 'Target matched. Ready to enter.' : 'Stopped.';
+    const message = !state.stopped ? 'Moving.' : canEnter(target, state, rules) ? (game.id === 'cube' ? 'Cube solved. Ready to enter.' : 'Target matched. Ready to enter.') : 'Stopped.';
     if (status.textContent !== message) status.textContent = message;
   }, tryEnter);
   active.reset(challenge);
