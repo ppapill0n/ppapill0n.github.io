@@ -31,7 +31,7 @@ test('all seven settled triples unlock entry; six non-seven triples also celebra
 test('fixed 777 formatting and equal registry partitions; repeated slots selection allowed',()=>{
   const registry=createRegistry(()=>{throw Error('Fixed target must not draw randomness');});
   const slots=registry.find(game=>game.id==='slots');assert.equal(slots.next().target,777);assert.equal(slots.formatTarget(777),'777');
-  assert.deepEqual([0,.3334,.6667,.99999].map(r=>chooseGame(registry,()=>r).id),['dial','cannon','slots','slots']);
+  assert.deepEqual([0,.25,.5,.75,.99999].map(r=>chooseGame(registry,()=>r).id),['dial','cannon','slots','soda','soda']);
   assert.equal(slots.next().target,777);
 });
 test('each reel finishes independently, all outcomes fit the strip, timing is frame-rate independent',()=>{

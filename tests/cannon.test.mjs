@@ -41,7 +41,7 @@ test('registry uniformly partitions cannon codes and allows repeated game select
     assert.equal(registry.find(g=>g.id==='cannon').next().target,code);
   }
   const registry=createRegistry(()=>0);
-  assert.equal(chooseGame(registry,()=>0).id,'dial');assert.equal(chooseGame(registry,()=>.5).id,'cannon');
+  assert.equal(chooseGame(registry,()=>0).id,'dial');assert.equal(chooseGame(registry,()=>.25).id,'cannon');
   assert.equal(chooseGame(registry,()=>.9).id,chooseGame(registry,()=>.9).id);
 });
 test('flight sampling at 30/60/120fps produces the same landing code without clamping',()=>{
