@@ -82,15 +82,7 @@ main.cube-mode { width:min(420px,calc(100% - 2rem)); }
 .cube-view { position:relative; }
 #cube { display:block; width:100%; aspect-ratio:420/340; touch-action:none; user-select:none; cursor:grab; -webkit-touch-callout:none; }
 #cube:focus-visible { outline:2px solid #9db6a5; outline-offset:2px; border-radius:8px; }
-#cube-home { position:absolute; right:0; bottom:4px; width:44px; height:44px; display:grid; place-items:center; border:1px solid #bfd0c4; border-radius:50%; color:var(--green); background:var(--paper); }
-.cube-controls { display:grid; grid-template-columns:repeat(3,1fr); gap:12px 8px; margin:1rem 0 1.5rem; }
-.cube-face-controls { display:flex; border:1px solid #bfd0c4; border-radius:9px; overflow:hidden; }
-.cube-face-controls button { display:flex; align-items:center; justify-content:center; gap:4px; width:50%; min-height:46px; padding:0 3px; background:transparent; color:#17251e; border:0; font:500 .9rem monospace; }
-.cube-face-controls button+button { border-left:1px solid #bfd0c4; }
-.cube-face-controls button:hover { background:var(--soft); }
-.cube-face-controls button:focus-visible { outline-offset:-3px; }
-.cube-face-controls i { width:7px; height:7px; border:1px solid #17251e66; background:var(--face-color); border-radius:2px; }
-.cube-face-controls button { gap:3px; }
-.cube-face-controls button span { font-size:1.3rem; line-height:1; }
-.cube-face-controls i { width:6px; height:6px; flex-shrink:0; }
-.cube-face-controls button,#cube-home { touch-action:manipulation; user-select:none; }
+
+.cube-mode #enter { margin-top:1.5rem; }
+#cube[data-pointer-focus]:focus-visible { outline:none; }
+#entry-error { font-size:.8rem; color:var(--green); margin:.75rem 0 0; }

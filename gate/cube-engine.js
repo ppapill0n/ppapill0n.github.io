@@ -19,9 +19,12 @@ export function solvedCube() {
   return stickers;
 }
 export function moveSpec(face,inverse=false) { const {axis,sign}=FACES[face];return {axis,sign,angle:-sign*(inverse?-1:1)*Math.PI/2}; }
+export function turnLayer(stickers,{axis,layer,angle}) {
+  return stickers.map(s=>s.p[axis]===layer?{...s,p:rotate(s.p,axis,angle).map(Math.round),n:rotate(s.n,axis,angle).map(Math.round)}:s);
+}
 export function turn(stickers,face,inverse=false) {
   const {axis,sign,angle}=moveSpec(face,inverse);
-  return stickers.map(s=>s.p[axis]===sign?{...s,p:rotate(s.p,axis,angle).map(Math.round),n:rotate(s.n,axis,angle).map(Math.round)}:s);
+  return turnLayer(stickers,{axis,layer:sign,angle});
 }
 export function isSolved(stickers) {
   return Object.values(FACES).every(({axis,sign})=>{

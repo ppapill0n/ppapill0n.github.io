@@ -1,14 +1,24 @@
 import { canEnter, formatValue } from './engine.js';
+import { enterPersonal } from './entry.js';
+import { clearPass } from './session-pass.js';
 import { createRegistry, chooseGame } from './registry.js';
 const registry = createRegistry();
 const root = document.querySelector('#game');
 const enter = document.querySelector('#enter');
 const status = document.querySelector('#state');
 let active = null, target = null, generation = 0, rules;
+function storageError(show) {
+  let message=document.querySelector('#entry-error');
+  if(show&&!message){message=document.createElement('p');message.id='entry-error';message.setAttribute('role','alert');enter.after(message);}
+  if(message){message.hidden=!show;message.textContent=show?'Session storage is unavailable. Enable it to enter.':'';}
+}
 function tryEnter() {
-  if (active && canEnter(target, active.getState(), rules)) window.location.assign('../personal/');
+  if (!active) return;
+  const result=enterPersonal(target, active.getState(), rules);
+  storageError(result==='unavailable');
 }
 function reset() {
+  storageError(!clearPass());
   const current = ++generation;
   enter.disabled = true;
   const previous = active; active = null; previous?.destroy();

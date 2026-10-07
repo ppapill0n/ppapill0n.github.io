@@ -9,8 +9,10 @@ function setLanguage(lang) {
     else el.textContent = copy[lang][el.dataset.copy];
   });
   document.querySelectorAll('[data-lang]').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.lang === lang)));
-  localStorage.setItem('academic-language',lang);
+  try { localStorage.setItem('academic-language',lang); } catch { /* Language still works when storage is disabled. */ }
 }
 document.querySelectorAll('[data-lang]').forEach(button => button.addEventListener('click',() => setLanguage(button.dataset.lang)));
 document.querySelector('#year').textContent = new Date().getFullYear();
-setLanguage(localStorage.getItem('academic-language') === 'ko' ? 'ko' : 'en');
+let language='en';
+try { language=localStorage.getItem('academic-language') === 'ko' ? 'ko' : 'en'; } catch { /* Use the default language. */ }
+setLanguage(language);
