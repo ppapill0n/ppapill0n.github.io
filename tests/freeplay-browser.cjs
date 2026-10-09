@@ -99,7 +99,7 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
     // No private markup flash while the guard/module is delayed, even on a game deep link.
     const missing = await open();
     let heldModule;
-    await missing.route('**/play/play.js', route => { heldModule = route; });
+    await missing.route('**/play/play.js*', route => { heldModule = route; });
     await missing.goto(url('play/?game=gomoku'), { waitUntil:'commit' });
     await waitUntil(() => heldModule, 'protected page module request');
     await missing.locator('#play-main').waitFor({ state:'attached' });
@@ -109,7 +109,7 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
     await missing.waitForURL(url('gate/'));
     assert.equal(await raw(missing), null);
     assert.deepEqual(await workerEvents(missing), []);
-    await missing.unroute('**/play/play.js');
+    await missing.unroute('**/play/play.js*');
 
     const invalid = await open();
     const valid = JSON.parse(await grant(invalid));

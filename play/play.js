@@ -68,7 +68,7 @@ function setLanguage(lang) {
     link.className = 'game-choice'; link.href = `?game=${game.id}`; link.dataset.selectGame = game.id;
     link.setAttribute('aria-label', `${text.games[game.id].name} · ${text.play}`);
     name.textContent = text.games[game.id].name; summary.textContent = text.games[game.id].summary;
-    arrow.textContent = '↗'; arrow.setAttribute('aria-hidden', 'true'); link.append(name, summary, arrow); return link;
+    arrow.textContent = '→'; arrow.setAttribute('aria-hidden', 'true'); link.append(name, summary, arrow); return link;
   }));
   document.title = text.pageTitle;
   renderGameCopy(); renderStatus(); decorateGame();
