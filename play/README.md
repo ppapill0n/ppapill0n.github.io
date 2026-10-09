@@ -16,6 +16,7 @@
 
 - `node --test tests/*.test.mjs`
 - `HAPPY_DOM_MODULE=/path/to/happy-dom/lib/index.js node tests/freeplay-dom.mjs`
+- `HAPPY_DOM_MODULE=/path/to/happy-dom/lib/index.js node tests/cube-dom.mjs`
 - `HAPPY_DOM_MODULE=/path/to/happy-dom/lib/index.js node tests/gomoku-dom.mjs`
 - `node tests/selection-simulation.mjs 300000`
 - `node tests/gomoku-winnability.mjs`
@@ -28,3 +29,9 @@ The DOM test uses real game adapters but stubs canvas drawing and worker transpo
 The chooser contains only a gameplay thumbnail and the localized game name per link. Its page heading remains screen-reader-only; the back arrow retains a localized accessible name. The gallery uses three desktop columns and two compact columns at 650 px and below. Image dimensions reserve a 4:3 frame; a failed image hides only the broken image, leaving the link and name usable. Below-the-fold previews load lazily.
 
 `thumbnails/*.webp` are real screenshots captured from the deployed shared games on 2026-10-09 at commit `7b6148deca908593686cd485161aa1e659190239`, through normal browser play after earning a gate pass. They are cropped/resized and padded to 600 × 450; no generated or reconstructed game imagery is used. The seven previews total less than 50 kB. A future game-art change should refresh its screenshot and the gallery asset version together.
+
+## Cube view controls
+
+Both cube sizes share a normalized quaternion orientation. Outside drags and arrow keys apply camera-relative rotations without Euler poles or pitch limits; straight diagonals use one fixed screen-space axis. The view transform and inverse ray picking use the same orientation, so face/slice gestures follow the visible grid after rolls and inverted views. Home and restart restore the original view.
+
+`cube-orientation.test.mjs` checks the math against independent Rodrigues geometry, including multiple full turns and long-run precision. `cube-dom.mjs` drives actual adapters with synthetic pointer/keyboard events and checks rendered polygon geometry at each orbit step; it is not physical touch-device verification. `cube-browser.cjs` additionally covers real pointer/touch browser events when run in a supported Playwright environment with `CUBE_SIZE=2` and `CUBE_SIZE=3`.

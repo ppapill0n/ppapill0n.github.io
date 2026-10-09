@@ -5,48 +5,79 @@ const url=process.env.GATE_URL||'http://127.0.0.1:8765/gate/';
 (async()=>{
   const {FACES,solvedCube,scramble,rotate,turnLayer,moveSpec,stickerCenter}=await import('../gate/common/cube-engine.js');
   const {project}=await import('../gate/common/cube-gestures.js');
+  const {createOrientation,orbitOrientation}=await import('../gate/common/cube-orientation.js');
+  // Reproduce the actual ordered camera-space key rotations; yaw/pitch sums lose roll.
+  const keyedOrientation=(horizontal=0,vertical=0)=>{let q=createOrientation();for(let i=0;i<Math.abs(horizontal);i++)q=orbitOrientation(q,Math.sign(horizontal)*.15,0);for(let i=0;i<Math.abs(vertical);i++)q=orbitOrientation(q,0,Math.sign(vertical)*.15);return q;};
   const browser=await chromium.launch({executablePath:process.env.CHROMIUM||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});const errors=[];
   async function open(mobile=false){const p=await (await browser.newContext(mobile?{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3}:{viewport:{width:1200,height:900}})).newPage();p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(r=>{Math.random=()=>window.__gateTestDraws?.length?window.__gateTestDraws.shift():r;window.drawnLetters=[];const fill=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(t,...args){window.drawnLetters.push(t);return fill.call(this,t,...args);};},rng);await p.goto(url);await p.waitForSelector('#cube');return p;}
   const state=p=>p.locator('#cube-accessible').innerText();const idle=p=>p.waitForFunction(()=>document.querySelector('#game').dataset.phase==='idle');
   const describe=stickers=>Object.values(FACES).map(({axis,sign,name})=>`${name}: ${stickers.filter(s=>s.n[axis]===sign).sort((a,b)=>b.p[(axis+2)%3]-a.p[(axis+2)%3]||a.p[(axis+1)%3]-b.p[(axis+1)%3]).map(s=>({U:'white',R:'red',F:'green',D:'yellow',L:'orange',B:'blue'})[s.color]).join(', ')}`).join('. ');
   async function drag(p,start,delta,finish=true){const r=await p.locator('#cube').boundingBox();await p.mouse.move(r.x+start[0]*r.width/420,r.y+start[1]*r.height/340);await p.mouse.down();await p.mouse.move(r.x+(start[0]+delta[0])*r.width/420,r.y+(start[1]+delta[1])*r.height/340,{steps:5});if(finish){await p.mouse.up();await idle(p);}}
-  function push(point,axis,sign,yaw,pitch,length=38){const faceCenter=point.map(v=>Math.abs(v)===1.505?v:0),rotated=rotate(faceCenter,axis,sign*.0001);const a=project(point,yaw,pitch),b=project(point.map((v,i)=>v+rotated[i]-faceCenter[i]),yaw,pitch),dx=b[0]-a[0],dy=b[1]-a[1],n=Math.hypot(dx,dy);return {start:a,delta:[dx/n*length,dy/n*length]};}
+  function push(point,axis,sign,orientation,length=38){const faceCenter=point.map(v=>Math.abs(v)===1.505?v:0),rotated=rotate(faceCenter,axis,sign*.0001);const a=project(point,orientation),b=project(point.map((v,i)=>v+rotated[i]-faceCenter[i]),orientation),dx=b[0]-a[0],dy=b[1]-a[1],n=Math.hypot(dx,dy);return {start:a,delta:[dx/n*length,dy/n*length]};}
+  // Check visible canvas pixels, never private camera or sticker state. Sticker centers
+  // stay clear of seams even after the camera rolls past the former pitch limits.
+  async function assertRenderedView(p,stickers,orientation,label){
+    const samples=stickers.filter(s=>project(s.n,orientation)[2]>.25).map(s=>({point:project(stickerCenter(s,size),orientation),color:FACES[s.color].color.slice(1).match(/../g).map(v=>parseInt(v,16))}));
+    assert.ok(samples.length>=size*size,`${label}: enough visible sticker samples`);
+    const colors=await p.locator('#cube').evaluate((canvas,samples)=>{const ctx=canvas.getContext('2d');return samples.map(({point:[x,y]})=>Array.from(ctx.getImageData(Math.round(x*2),Math.round(y*2),1,1).data).slice(0,3));},samples);
+    for(let i=0;i<samples.length;i++)assert.deepEqual(colors[i],samples[i].color,`${label}: rendered sticker ${i}`);
+  }
+  async function orbitRegressions(p,swipe,kind,stickers){
+    const before=describe(stickers),stepPixels=(Math.PI/4)*420/3.8;
+    for(const [name,unit] of [['horizontal',[1,0]],['vertical',[0,1]],['diagonal',[Math.SQRT1_2,Math.SQRT1_2]]]){
+      await p.locator('#cube').focus();await p.keyboard.press('Home');let camera=createOrientation();
+      const delta=unit.map(v=>v*stepPixels);
+      // Twenty-four same-direction outside swipes accumulate three full revolutions.
+      // Check every eighth-turn, not just the final image, to catch clamping or snapping.
+      for(let i=0;i<24;i++){
+        await swipe([12,12],delta);camera=orbitOrientation(camera,delta[0]*3.8/420,delta[1]*3.8/420);
+        assert.equal(await state(p),before,`${kind} ${name} orbit ${i+1}: stickers unchanged`);
+        await assertRenderedView(p,stickers,camera,`${kind} ${name} orbit ${i+1}`);
+      }
+      await assertRenderedView(p,stickers,createOrientation(),`${kind} ${name}: three revolutions return home`);
+    }
+    await p.keyboard.press('Home');console.log(`PASS ${kind} horizontal/vertical/diagonal orbits: three revolutions each, unchanged stickers`);
+  }
   const p=await open();let expected=scramble(()=>rng,size===2?15:25,size).stickers;const initial=describe(expected);assert.equal(await state(p),initial);assert.equal(await p.locator('#game button').count(),0);assert.equal(await p.locator('button:visible').count(),2);assert.ok(await p.locator('#target').isHidden());assert.deepEqual(await p.evaluate(()=>window.drawnLetters),[]);await p.screenshot({path:`/tmp/cube-${size}-drag-desktop.png`});
   // All visible faces, corners, edges and center slices, two directions and their reverses,
-  // at front/right/left/back and bottom/up views. Each move is a real mouse drag.
+  // at front/right/left/back, bottom/up and fully inverted views. Each move is a real mouse drag.
   let cases=0;
-  for(const [horizontal,vertical] of (process.env.CUBE_FOCUSED?[]:[[0,0],[8,2],[20,0],[-10,-6],[6,-10],[-3,6]])){
+  const viewpoints=[...(process.env.CUBE_FOCUSED?[]:[[0,0],[8,2],[20,0],[-10,-6],[6,-10],[-3,6]]),[0,21],[13,21]];
+  for(const [horizontal,vertical] of viewpoints){
     await p.locator('#cube').focus();await p.keyboard.press('Home');for(let i=0;i<Math.abs(horizontal);i++)await p.keyboard.press(horizontal>0?'ArrowRight':'ArrowLeft');for(let i=0;i<Math.abs(vertical);i++)await p.keyboard.press(vertical>0?'ArrowDown':'ArrowUp');
-    const yaw=-.58+horizontal*.15,pitch=Math.max(-1.45,Math.min(1.45,.42+vertical*.15));
+    const orientation=keyedOrientation(horizontal,vertical);
+    if(vertical===21)assert.ok(project([0,1,0],orientation)[1]>170,'world up is below center in an inverted view');
+    await assertRenderedView(p,expected,orientation,`keyboard viewpoint ${horizontal},${vertical}`);
     for(const {axis:normalAxis,sign} of Object.values(FACES)){
-      const normal=[0,0,0];normal[normalAxis]=sign;if(project(normal,yaw,pitch)[2]<.08)continue;
+      const normal=[0,0,0];normal[normalAxis]=sign;if(project(normal,orientation)[2]<.08)continue;
       for(const [a,b] of (size===2?[[.75,.75],[-.75,.75],[-.75,-.75]]:[[0,0],[1,0],[-1,1]])){
         const point=[0,0,0];point[normalAxis]=sign*1.505;point[(normalAxis+1)%3]=a;point[(normalAxis+2)%3]=b;
         for(const axis of [0,1,2].filter(n=>n!==normalAxis))for(const direction of [1,-1]){
-          const plan=push(point,axis,direction,yaw,pitch);await drag(p,plan.start,plan.delta);expected=turnLayer(expected,{axis,layer:size===2?Math.sign(point[axis]):Math.round(point[axis]),angle:direction*Math.PI/2});assert.equal(await state(p),describe(expected),JSON.stringify({horizontal,vertical,normalAxis,sign,a,b,axis,direction}));cases++;
+          const plan=push(point,axis,direction,orientation);await drag(p,plan.start,plan.delta);expected=turnLayer(expected,{axis,layer:size===2?Math.sign(point[axis]):Math.round(point[axis]),angle:direction*Math.PI/2});assert.equal(await state(p),describe(expected),JSON.stringify({horizontal,vertical,normalAxis,sign,a,b,axis,direction}));cases++;
         }
       }
     }
   }
-  assert.equal(await state(p),initial);console.log('PASS',cases,'actual face/slice drags across six viewpoints');
+  assert.equal(await state(p),initial);console.log('PASS',cases,`actual face/slice drags across ${viewpoints.length} viewpoints, including fully inverted views`);
   // Explicit horizontal, vertical and diagonal screen swipes, also at seams/near corners.
   for(const h of [0,18,-12]){
     await p.keyboard.press('Home');for(let i=0;i<Math.abs(h);i++)await p.keyboard.press(h>0?'ArrowRight':'ArrowLeft');
-    const y=-.58+h*.15,t=.42,face=Object.values(FACES).sort((a,b)=>{const na=[0,0,0],nb=[0,0,0];na[a.axis]=a.sign;nb[b.axis]=b.sign;return project(nb,y,t)[2]-project(na,y,t)[2];})[0];
+    const orientation=keyedOrientation(h),face=Object.values(FACES).sort((a,b)=>{const na=[0,0,0],nb=[0,0,0];na[a.axis]=a.sign;nb[b.axis]=b.sign;return project(nb,orientation)[2]-project(na,orientation)[2];})[0];
     for(const pair of (size===2?[[.75,.75],[0,.75],[1.45,-1.45]]:[[0,0],[.5,0],[1.45,-1.45]]))for(const delta of [[38,0],[0,38],[30,30],[30,-30]]){
-      const point=[0,0,0];point[face.axis]=face.sign*1.505;point[(face.axis+1)%3]=pair[0];point[(face.axis+2)%3]=pair[1];const start=project(point,y,t);
+      const point=[0,0,0];point[face.axis]=face.sign*1.505;point[(face.axis+1)%3]=pair[0];point[(face.axis+2)%3]=pair[1];const start=project(point,orientation);
       // Derive expected move independently from finite 3D rotations.
-      const options=[0,1,2].filter(a=>a!==face.axis).map(axis=>{const center=point.map((v,i)=>i===face.axis?v:0),rotated=rotate(center,axis,.000001);const end=project(point.map((v,i)=>v+rotated[i]-center[i]),y,t),v=[end[0]-start[0],end[1]-start[1]],dot=v[0]*delta[0]+v[1]*delta[1];return {axis,layer:size===2?(point[axis]>=0?1:-1):Math.max(-1,Math.min(1,Math.floor(point[axis]+.5))),angle:Math.sign(dot)*Math.PI/2,score:Math.abs(dot)/Math.hypot(...v)};}).sort((a,b)=>b.score-a.score||a.axis-b.axis);
+      const options=[0,1,2].filter(a=>a!==face.axis).map(axis=>{const center=point.map((v,i)=>i===face.axis?v:0),rotated=rotate(center,axis,.000001);const end=project(point.map((v,i)=>v+rotated[i]-center[i]),orientation),v=[end[0]-start[0],end[1]-start[1]],dot=v[0]*delta[0]+v[1]*delta[1];return {axis,layer:size===2?(point[axis]>=0?1:-1):Math.max(-1,Math.min(1,Math.floor(point[axis]+.5))),angle:Math.sign(dot)*Math.PI/2,score:Math.abs(dot)/Math.hypot(...v)};}).sort((a,b)=>b.score-a.score||a.axis-b.axis);
       await drag(p,start,delta);expected=turnLayer(expected,options[0]);assert.equal(await state(p),describe(expected),JSON.stringify({h,pair,delta,move:options[0]}));await drag(p,start,delta.map(v=>-v));expected=turnLayer(expected,{...options[0],angle:-options[0].angle});assert.equal(await state(p),describe(expected));
     }
   }
   assert.equal(await state(p),initial);console.log('PASS 72 horizontal/vertical/diagonal and seam/corner swipes');
-  await p.keyboard.press('Home');const yaw=-.58,pitch=.42;
+  await orbitRegressions(p,(start,delta)=>drag(p,start,delta),'mouse',expected);
+  await p.keyboard.press('Home');const orientation=createOrientation();
   // Outside orbit changes the image but not stickers; a click or tiny drag does nothing.
   const beforeImage=await p.locator('#cube').screenshot();await drag(p,[12,12],[70,30]);assert.equal(await state(p),initial);assert.notDeepEqual(await p.locator('#cube').screenshot(),beforeImage);await p.keyboard.press('Home');
-  const center=project([size===2?.75:0,size===2?.75:0,1.505],yaw,pitch);await drag(p,center,[0,0]);await drag(p,center,[3,2]);assert.equal(await state(p),initial);
+  const center=project([size===2?.75:0,size===2?.75:0,1.505],orientation);await drag(p,center,[0,0]);await drag(p,center,[3,2]);assert.equal(await state(p),initial);
   // Reverse drag to origin cancels. Every interruption rolls back the uncommitted preview.
-  const plan=push([size===2?.75:1,size===2?.75:0,1.505],0,1,yaw,pitch);
+  const plan=push([size===2?.75:1,size===2?.75:0,1.505],0,1,orientation);
   for(const type of ['pointercancel','lostpointercapture','blur','resize']){
     await drag(p,plan.start,plan.delta,false);assert.ok(await p.locator('#enter').isDisabled());await p.screenshot({path:`/tmp/cube-${size}-drag-preview.png`});
     await p.evaluate(type=>{if(type==='blur'||type==='resize')window.dispatchEvent(new Event(type));else document.querySelector('#cube').dispatchEvent(new PointerEvent(type,{pointerId:1}));},type);await p.mouse.up();if(type==='blur')await p.evaluate(()=>window.dispatchEvent(new Event('focus')));await idle(p);assert.equal(await state(p),initial);
@@ -64,8 +95,8 @@ const url=process.env.GATE_URL||'http://127.0.0.1:8765/gate/';
   for(const m of scramble(()=>rng,size===2?15:25,size).moves.reverse()){
     const spec=moveSpec(m.face,!m.inverse);let selected;
     for(const sticker of solvedCube(size)){
-      const normalAxis=sticker.n.findIndex(v=>v!==0);if(normalAxis===spec.axis||sticker.p[spec.axis]!==spec.sign||project(sticker.n,yaw,pitch)[2]<.08)continue;
-      const point=stickerCenter(sticker,size);selected=push(point,spec.axis,Math.sign(spec.angle),yaw,pitch);break;
+      const normalAxis=sticker.n.findIndex(v=>v!==0);if(normalAxis===spec.axis||sticker.p[spec.axis]!==spec.sign||project(sticker.n,orientation)[2]<.08)continue;
+      const point=stickerCenter(sticker,size);selected=push(point,spec.axis,Math.sign(spec.angle),orientation);break;
     }
     assert.ok(selected);await drag(p,selected.start,selected.delta);
   }
@@ -78,12 +109,13 @@ const url=process.env.GATE_URL||'http://127.0.0.1:8765/gate/';
   await p.evaluate(async()=>{const {PASS_KEY,PASS_TTL}=await import('/gate/common/session-pass.js');sessionStorage.setItem(PASS_KEY,JSON.stringify({version:1,issuedAt:Date.now()-PASS_TTL-1000,expiresAt:Date.now()-1000}));});await p.reload();await p.waitForURL('**/gate/');
   const mobile=await open(true),cdp=await mobile.context().newCDPSession(mobile);const mr=await mobile.locator('#cube').boundingBox();
   const touch=async(type,xy)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:xy?[{x:mr.x+xy[0]*mr.width/420,y:mr.y+xy[1]*mr.height/340,id:1}]:[]});
-  for(const direction of [1,-1]){const t=push([size===2?.75:0,size===2?.75:0,1.505],1,direction,yaw,pitch);await touch('touchStart',t.start);await touch('touchMove',[t.start[0]+t.delta[0],t.start[1]+t.delta[1]]);await touch('touchEnd');await idle(mobile);}
-  for(const [h,v] of [[0,0],[8,2],[20,0],[-10,-6],[6,-10],[-3,6]]){
+  for(const direction of [1,-1]){const t=push([size===2?.75:0,size===2?.75:0,1.505],1,direction,orientation);await touch('touchStart',t.start);await touch('touchMove',[t.start[0]+t.delta[0],t.start[1]+t.delta[1]]);await touch('touchEnd');await idle(mobile);}
+  for(const [h,v] of [[0,0],[8,2],[20,0],[-10,-6],[6,-10],[-3,6],[0,21],[13,21]]){
     await mobile.locator('#cube').focus();await mobile.keyboard.press('Home');for(let i=0;i<Math.abs(h);i++)await mobile.keyboard.press(h>0?'ArrowRight':'ArrowLeft');for(let i=0;i<Math.abs(v);i++)await mobile.keyboard.press(v>0?'ArrowDown':'ArrowUp');
-    const y=-.58+h*.15,t=Math.max(-1.45,Math.min(1.45,.42+v*.15));const sticker=solvedCube(size).find(s=>project(s.n,y,t)[2]>.2),normalAxis=sticker.n.findIndex(n=>n!==0),axis=(normalAxis+1)%3;
-    for(const sign of [1,-1]){const gesture=push(stickerCenter(sticker,size),axis,sign,y,t);await touch('touchStart',gesture.start);await touch('touchMove',[gesture.start[0]+gesture.delta[0],gesture.start[1]+gesture.delta[1]]);await touch('touchEnd');await idle(mobile);}assert.equal(await state(mobile),initial);
+    const camera=keyedOrientation(h,v);const sticker=solvedCube(size).find(s=>project(s.n,camera)[2]>.2),normalAxis=sticker.n.findIndex(n=>n!==0),axis=(normalAxis+1)%3;
+    for(const sign of [1,-1]){const gesture=push(stickerCenter(sticker,size),axis,sign,camera);await touch('touchStart',gesture.start);await touch('touchMove',[gesture.start[0]+gesture.delta[0],gesture.start[1]+gesture.delta[1]]);await touch('touchEnd');await idle(mobile);}assert.equal(await state(mobile),initial);
   }
+  await orbitRegressions(mobile,async(start,delta)=>{await touch('touchStart',start);await touch('touchMove',[start[0]+delta[0],start[1]+delta[1]]);await touch('touchEnd');await idle(mobile);},'touch',scramble(()=>rng,size===2?15:25,size).stickers);
   await mobile.keyboard.press('Home');
   assert.equal(await state(mobile),initial);await touch('touchStart',plan.start);await touch('touchMove',[plan.start[0]+plan.delta[0],plan.start[1]+plan.delta[1]]);await touch('touchCancel');assert.equal(await state(mobile),initial);
   await touch('touchStart',[10,10]);await touch('touchMove',[65,45]);await touch('touchEnd');assert.equal(await state(mobile),initial);await mobile.screenshot({path:`/tmp/cube-${size}-drag-mobile.png`});
@@ -92,8 +124,8 @@ const url=process.env.GATE_URL||'http://127.0.0.1:8765/gate/';
   for(const m of scramble(()=>rng,size===2?15:25,size).moves.reverse()){
     const spec=moveSpec(m.face,!m.inverse);let selected;
     for(const sticker of solvedCube(size)){
-      const normalAxis=sticker.n.findIndex(v=>v!==0);if(normalAxis===spec.axis||sticker.p[spec.axis]!==spec.sign||project(sticker.n,yaw,pitch)[2]<.08)continue;
-      selected=push(stickerCenter(sticker,size),spec.axis,Math.sign(spec.angle),yaw,pitch);break;
+      const normalAxis=sticker.n.findIndex(v=>v!==0);if(normalAxis===spec.axis||sticker.p[spec.axis]!==spec.sign||project(sticker.n,orientation)[2]<.08)continue;
+      selected=push(stickerCenter(sticker,size),spec.axis,Math.sign(spec.angle),orientation);break;
     }
     await touch('touchStart',selected.start);await touch('touchMove',[selected.start[0]+selected.delta[0],selected.start[1]+selected.delta[1]]);await touch('touchEnd');await idle(mobile);
   }

@@ -1,7 +1,7 @@
 import { canEnter, formatValue } from './common/engine.js';
 import { enterPersonal } from './common/entry.js';
 import { clearPass } from './common/session-pass.js';
-import { createRegistry, createGameSelector } from './registry.js';
+import { createRegistry, createGameSelector } from './registry.js?v=20261009-orbit';
 const registry = createRegistry();
 const selector = createGameSelector(registry);
 const root = document.querySelector('#game');
