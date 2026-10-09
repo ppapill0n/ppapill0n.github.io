@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Deterministic Gomoku browser QA</title><link rel="stylesheet" href="../gate/gate.css"></head>
+<body><main class="gomoku-mode"><p style="font-size:.75rem">Deterministic browser QA · fixture 20261033</p><div id="game"></div><button id="enter" disabled>Enter</button><p id="fixture-error" role="alert"></p></main>
+<script type="module">
+import {createGomokuGame} from '../gate/games/gomoku/game.js';
+import {createWorkerEngine} from '../gate/games/gomoku/engine-client.js';
+import {canEnter} from '../gate/common/engine.js';
+import {enterPersonal} from '../gate/common/entry.js';
+import {clearPass} from '../gate/common/session-pass.js';
+// This temporary QA page changes only RNG seeds. Every stone is selected by
+// an actual UI click or the unmodified production Worker; no board/outcome
+// is injected and Enter still requires a genuine rules-checked human victory.
+const source=await fetch('./gomoku-winnability-fixtures.json');
+const fixture=(await source.json()).demonstrations.find(game=>game.seed===20261033);
+const base=createWorkerEngine();
+const engine={
+ async findMove(board,player,options){
+  const expected=fixture.trace[Array.from(board).filter(Boolean).length];
+  if(!expected||expected.side!=='panda')throw Error('Fixture turn mismatch');
+  const index=await base.findMove(board,player,{...options,seed:expected.seed});
+  if(index!==expected.index)throw Error('Seeded engine diverged');
+  return index;
+ },
+ cancel:()=>base.cancel(),destroy:()=>base.destroy()
+};
+const rules={humanVictory:true,requireStopped:true},enter=document.querySelector('#enter');
+clearPass();
+const game=createGomokuGame(document.querySelector('#game'),state=>enter.disabled=!canEnter(undefined,state,rules),null,{engine,humanFirst:false});
+game.reset();
+enter.addEventListener('click',()=>{const result=enterPersonal(undefined,game.getState(),rules);if(result==='unavailable')document.querySelector('#fixture-error').textContent='Session storage unavailable.';});
+</script></body></html>
