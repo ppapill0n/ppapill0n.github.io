@@ -1,4 +1,4 @@
-import { createRegistry } from '../gate/registry.js';
+import { createRegistry } from '../gate/registry.js?v=20261009-freeplay';
 import { canEnter, formatValue } from '../gate/common/engine.js';
 import { readPass } from '../gate/common/session-pass.js';
 import { createAccessGuard } from '../gate/common/access-guard.js';

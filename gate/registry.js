@@ -1,5 +1,5 @@
 import { createGate, defaultRules } from './common/engine.js';
-import { createDialGame } from './games/dial/game.js';
+import { createDialGame } from './games/dial/game.js?v=20261009-freeplay';
 import { createCannonGame } from './games/cannon/game.js';
 import { createSodaGame } from './games/soda/game.js';
 import { createCubeGame } from './games/cube/game.js';

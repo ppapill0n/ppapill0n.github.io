@@ -83,3 +83,13 @@ test('freeplay has no entry action or pass issuance and leaves gate selection co
   const personal = await readFile(new URL('../personal/index.html',import.meta.url),'utf8');
   assert.match(personal,/class="personal-cue" href="\.\.\/play\/"/);assert.match(personal,/Coming soon/);
 });
+test('changed page assets and the freeplay dial graph use matching rollout versions', async () => {
+  const files=await Promise.all(['../index.html','../personal/index.html','../play/index.html','../play/play.js','../gate/registry.js','../gate/games/dial/game.js'].map(path=>readFile(new URL(path,import.meta.url),'utf8')));
+  for(const html of files.slice(0,3)) assert.match(html,/academic\.css\?v=20261009-freeplay/);
+  assert.match(files[0],/academic\.js\?v=20261009-freeplay/);
+  assert.match(files[1],/coming-soon\.js\?v=20261009-freeplay/);
+  assert.match(files[1],/data-copy="play">can't leave yet\?/);
+  assert.match(files[3],/registry\.js\?v=20261009-freeplay/);
+  assert.match(files[4],/games\/dial\/game\.js\?v=20261009-freeplay/);
+  assert.match(files[5],/dial\.js\?v=20261009-freeplay/);
+});
