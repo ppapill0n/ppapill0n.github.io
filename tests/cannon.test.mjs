@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sweepAngle, chargePower, trajectory, flightPoint, landingCode } from '../gate/cannon-physics.js';
+import { sweepAngle, chargePower, trajectory, flightPoint, landingCode } from '../gate/games/cannon/physics.js';
 import { createRegistry, chooseGame } from '../gate/registry.js';
-import { canEnter } from '../gate/engine.js';
+import { canEnter } from '../gate/common/engine.js';
 test('one-second sweep and half-second capped charge are independent of frame rate',()=>{
   for(const fps of [30,60,120]){
     for(let f=0;f<=fps*3;f++){

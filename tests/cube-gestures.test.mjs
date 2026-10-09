@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {pickSurface,project,chooseDrag,dragCandidates} from '../gate/cube-gestures.js';
-import {solvedCube,rotate,turnLayer,isSolved} from '../gate/cube-engine.js';
+import {pickSurface,project,chooseDrag,dragCandidates} from '../gate/common/cube-gestures.js';
+import {solvedCube,rotate,turnLayer,isSolved} from '../gate/common/cube-engine.js';
 const views=[[-.58,.42],[.7,.55],[2.4,.4],[-2.2,-.6],[.4,-1.2],[-.9,1.2]];
 test('ray picking resolves every visible sticker center and seams at six varied front/back/bottom views',()=>{
   for(const [yaw,pitch] of views)for(const sticker of solvedCube()){

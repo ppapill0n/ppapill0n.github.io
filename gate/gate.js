@@ -1,8 +1,9 @@
-import { canEnter, formatValue } from './engine.js';
-import { enterPersonal } from './entry.js';
-import { clearPass } from './session-pass.js';
-import { createRegistry, chooseGame } from './registry.js';
+import { canEnter, formatValue } from './common/engine.js';
+import { enterPersonal } from './common/entry.js';
+import { clearPass } from './common/session-pass.js';
+import { createRegistry, createGameSelector } from './registry.js';
 const registry = createRegistry();
+const selector = createGameSelector(registry);
 const root = document.querySelector('#game');
 const enter = document.querySelector('#enter');
 const status = document.querySelector('#state');
@@ -22,11 +23,12 @@ function reset() {
   const current = ++generation;
   enter.disabled = true;
   const previous = active; active = null; previous?.destroy();
-  const game = chooseGame(registry); rules = game.rules;
+  const game = selector.next(); rules = game.rules;
   const challenge = game.next(); target = challenge.target;
   document.querySelector('#target').parentElement.hidden = !!game.hideTarget;
   document.querySelector('main').classList.toggle('cube-mode', !!game.cube);
-  document.querySelector('#target').textContent = (game.formatTarget ?? formatValue)(target);
+  document.querySelector('#target').textContent = game.hideTarget ? '' : (game.formatTarget ?? formatValue)(target);
+  document.querySelector('main').classList.toggle('gomoku-mode', game.id === 'gomoku');
   document.querySelector('main').classList.toggle('cannon-mode', game.id === 'cannon');
   document.querySelector('main').classList.toggle('slots-mode', game.id === 'slots');
   document.querySelector('main').classList.toggle('soda-mode', game.id === 'soda');
@@ -34,7 +36,7 @@ function reset() {
   active = game.create(root, state => {
     if (current !== generation) return;
     enter.disabled = !canEnter(target, state, rules);
-    const message = !state.stopped ? 'Moving.' : canEnter(target, state, rules) ? (!!game.cube ? 'Cube solved. Ready to enter.' : 'Target matched. Ready to enter.') : 'Stopped.';
+    const message = game.id === 'gomoku' ? (state.outcome === 'human' ? 'You won. Ready to enter.' : document.querySelector('#gomoku-status').textContent) : !state.stopped ? 'Moving.' : canEnter(target, state, rules) ? (!!game.cube ? 'Cube solved. Ready to enter.' : 'Target matched. Ready to enter.') : 'Stopped.';
     if (status.textContent !== message) status.textContent = message;
   }, tryEnter);
   active.reset(challenge);

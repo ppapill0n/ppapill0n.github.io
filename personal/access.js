@@ -1,4 +1,4 @@
-import {readPass,clearPass,PASS_KEY} from '../gate/session-pass.js';
+import {readPass,clearPass,PASS_KEY} from '../gate/common/session-pass.js';
 const page=document.documentElement,gate=new URL('../gate/',import.meta.url);
 let timer=null;
 function hide(){page.setAttribute('data-private-pending','');clearTimeout(timer);timer=null;}

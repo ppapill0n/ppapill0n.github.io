@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createGate, formatValue } from '../gate/engine.js';
-import { advance, physics, wrap } from '../gate/motion.js';
-import { InertiaDial } from '../gate/dial.js';
+import { createGate, formatValue } from '../gate/common/engine.js';
+import { advance, physics, wrap } from '../gate/common/motion.js';
+import { InertiaDial } from '../gate/games/dial/dial.js';
 function fixture() {
   globalThis.window=new EventTarget();globalThis.document=new EventTarget();
   let callback=null;

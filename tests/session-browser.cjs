@@ -2,7 +2,7 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
 const base=process.env.SITE_URL||'http://127.0.0.1:8765';const KEY='personal-gate-pass',TTL=3600000;
 (async()=>{
   const browser=await chromium.launch({executablePath:process.env.CHROMIUM||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});const errors=[];
-  async function open(context){const p=await (context||await browser.newContext()).newPage();p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(()=>{let n=0;Math.random=()=>n++===0?.7:0;});return p;}
+  async function open(context){const p=await (context||await browser.newContext()).newPage();p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(()=>{let n=0;Math.random=()=>n++===0?3.5/7:0;});return p;}
   const raw=p=>p.evaluate(key=>sessionStorage.getItem(key),KEY);
   async function win(p){await p.goto(base+'/gate/');await p.waitForFunction(()=>!document.querySelector('#enter').disabled);assert.equal(await raw(p),null);await p.locator('#enter').click();await p.waitForURL('**/personal/');await p.waitForFunction(()=>!document.documentElement.hasAttribute('data-private-pending'));}
   const p=await open();
@@ -31,14 +31,14 @@ const base=process.env.SITE_URL||'http://127.0.0.1:8765';const KEY='personal-gat
   // Denied storage: a single redirect from personal, then a visible error on gate.
   const blocked=await open();await blocked.addInitScript(()=>{for(const name of ['sessionStorage','localStorage'])Object.defineProperty(window,name,{get(){throw new DOMException('Disabled','SecurityError');},configurable:true});});
   await blocked.goto(base+'/personal/');await blocked.waitForURL('**/gate/');await blocked.waitForFunction(()=>!document.querySelector('#enter').disabled);assert.ok(await blocked.locator('#entry-error').isVisible());await blocked.locator('#enter').click();await blocked.waitForTimeout(200);assert.ok(blocked.url().endsWith('/gate/'));assert.ok(await blocked.locator('[role="alert"]').isVisible());
-  // Five REAL adapter instances feed their actual getState into the shared entry action.
+  // Six existing REAL adapter instances feed their actual getState into the shared entry action.
   // Clock injection supplies deterministic cannon and slot completion, not fake state.
   const adapters=await open();await adapters.goto(base+'/gate/');const results=await adapters.evaluate(async()=>{
-    const {createRegistry}=await import('/gate/registry.js'),{enterPersonal}=await import('/gate/entry.js'),{clearPass,readPass,PASS_KEY}=await import('/gate/session-pass.js'),{solvedCube}=await import('/gate/cube-engine.js'),{trajectory,landingCode}=await import('/gate/cannon-physics.js');
+    const {createRegistry}=await import('/gate/registry.js'),{enterPersonal}=await import('/gate/common/entry.js'),{clearPass,readPass,PASS_KEY}=await import('/gate/common/session-pass.js'),{solvedCube}=await import('/gate/common/cube-engine.js'),{trajectory,landingCode}=await import('/gate/games/cannon/physics.js');
     const results=[];
-    for(const definition of createRegistry(()=>0)){
+    for(const definition of createRegistry(()=>0).filter(game=>game.id!=='gomoku')){
       clearPass();let time=0,navigations=0,result=null;const host=document.createElement('main');document.body.append(host);
-      const challenge=definition.id==='dial'?{target:42,start:42}:definition.id==='cube'?{target:1,stickers:solvedCube()}:definition.id==='cannon'?{target:landingCode(trajectory(45,.5).distance)}:definition.id==='slots'?{target:777}:{target:0};
+      const challenge=definition.id==='dial'?{target:42,start:42}:definition.cube?{target:1,stickers:solvedCube(definition.id==='cube2'?2:3)}:definition.id==='cannon'?{target:landingCode(trajectory(45,.5).distance)}:definition.id==='slots'?{target:777}:{target:0};
       const game=definition.create(host,()=>{},()=>{},()=>time,()=>0);game.reset(challenge);
       const action=document.createElement('button');action.textContent='Test explicit entry';host.append(action);action.onclick=()=>{result=enterPersonal(challenge.target,game.getState(),definition.rules,()=>navigations++);};
       if(definition.id==='slots'){host.querySelector('#lever').click();action.click();if(result!=='locked')throw Error('Spinning slot granted');time=3000;}
@@ -49,7 +49,7 @@ const base=process.env.SITE_URL||'http://127.0.0.1:8765';const KEY='personal-gat
     }
     return results;
   });
-  assert.deepEqual(results.map(r=>r.id),['dial','cannon','slots','soda','cube']);for(const result of results){assert.equal(result.result,'entered');assert.equal(result.navigations,1);assert.equal(result.status,'valid');}
+  assert.deepEqual(results.map(r=>r.id),['dial','cannon','slots','soda','cube','cube2']);for(const result of results){assert.equal(result.result,'entered');assert.equal(result.navigations,1);assert.equal(result.status,'valid');}
   await p.context().close();const fresh=await open();await fresh.goto(base+'/personal/');await fresh.waitForURL('**/gate/');assert.equal(await raw(fresh),null);
-  assert.deepEqual(errors,[]);console.log('PASS direct URL/no-flash, actual entry and refresh, fixed one-hour expiry/timer/background/pageshow/back, malformed/future records, new and opener-copied tabs, session end, reset, unavailable storage, all five adapter entry integrations');await browser.close();
+  assert.deepEqual(errors,[]);console.log('PASS direct URL/no-flash, actual entry and refresh, fixed one-hour expiry/timer/background/pageshow/back, malformed/future records, new and opener-copied tabs, session end, reset, unavailable storage, all six existing adapter entry integrations');await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});

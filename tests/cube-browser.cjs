@@ -1,11 +1,12 @@
 const {chromium}=require('playwright');const assert=require('node:assert/strict');
-const size=Number(process.env.CUBE_SIZE||3),rng=size===2?.9:.8;
+const {resetToGame}=require('./browser-selection.cjs');
+const size=Number(process.env.CUBE_SIZE||3),rng=(size===2?5.5:4.5)/7;
 const url=process.env.GATE_URL||'http://127.0.0.1:8765/gate/';
 (async()=>{
-  const {FACES,solvedCube,scramble,rotate,turnLayer,moveSpec,stickerCenter}=await import('../gate/cube-engine.js');
-  const {project}=await import('../gate/cube-gestures.js');
+  const {FACES,solvedCube,scramble,rotate,turnLayer,moveSpec,stickerCenter}=await import('../gate/common/cube-engine.js');
+  const {project}=await import('../gate/common/cube-gestures.js');
   const browser=await chromium.launch({executablePath:process.env.CHROMIUM||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});const errors=[];
-  async function open(mobile=false){const p=await (await browser.newContext(mobile?{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3}:{viewport:{width:1200,height:900}})).newPage();p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(r=>{Math.random=()=>r;window.drawnLetters=[];const fill=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(t,...args){window.drawnLetters.push(t);return fill.call(this,t,...args);};},rng);await p.goto(url);await p.waitForSelector('#cube');return p;}
+  async function open(mobile=false){const p=await (await browser.newContext(mobile?{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3}:{viewport:{width:1200,height:900}})).newPage();p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(r=>{Math.random=()=>window.__gateTestDraws?.length?window.__gateTestDraws.shift():r;window.drawnLetters=[];const fill=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(t,...args){window.drawnLetters.push(t);return fill.call(this,t,...args);};},rng);await p.goto(url);await p.waitForSelector('#cube');return p;}
   const state=p=>p.locator('#cube-accessible').innerText();const idle=p=>p.waitForFunction(()=>document.querySelector('#game').dataset.phase==='idle');
   const describe=stickers=>Object.values(FACES).map(({axis,sign,name})=>`${name}: ${stickers.filter(s=>s.n[axis]===sign).sort((a,b)=>b.p[(axis+2)%3]-a.p[(axis+2)%3]||a.p[(axis+1)%3]-b.p[(axis+1)%3]).map(s=>({U:'white',R:'red',F:'green',D:'yellow',L:'orange',B:'blue'})[s.color]).join(', ')}`).join('. ');
   async function drag(p,start,delta,finish=true){const r=await p.locator('#cube').boundingBox();await p.mouse.move(r.x+start[0]*r.width/420,r.y+start[1]*r.height/340);await p.mouse.down();await p.mouse.move(r.x+(start[0]+delta[0])*r.width/420,r.y+(start[1]+delta[1])*r.height/340,{steps:5});if(finish){await p.mouse.up();await idle(p);}}
@@ -72,9 +73,9 @@ const url=process.env.GATE_URL||'http://127.0.0.1:8765/gate/';
   await drag(p,plan.start,plan.delta,false);assert.ok(await p.locator('#enter').isDisabled());await p.evaluate(()=>window.dispatchEvent(new Event('resize')));await p.mouse.up();assert.ok(await p.locator('#enter').isEnabled());
   // Keyboard access and queued turns remain; Enter never unlocks between queued moves.
   await p.locator('#cube').focus();for(let i=0;i<4;i++)await p.keyboard.press('r');assert.ok(await p.locator('#enter').isDisabled());await idle(p);assert.ok(await p.locator('#enter').isEnabled());await p.keyboard.press('f');await p.keyboard.press('Shift+F');await idle(p);assert.ok(await p.locator('#enter').isEnabled());assert.deepEqual(await p.evaluate(()=>window.drawnLetters),[]);await p.locator('#enter').click();await p.waitForURL('**/personal/');await p.waitForFunction(()=>!document.documentElement.hasAttribute('data-private-pending'));assert.ok(await p.locator('main').isVisible());
-  const passBefore=await p.evaluate(async()=>{const {PASS_KEY}=await import('/gate/session-pass.js');return sessionStorage.getItem(PASS_KEY);});assert.ok(passBefore);assert.equal(JSON.parse(passBefore).expiresAt-JSON.parse(passBefore).issuedAt,3600000);
-  await p.reload();await p.waitForFunction(()=>!document.documentElement.hasAttribute('data-private-pending'));assert.equal(await p.evaluate(async()=>{const {PASS_KEY}=await import('/gate/session-pass.js');return sessionStorage.getItem(PASS_KEY);}),passBefore);
-  await p.evaluate(async()=>{const {PASS_KEY,PASS_TTL}=await import('/gate/session-pass.js');sessionStorage.setItem(PASS_KEY,JSON.stringify({version:1,issuedAt:Date.now()-PASS_TTL-1000,expiresAt:Date.now()-1000}));});await p.reload();await p.waitForURL('**/gate/');
+  const passBefore=await p.evaluate(async()=>{const {PASS_KEY}=await import('/gate/common/session-pass.js');return sessionStorage.getItem(PASS_KEY);});assert.ok(passBefore);assert.equal(JSON.parse(passBefore).expiresAt-JSON.parse(passBefore).issuedAt,3600000);
+  await p.reload();await p.waitForFunction(()=>!document.documentElement.hasAttribute('data-private-pending'));assert.equal(await p.evaluate(async()=>{const {PASS_KEY}=await import('/gate/common/session-pass.js');return sessionStorage.getItem(PASS_KEY);}),passBefore);
+  await p.evaluate(async()=>{const {PASS_KEY,PASS_TTL}=await import('/gate/common/session-pass.js');sessionStorage.setItem(PASS_KEY,JSON.stringify({version:1,issuedAt:Date.now()-PASS_TTL-1000,expiresAt:Date.now()-1000}));});await p.reload();await p.waitForURL('**/gate/');
   const mobile=await open(true),cdp=await mobile.context().newCDPSession(mobile);const mr=await mobile.locator('#cube').boundingBox();
   const touch=async(type,xy)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:xy?[{x:mr.x+xy[0]*mr.width/420,y:mr.y+xy[1]*mr.height/340,id:1}]:[]});
   for(const direction of [1,-1]){const t=push([size===2?.75:0,size===2?.75:0,1.505],1,direction,yaw,pitch);await touch('touchStart',t.start);await touch('touchMove',[t.start[0]+t.delta[0],t.start[1]+t.delta[1]]);await touch('touchEnd');await idle(mobile);}
@@ -97,10 +98,10 @@ const url=process.env.GATE_URL||'http://127.0.0.1:8765/gate/';
     await touch('touchStart',selected.start);await touch('touchMove',[selected.start[0]+selected.delta[0],selected.start[1]+selected.delta[1]]);await touch('touchEnd');await idle(mobile);
   }
   assert.ok(await mobile.locator('#enter').isEnabled());assert.ok(mobile.url().endsWith('/gate/'));await mobile.screenshot({path:`/tmp/cube-${size}-touch-solved.png`});
-  await mobile.locator('#new-target').click();await idle(mobile);
-  // Global reset mid-preview and mid-keyboard queue leaves a fresh scramble, no old work.
-  await mobile.locator('#cube').focus();await mobile.keyboard.press('Home');await drag(mobile,plan.start,plan.delta,false);await mobile.evaluate(()=>document.querySelector('#new-target').click());await mobile.mouse.up();await idle(mobile);assert.equal(await state(mobile),initial);
-  await mobile.locator('#cube').focus();for(let i=0;i<8;i++)await mobile.keyboard.press('r');await mobile.evaluate(()=>document.querySelector('#new-target').click());await mobile.waitForTimeout(700);assert.equal(await state(mobile),initial);
-  for(const [random,id] of [[0,'dial'],[.3,'cannon'],[.42,'slots'],[.58,'soda']]){await mobile.evaluate(r=>{Math.random=()=>r;document.querySelector('#new-target').click();},random);assert.equal(await mobile.locator('#game').getAttribute('data-game'),id);assert.ok(await mobile.locator('#target').isVisible());}
+  await resetToGame(mobile,size===2?'cube2':'cube',rng);await idle(mobile);
+  // Global reset mid-preview and mid-keyboard queue switches away and back to a fresh scramble, with no old work.
+  await mobile.locator('#cube').focus();await mobile.keyboard.press('Home');await drag(mobile,plan.start,plan.delta,false);await resetToGame(mobile,size===2?'cube2':'cube',rng);await mobile.mouse.up();await idle(mobile);assert.equal(await state(mobile),initial);
+  await mobile.locator('#cube').focus();for(let i=0;i<8;i++)await mobile.keyboard.press('r');await resetToGame(mobile,size===2?'cube2':'cube',rng);await mobile.waitForTimeout(700);assert.equal(await state(mobile),initial);
+  for(const [random,id] of [[.5/7,'dial'],[1.5/7,'cannon'],[2.5/7,'slots'],[3.5/7,'soda']]){await resetToGame(mobile,id,random);assert.equal(await mobile.locator('#game').getAttribute('data-game'),id);assert.ok(await mobile.locator('#target').isVisible());}
   assert.deepEqual(errors,[]);console.log('PASS gesture-only full solve, inverse/four turns, threshold/preview/cancel, outside orbit, touch, keyboard queue, global reset and target restoration; zero browser errors');await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});

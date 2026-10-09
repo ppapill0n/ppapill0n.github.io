@@ -1,0 +1,4309 @@
+{
+  "description": "Reachability evidence, not a human-usability benchmark. Every trace starts empty and ends on a legal human-policy five.",
+  "recordedOn": "2026-10-09",
+  "environment": {
+    "runtime": "v24.19.0",
+    "platform": "linux",
+    "arch": "x64",
+    "timingCaveat": "Single Node process; does not measure browser worker, UI, mobile-device or human response time."
+  },
+  "sourceHashes": {
+    "gate/games/gomoku/ai.js": "c9b71bd6d6ec4008c26fe0241634cccfaaa1f706553c53aa81cf34b8fc92dc74",
+    "gate/games/gomoku/rules.js": "0ee9930db681c424442617e0fdfc7d42a32c281ce44996775174f7a3c4bab5dc",
+    "gate/games/gomoku/vendor/evaluator.js": "9f4dd81391fb453b1221879e1cda8eb94cd8610703d9b134c1d9d86bfc0c3226"
+  },
+  "sampling": "200 consecutive integer seeds per seat beginning 20261009. No games discarded. Same independent greedy tactical policy both seats. Fresh PRNG seed provided for every move. All per-move seeds saved in traces.",
+  "limitations": [
+    "This automated player scans every nearby move and never misses an immediate win or block. Its win rate is not a human win rate.",
+    "The short demonstrations are the shortest human-policy victories in the sample, selected to make the tactical ideas easy to inspect. They are not typical game lengths.",
+    "Both seats are demonstrably winnable with human-understandable tactics; this is not a measured beginner success rate.",
+    "Under the clarified preference to keep the human second unless victory is unrealistic/impossible, recommend human second: simple double-three/open-four tactics produce reproducible full-game wins. Only an actual human five should unlock."
+  ],
+  "sample": {
+    "caution": "Automated tactical-policy wins demonstrate reachable legal victories, not beginner human usability or a measured human win rate.",
+    "policy": "Greedy one-placement tactical pattern scoring: immediate wins/blocks, open-four endpoints, forcing four, double/open three, local development. No opponent seed knowledge and no search through opponent responses.",
+    "gamesPerSeat": 200,
+    "baseSeed": 20261009,
+    "seats": [
+      {
+        "humanFirst": true,
+        "wins": 127,
+        "losses": 39,
+        "draws": 34,
+        "meanPlies": 82.085,
+        "timingMs": {
+          "total": 7783.227381000006,
+          "maxPandaMove": 8.665077999999994
+        },
+        "firstVictory": {
+          "humanFirst": true,
+          "seed": 20261015,
+          "outcome": "human",
+          "plies": 33,
+          "timingMs": {
+            "total": 16.213820999999996,
+            "human": 7.193062999999938,
+            "panda": 8.95269200000007,
+            "maxPandaMove": 0.7782930000000192
+          },
+          "maxAiEvaluations": 84,
+          "winningLine": [
+            [
+              9,
+              6
+            ],
+            [
+              8,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              6,
+              9
+            ],
+            [
+              5,
+              10
+            ]
+          ],
+          "trace": [
+            {
+              "ply": 1,
+              "side": "human-policy",
+              "index": 112,
+              "coordinate": [
+                8,
+                8
+              ],
+              "seed": 1723338109,
+              "tactic": "develop / connect stones"
+            },
+            {
+              "ply": 2,
+              "side": "panda",
+              "index": 126,
+              "coordinate": [
+                9,
+                7
+              ],
+              "seed": 2185057250,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 3,
+              "side": "human-policy",
+              "index": 127,
+              "coordinate": [
+                9,
+                8
+              ],
+              "seed": 2352635611,
+              "tactic": "develop / connect stones"
+            },
+            {
+              "ply": 4,
+              "side": "panda",
+              "index": 142,
+              "coordinate": [
+                10,
+                8
+              ],
+              "seed": 2168576706,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 5,
+              "side": "human-policy",
+              "index": 110,
+              "coordinate": [
+                8,
+                6
+              ],
+              "seed": 3783882334,
+              "tactic": "contest opposing open three"
+            },
+            {
+              "ply": 6,
+              "side": "panda",
+              "index": 174,
+              "coordinate": [
+                12,
+                10
+              ],
+              "seed": 1340504141,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 7,
+              "side": "human-policy",
+              "index": 158,
+              "coordinate": [
+                11,
+                9
+              ],
+              "seed": 93962161,
+              "tactic": "develop / connect stones"
+            },
+            {
+              "ply": 8,
+              "side": "panda",
+              "index": 109,
+              "coordinate": [
+                8,
+                5
+              ],
+              "seed": 1136604086,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 9,
+              "side": "human-policy",
+              "index": 114,
+              "coordinate": [
+                8,
+                10
+              ],
+              "seed": 4079996089,
+              "tactic": "develop / connect stones"
+            },
+            {
+              "ply": 10,
+              "side": "panda",
+              "index": 113,
+              "coordinate": [
+                8,
+                9
+              ],
+              "seed": 3848232148,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 11,
+              "side": "human-policy",
+              "index": 82,
+              "coordinate": [
+                6,
+                8
+              ],
+              "seed": 2957872592,
+              "tactic": "develop / connect stones"
+            },
+            {
+              "ply": 12,
+              "side": "panda",
+              "index": 67,
+              "coordinate": [
+                5,
+                8
+              ],
+              "seed": 1316655672,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 13,
+              "side": "human-policy",
+              "index": 81,
+              "coordinate": [
+                6,
+                7
+              ],
+              "seed": 4264765472,
+              "tactic": "contest opposing open three"
+            },
+            {
+              "ply": 14,
+              "side": "panda",
+              "index": 68,
+              "coordinate": [
+                5,
+                9
+              ],
+              "seed": 2731707540,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 15,
+              "side": "human-policy",
+              "index": 83,
+              "coordinate": [
+                6,
+                9
+              ],
+              "seed": 3644801156,
+              "tactic": "build an open three"
+            },
+            {
+              "ply": 16,
+              "side": "panda",
+              "index": 84,
+              "coordinate": [
+                6,
+                10
+              ],
+              "seed": 93743546,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 17,
+              "side": "human-policy",
+              "index": 79,
+              "coordinate": [
+                6,
+                5
+              ],
+              "seed": 1611900781,
+              "tactic": "make a forcing four"
+            },
+            {
+              "ply": 18,
+              "side": "panda",
+              "index": 80,
+              "coordinate": [
+                6,
+                6
+              ],
+              "seed": 1300583401,
+              "tactic": "block"
+            },
+            {
+              "ply": 19,
+              "side": "human-policy",
+              "index": 66,
+              "coordinate": [
+                5,
+                7
+              ],
+              "seed": 2183508373,
+              "tactic": "build an open three"
+            },
+            {
+              "ply": 20,
+              "side": "panda",
+              "index": 98,
+              "coordinate": [
+                7,
+                9
+              ],
+              "seed": 126803644,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 21,
+              "side": "human-policy",
+              "index": 36,
+              "coordinate": [
+                3,
+                7
+              ],
+              "seed": 2133258630,
+              "tactic": "build an open three"
+            },
+            {
+              "ply": 22,
+              "side": "panda",
+              "index": 51,
+              "coordinate": [
+                4,
+                7
+              ],
+              "seed": 3234857064,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 23,
+              "side": "human-policy",
+              "index": 100,
+              "coordinate": [
+                7,
+                11
+              ],
+              "seed": 2235679180,
+              "tactic": "contest opposing open three"
+            },
+            {
+              "ply": 24,
+              "side": "panda",
+              "index": 70,
+              "coordinate": [
+                5,
+                11
+              ],
+              "seed": 704300562,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 25,
+              "side": "human-policy",
+              "index": 69,
+              "coordinate": [
+                5,
+                10
+              ],
+              "seed": 936055897,
+              "tactic": "develop / connect stones"
+            },
+            {
+              "ply": 26,
+              "side": "panda",
+              "index": 56,
+              "coordinate": [
+                4,
+                12
+              ],
+              "seed": 805886344,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 27,
+              "side": "human-policy",
+              "index": 42,
+              "coordinate": [
+                3,
+                13
+              ],
+              "seed": 3790313403,
+              "tactic": "block immediate five"
+            },
+            {
+              "ply": 28,
+              "side": "panda",
+              "index": 35,
+              "coordinate": [
+                3,
+                6
+              ],
+              "seed": 2405912950,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 29,
+              "side": "human-policy",
+              "index": 111,
+              "coordinate": [
+                8,
+                7
+              ],
+              "seed": 2903802741,
+              "tactic": "create double open three"
+            },
+            {
+              "ply": 30,
+              "side": "panda",
+              "index": 95,
+              "coordinate": [
+                7,
+                6
+              ],
+              "seed": 232618327,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 31,
+              "side": "human-policy",
+              "index": 97,
+              "coordinate": [
+                7,
+                8
+              ],
+              "seed": 751152776,
+              "tactic": "create two winning endpoints"
+            },
+            {
+              "ply": 32,
+              "side": "panda",
+              "index": 55,
+              "coordinate": [
+                4,
+                11
+              ],
+              "seed": 3813610857,
+              "tactic": "block"
+            },
+            {
+              "ply": 33,
+              "side": "human-policy",
+              "index": 125,
+              "coordinate": [
+                9,
+                6
+              ],
+              "seed": 2419126205,
+              "tactic": "complete five"
+            }
+          ]
+        },
+        "outcomes": [
+          {
+            "seed": 20261009,
+            "outcome": "panda",
+            "plies": 54
+          },
+          {
+            "seed": 20261010,
+            "outcome": "panda",
+            "plies": 84
+          },
+          {
+            "seed": 20261011,
+            "outcome": "panda",
+            "plies": 36
+          },
+          {
+            "seed": 20261012,
+            "outcome": "panda",
+            "plies": 44
+          },
+          {
+            "seed": 20261013,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261014,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261015,
+            "outcome": "human",
+            "plies": 33
+          },
+          {
+            "seed": 20261016,
+            "outcome": "human",
+            "plies": 41
+          },
+          {
+            "seed": 20261017,
+            "outcome": "panda",
+            "plies": 38
+          },
+          {
+            "seed": 20261018,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261019,
+            "outcome": "human",
+            "plies": 105
+          },
+          {
+            "seed": 20261020,
+            "outcome": "human",
+            "plies": 77
+          },
+          {
+            "seed": 20261021,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261022,
+            "outcome": "human",
+            "plies": 75
+          },
+          {
+            "seed": 20261023,
+            "outcome": "human",
+            "plies": 71
+          },
+          {
+            "seed": 20261024,
+            "outcome": "human",
+            "plies": 97
+          },
+          {
+            "seed": 20261025,
+            "outcome": "panda",
+            "plies": 80
+          },
+          {
+            "seed": 20261026,
+            "outcome": "human",
+            "plies": 91
+          },
+          {
+            "seed": 20261027,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261028,
+            "outcome": "human",
+            "plies": 91
+          },
+          {
+            "seed": 20261029,
+            "outcome": "human",
+            "plies": 67
+          },
+          {
+            "seed": 20261030,
+            "outcome": "human",
+            "plies": 21
+          },
+          {
+            "seed": 20261031,
+            "outcome": "panda",
+            "plies": 40
+          },
+          {
+            "seed": 20261032,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261033,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261034,
+            "outcome": "human",
+            "plies": 73
+          },
+          {
+            "seed": 20261035,
+            "outcome": "panda",
+            "plies": 36
+          },
+          {
+            "seed": 20261036,
+            "outcome": "human",
+            "plies": 77
+          },
+          {
+            "seed": 20261037,
+            "outcome": "human",
+            "plies": 49
+          },
+          {
+            "seed": 20261038,
+            "outcome": "human",
+            "plies": 33
+          },
+          {
+            "seed": 20261039,
+            "outcome": "human",
+            "plies": 25
+          },
+          {
+            "seed": 20261040,
+            "outcome": "human",
+            "plies": 59
+          },
+          {
+            "seed": 20261041,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261042,
+            "outcome": "panda",
+            "plies": 96
+          },
+          {
+            "seed": 20261043,
+            "outcome": "human",
+            "plies": 23
+          },
+          {
+            "seed": 20261044,
+            "outcome": "panda",
+            "plies": 48
+          },
+          {
+            "seed": 20261045,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261046,
+            "outcome": "panda",
+            "plies": 30
+          },
+          {
+            "seed": 20261047,
+            "outcome": "human",
+            "plies": 57
+          },
+          {
+            "seed": 20261048,
+            "outcome": "human",
+            "plies": 31
+          },
+          {
+            "seed": 20261049,
+            "outcome": "human",
+            "plies": 49
+          },
+          {
+            "seed": 20261050,
+            "outcome": "human",
+            "plies": 101
+          },
+          {
+            "seed": 20261051,
+            "outcome": "panda",
+            "plies": 48
+          },
+          {
+            "seed": 20261052,
+            "outcome": "human",
+            "plies": 39
+          },
+          {
+            "seed": 20261053,
+            "outcome": "panda",
+            "plies": 56
+          },
+          {
+            "seed": 20261054,
+            "outcome": "human",
+            "plies": 41
+          },
+          {
+            "seed": 20261055,
+            "outcome": "panda",
+            "plies": 58
+          },
+          {
+            "seed": 20261056,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261057,
+            "outcome": "panda",
+            "plies": 40
+          },
+          {
+            "seed": 20261058,
+            "outcome": "human",
+            "plies": 33
+          },
+          {
+            "seed": 20261059,
+            "outcome": "human",
+            "plies": 73
+          },
+          {
+            "seed": 20261060,
+            "outcome": "human",
+            "plies": 47
+          },
+          {
+            "seed": 20261061,
+            "outcome": "human",
+            "plies": 23
+          },
+          {
+            "seed": 20261062,
+            "outcome": "panda",
+            "plies": 54
+          },
+          {
+            "seed": 20261063,
+            "outcome": "panda",
+            "plies": 36
+          },
+          {
+            "seed": 20261064,
+            "outcome": "human",
+            "plies": 33
+          },
+          {
+            "seed": 20261065,
+            "outcome": "human",
+            "plies": 43
+          },
+          {
+            "seed": 20261066,
+            "outcome": "human",
+            "plies": 37
+          },
+          {
+            "seed": 20261067,
+            "outcome": "human",
+            "plies": 37
+          },
+          {
+            "seed": 20261068,
+            "outcome": "human",
+            "plies": 21
+          },
+          {
+            "seed": 20261069,
+            "outcome": "human",
+            "plies": 23
+          },
+          {
+            "seed": 20261070,
+            "outcome": "human",
+            "plies": 45
+          },
+          {
+            "seed": 20261071,
+            "outcome": "human",
+            "plies": 43
+          },
+          {
+            "seed": 20261072,
+            "outcome": "human",
+            "plies": 53
+          },
+          {
+            "seed": 20261073,
+            "outcome": "human",
+            "plies": 69
+          },
+          {
+            "seed": 20261074,
+            "outcome": "panda",
+            "plies": 30
+          },
+          {
+            "seed": 20261075,
+            "outcome": "human",
+            "plies": 43
+          },
+          {
+            "seed": 20261076,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261077,
+            "outcome": "human",
+            "plies": 21
+          },
+          {
+            "seed": 20261078,
+            "outcome": "human",
+            "plies": 45
+          },
+          {
+            "seed": 20261079,
+            "outcome": "human",
+            "plies": 49
+          },
+          {
+            "seed": 20261080,
+            "outcome": "human",
+            "plies": 135
+          },
+          {
+            "seed": 20261081,
+            "outcome": "human",
+            "plies": 21
+          },
+          {
+            "seed": 20261082,
+            "outcome": "human",
+            "plies": 23
+          },
+          {
+            "seed": 20261083,
+            "outcome": "human",
+            "plies": 49
+          },
+          {
+            "seed": 20261084,
+            "outcome": "human",
+            "plies": 97
+          },
+          {
+            "seed": 20261085,
+            "outcome": "human",
+            "plies": 145
+          },
+          {
+            "seed": 20261086,
+            "outcome": "human",
+            "plies": 33
+          },
+          {
+            "seed": 20261087,
+            "outcome": "panda",
+            "plies": 30
+          },
+          {
+            "seed": 20261088,
+            "outcome": "panda",
+            "plies": 44
+          },
+          {
+            "seed": 20261089,
+            "outcome": "human",
+            "plies": 27
+          },
+          {
+            "seed": 20261090,
+            "outcome": "human",
+            "plies": 25
+          },
+          {
+            "seed": 20261091,
+            "outcome": "human",
+            "plies": 33
+          },
+          {
+            "seed": 20261092,
+            "outcome": "human",
+            "plies": 41
+          },
+          {
+            "seed": 20261093,
+            "outcome": "human",
+            "plies": 29
+          },
+          {
+            "seed": 20261094,
+            "outcome": "human",
+            "plies": 91
+          },
+          {
+            "seed": 20261095,
+            "outcome": "human",
+            "plies": 39
+          },
+          {
+            "seed": 20261096,
+            "outcome": "panda",
+            "plies": 32
+          },
+          {
+            "seed": 20261097,
+            "outcome": "human",
+            "plies": 39
+          },
+          {
+            "seed": 20261098,
+            "outcome": "human",
+            "plies": 35
+          },
+          {
+            "seed": 20261099,
+            "outcome": "panda",
+            "plies": 84
+          },
+          {
+            "seed": 20261100,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261101,
+            "outcome": "human",
+            "plies": 91
+          },
+          {
+            "seed": 20261102,
+            "outcome": "human",
+            "plies": 29
+          },
+          {
+            "seed": 20261103,
+            "outcome": "human",
+            "plies": 51
+          },
+          {
+            "seed": 20261104,
+            "outcome": "human",
+            "plies": 31
+          },
+          {
+            "seed": 20261105,
+            "outcome": "panda",
+            "plies": 56
+          },
+          {
+            "seed": 20261106,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261107,
+            "outcome": "human",
+            "plies": 25
+          },
+          {
+            "seed": 20261108,
+            "outcome": "panda",
+            "plies": 64
+          },
+          {
+            "seed": 20261109,
+            "outcome": "human",
+            "plies": 119
+          },
+          {
+            "seed": 20261110,
+            "outcome": "human",
+            "plies": 111
+          },
+          {
+            "seed": 20261111,
+            "outcome": "human",
+            "plies": 91
+          },
+          {
+            "seed": 20261112,
+            "outcome": "human",
+            "plies": 45
+          },
+          {
+            "seed": 20261113,
+            "outcome": "human",
+            "plies": 57
+          },
+          {
+            "seed": 20261114,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261115,
+            "outcome": "human",
+            "plies": 27
+          },
+          {
+            "seed": 20261116,
+            "outcome": "panda",
+            "plies": 64
+          },
+          {
+            "seed": 20261117,
+            "outcome": "human",
+            "plies": 93
+          },
+          {
+            "seed": 20261118,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261119,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261120,
+            "outcome": "human",
+            "plies": 37
+          },
+          {
+            "seed": 20261121,
+            "outcome": "human",
+            "plies": 83
+          },
+          {
+            "seed": 20261122,
+            "outcome": "panda",
+            "plies": 74
+          },
+          {
+            "seed": 20261123,
+            "outcome": "human",
+            "plies": 51
+          },
+          {
+            "seed": 20261124,
+            "outcome": "human",
+            "plies": 29
+          },
+          {
+            "seed": 20261125,
+            "outcome": "human",
+            "plies": 103
+          },
+          {
+            "seed": 20261126,
+            "outcome": "human",
+            "plies": 31
+          },
+          {
+            "seed": 20261127,
+            "outcome": "human",
+            "plies": 139
+          },
+          {
+            "seed": 20261128,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261129,
+            "outcome": "human",
+            "plies": 31
+          },
+          {
+            "seed": 20261130,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261131,
+            "outcome": "human",
+            "plies": 19
+          },
+          {
+            "seed": 20261132,
+            "outcome": "human",
+            "plies": 69
+          },
+          {
+            "seed": 20261133,
+            "outcome": "human",
+            "plies": 55
+          },
+          {
+            "seed": 20261134,
+            "outcome": "panda",
+            "plies": 38
+          },
+          {
+            "seed": 20261135,
+            "outcome": "human",
+            "plies": 103
+          },
+          {
+            "seed": 20261136,
+            "outcome": "human",
+            "plies": 33
+          },
+          {
+            "seed": 20261137,
+            "outcome": "human",
+            "plies": 43
+          },
+          {
+            "seed": 20261138,
+            "outcome": "human",
+            "plies": 57
+          },
+          {
+            "seed": 20261139,
+            "outcome": "human",
+            "plies": 49
+          },
+          {
+            "seed": 20261140,
+            "outcome": "human",
+            "plies": 119
+          },
+          {
+            "seed": 20261141,
+            "outcome": "human",
+            "plies": 77
+          },
+          {
+            "seed": 20261142,
+            "outcome": "human",
+            "plies": 39
+          },
+          {
+            "seed": 20261143,
+            "outcome": "human",
+            "plies": 31
+          },
+          {
+            "seed": 20261144,
+            "outcome": "human",
+            "plies": 43
+          },
+          {
+            "seed": 20261145,
+            "outcome": "human",
+            "plies": 33
+          },
+          {
+            "seed": 20261146,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261147,
+            "outcome": "human",
+            "plies": 53
+          },
+          {
+            "seed": 20261148,
+            "outcome": "human",
+            "plies": 21
+          },
+          {
+            "seed": 20261149,
+            "outcome": "human",
+            "plies": 97
+          },
+          {
+            "seed": 20261150,
+            "outcome": "human",
+            "plies": 43
+          },
+          {
+            "seed": 20261151,
+            "outcome": "human",
+            "plies": 45
+          },
+          {
+            "seed": 20261152,
+            "outcome": "human",
+            "plies": 41
+          },
+          {
+            "seed": 20261153,
+            "outcome": "panda",
+            "plies": 58
+          },
+          {
+            "seed": 20261154,
+            "outcome": "human",
+            "plies": 59
+          },
+          {
+            "seed": 20261155,
+            "outcome": "panda",
+            "plies": 54
+          },
+          {
+            "seed": 20261156,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261157,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261158,
+            "outcome": "panda",
+            "plies": 58
+          },
+          {
+            "seed": 20261159,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261160,
+            "outcome": "panda",
+            "plies": 44
+          },
+          {
+            "seed": 20261161,
+            "outcome": "human",
+            "plies": 45
+          },
+          {
+            "seed": 20261162,
+            "outcome": "panda",
+            "plies": 62
+          },
+          {
+            "seed": 20261163,
+            "outcome": "panda",
+            "plies": 32
+          },
+          {
+            "seed": 20261164,
+            "outcome": "human",
+            "plies": 29
+          },
+          {
+            "seed": 20261165,
+            "outcome": "human",
+            "plies": 79
+          },
+          {
+            "seed": 20261166,
+            "outcome": "human",
+            "plies": 59
+          },
+          {
+            "seed": 20261167,
+            "outcome": "human",
+            "plies": 49
+          },
+          {
+            "seed": 20261168,
+            "outcome": "panda",
+            "plies": 36
+          },
+          {
+            "seed": 20261169,
+            "outcome": "human",
+            "plies": 27
+          },
+          {
+            "seed": 20261170,
+            "outcome": "human",
+            "plies": 115
+          },
+          {
+            "seed": 20261171,
+            "outcome": "human",
+            "plies": 63
+          },
+          {
+            "seed": 20261172,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261173,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261174,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261175,
+            "outcome": "panda",
+            "plies": 130
+          },
+          {
+            "seed": 20261176,
+            "outcome": "human",
+            "plies": 21
+          },
+          {
+            "seed": 20261177,
+            "outcome": "human",
+            "plies": 39
+          },
+          {
+            "seed": 20261178,
+            "outcome": "human",
+            "plies": 23
+          },
+          {
+            "seed": 20261179,
+            "outcome": "human",
+            "plies": 31
+          },
+          {
+            "seed": 20261180,
+            "outcome": "panda",
+            "plies": 74
+          },
+          {
+            "seed": 20261181,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261182,
+            "outcome": "human",
+            "plies": 31
+          },
+          {
+            "seed": 20261183,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261184,
+            "outcome": "human",
+            "plies": 19
+          },
+          {
+            "seed": 20261185,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261186,
+            "outcome": "human",
+            "plies": 31
+          },
+          {
+            "seed": 20261187,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261188,
+            "outcome": "panda",
+            "plies": 40
+          },
+          {
+            "seed": 20261189,
+            "outcome": "human",
+            "plies": 53
+          },
+          {
+            "seed": 20261190,
+            "outcome": "panda",
+            "plies": 72
+          },
+          {
+            "seed": 20261191,
+            "outcome": "human",
+            "plies": 33
+          },
+          {
+            "seed": 20261192,
+            "outcome": "human",
+            "plies": 35
+          },
+          {
+            "seed": 20261193,
+            "outcome": "human",
+            "plies": 23
+          },
+          {
+            "seed": 20261194,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261195,
+            "outcome": "human",
+            "plies": 37
+          },
+          {
+            "seed": 20261196,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261197,
+            "outcome": "human",
+            "plies": 43
+          },
+          {
+            "seed": 20261198,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261199,
+            "outcome": "human",
+            "plies": 57
+          },
+          {
+            "seed": 20261200,
+            "outcome": "human",
+            "plies": 33
+          },
+          {
+            "seed": 20261201,
+            "outcome": "human",
+            "plies": 41
+          },
+          {
+            "seed": 20261202,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261203,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261204,
+            "outcome": "human",
+            "plies": 57
+          },
+          {
+            "seed": 20261205,
+            "outcome": "human",
+            "plies": 129
+          },
+          {
+            "seed": 20261206,
+            "outcome": "human",
+            "plies": 21
+          },
+          {
+            "seed": 20261207,
+            "outcome": "panda",
+            "plies": 36
+          },
+          {
+            "seed": 20261208,
+            "outcome": "human",
+            "plies": 25
+          }
+        ]
+      },
+      {
+        "humanFirst": false,
+        "wins": 104,
+        "losses": 75,
+        "draws": 21,
+        "meanPlies": 62.77,
+        "timingMs": {
+          "total": 5735.366315999989,
+          "maxPandaMove": 9.754282000001695
+        },
+        "firstVictory": {
+          "humanFirst": false,
+          "seed": 20261009,
+          "outcome": "human",
+          "plies": 36,
+          "timingMs": {
+            "total": 15.990438999999242,
+            "human": 7.573233999997683,
+            "panda": 8.351850999997623,
+            "maxPandaMove": 0.6759620000002542
+          },
+          "maxAiEvaluations": 84,
+          "winningLine": [
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              10
+            ],
+            [
+              11,
+              9
+            ],
+            [
+              11,
+              8
+            ],
+            [
+              11,
+              7
+            ]
+          ],
+          "trace": [
+            {
+              "ply": 1,
+              "side": "panda",
+              "index": 112,
+              "coordinate": [
+                8,
+                8
+              ],
+              "seed": 1068550449,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 2,
+              "side": "human-policy",
+              "index": 127,
+              "coordinate": [
+                9,
+                8
+              ],
+              "seed": 1794724683,
+              "tactic": "develop / connect stones"
+            },
+            {
+              "ply": 3,
+              "side": "panda",
+              "index": 111,
+              "coordinate": [
+                8,
+                7
+              ],
+              "seed": 176315227,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 4,
+              "side": "human-policy",
+              "index": 113,
+              "coordinate": [
+                8,
+                9
+              ],
+              "seed": 1086007177,
+              "tactic": "contest opposing open three"
+            },
+            {
+              "ply": 5,
+              "side": "panda",
+              "index": 141,
+              "coordinate": [
+                10,
+                7
+              ],
+              "seed": 2541830973,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 6,
+              "side": "human-policy",
+              "index": 126,
+              "coordinate": [
+                9,
+                7
+              ],
+              "seed": 380512510,
+              "tactic": "contest opposing open three"
+            },
+            {
+              "ply": 7,
+              "side": "panda",
+              "index": 125,
+              "coordinate": [
+                9,
+                6
+              ],
+              "seed": 3372926893,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 8,
+              "side": "human-policy",
+              "index": 109,
+              "coordinate": [
+                8,
+                5
+              ],
+              "seed": 1278568317,
+              "tactic": "contest opposing open three"
+            },
+            {
+              "ply": 9,
+              "side": "panda",
+              "index": 97,
+              "coordinate": [
+                7,
+                8
+              ],
+              "seed": 1437476548,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 10,
+              "side": "human-policy",
+              "index": 83,
+              "coordinate": [
+                6,
+                9
+              ],
+              "seed": 68879422,
+              "tactic": "stop opposing open four / fork"
+            },
+            {
+              "ply": 11,
+              "side": "panda",
+              "index": 153,
+              "coordinate": [
+                11,
+                4
+              ],
+              "seed": 1877895177,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 12,
+              "side": "human-policy",
+              "index": 139,
+              "coordinate": [
+                10,
+                5
+              ],
+              "seed": 1724669692,
+              "tactic": "block immediate five"
+            },
+            {
+              "ply": 13,
+              "side": "panda",
+              "index": 82,
+              "coordinate": [
+                6,
+                8
+              ],
+              "seed": 3493797444,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 14,
+              "side": "human-policy",
+              "index": 67,
+              "coordinate": [
+                5,
+                8
+              ],
+              "seed": 1093900230,
+              "tactic": "develop / connect stones"
+            },
+            {
+              "ply": 15,
+              "side": "panda",
+              "index": 115,
+              "coordinate": [
+                8,
+                11
+              ],
+              "seed": 750096567,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 16,
+              "side": "human-policy",
+              "index": 128,
+              "coordinate": [
+                9,
+                9
+              ],
+              "seed": 4157082253,
+              "tactic": "build an open three"
+            },
+            {
+              "ply": 17,
+              "side": "panda",
+              "index": 98,
+              "coordinate": [
+                7,
+                9
+              ],
+              "seed": 4154528281,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 18,
+              "side": "human-policy",
+              "index": 130,
+              "coordinate": [
+                9,
+                11
+              ],
+              "seed": 1151594917,
+              "tactic": "make a forcing four"
+            },
+            {
+              "ply": 19,
+              "side": "panda",
+              "index": 129,
+              "coordinate": [
+                9,
+                10
+              ],
+              "seed": 2728346932,
+              "tactic": "block"
+            },
+            {
+              "ply": 20,
+              "side": "human-policy",
+              "index": 95,
+              "coordinate": [
+                7,
+                6
+              ],
+              "seed": 2980666035,
+              "tactic": "build an open three"
+            },
+            {
+              "ply": 21,
+              "side": "panda",
+              "index": 81,
+              "coordinate": [
+                6,
+                7
+              ],
+              "seed": 706141505,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 22,
+              "side": "human-policy",
+              "index": 99,
+              "coordinate": [
+                7,
+                10
+              ],
+              "seed": 84379636,
+              "tactic": "contest opposing open three"
+            },
+            {
+              "ply": 23,
+              "side": "panda",
+              "index": 143,
+              "coordinate": [
+                10,
+                9
+              ],
+              "seed": 1542926167,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 24,
+              "side": "human-policy",
+              "index": 157,
+              "coordinate": [
+                11,
+                8
+              ],
+              "seed": 2975389383,
+              "tactic": "stop opposing open four / fork"
+            },
+            {
+              "ply": 25,
+              "side": "panda",
+              "index": 51,
+              "coordinate": [
+                4,
+                7
+              ],
+              "seed": 1950343772,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 26,
+              "side": "human-policy",
+              "index": 66,
+              "coordinate": [
+                5,
+                7
+              ],
+              "seed": 2679763182,
+              "tactic": "contest opposing open three"
+            },
+            {
+              "ply": 27,
+              "side": "panda",
+              "index": 144,
+              "coordinate": [
+                10,
+                10
+              ],
+              "seed": 481977650,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 28,
+              "side": "human-policy",
+              "index": 142,
+              "coordinate": [
+                10,
+                8
+              ],
+              "seed": 2094475530,
+              "tactic": "stop opposing open four / fork"
+            },
+            {
+              "ply": 29,
+              "side": "panda",
+              "index": 174,
+              "coordinate": [
+                12,
+                10
+              ],
+              "seed": 3291517074,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 30,
+              "side": "human-policy",
+              "index": 159,
+              "coordinate": [
+                11,
+                10
+              ],
+              "seed": 3572631596,
+              "tactic": "stop opposing open four / fork"
+            },
+            {
+              "ply": 31,
+              "side": "panda",
+              "index": 85,
+              "coordinate": [
+                6,
+                11
+              ],
+              "seed": 1842062152,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 32,
+              "side": "human-policy",
+              "index": 156,
+              "coordinate": [
+                11,
+                7
+              ],
+              "seed": 1187645643,
+              "tactic": "create double open three"
+            },
+            {
+              "ply": 33,
+              "side": "panda",
+              "index": 114,
+              "coordinate": [
+                8,
+                10
+              ],
+              "seed": 3892051728,
+              "tactic": "bounded evaluation"
+            },
+            {
+              "ply": 34,
+              "side": "human-policy",
+              "index": 158,
+              "coordinate": [
+                11,
+                9
+              ],
+              "seed": 694704631,
+              "tactic": "create two winning endpoints"
+            },
+            {
+              "ply": 35,
+              "side": "panda",
+              "index": 155,
+              "coordinate": [
+                11,
+                6
+              ],
+              "seed": 3120172328,
+              "tactic": "block"
+            },
+            {
+              "ply": 36,
+              "side": "human-policy",
+              "index": 160,
+              "coordinate": [
+                11,
+                11
+              ],
+              "seed": 4273007581,
+              "tactic": "complete five"
+            }
+          ]
+        },
+        "outcomes": [
+          {
+            "seed": 20261009,
+            "outcome": "human",
+            "plies": 36
+          },
+          {
+            "seed": 20261010,
+            "outcome": "human",
+            "plies": 34
+          },
+          {
+            "seed": 20261011,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261012,
+            "outcome": "human",
+            "plies": 64
+          },
+          {
+            "seed": 20261013,
+            "outcome": "human",
+            "plies": 32
+          },
+          {
+            "seed": 20261014,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261015,
+            "outcome": "panda",
+            "plies": 25
+          },
+          {
+            "seed": 20261016,
+            "outcome": "panda",
+            "plies": 29
+          },
+          {
+            "seed": 20261017,
+            "outcome": "panda",
+            "plies": 37
+          },
+          {
+            "seed": 20261018,
+            "outcome": "panda",
+            "plies": 31
+          },
+          {
+            "seed": 20261019,
+            "outcome": "panda",
+            "plies": 29
+          },
+          {
+            "seed": 20261020,
+            "outcome": "human",
+            "plies": 36
+          },
+          {
+            "seed": 20261021,
+            "outcome": "panda",
+            "plies": 41
+          },
+          {
+            "seed": 20261022,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261023,
+            "outcome": "human",
+            "plies": 44
+          },
+          {
+            "seed": 20261024,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261025,
+            "outcome": "human",
+            "plies": 68
+          },
+          {
+            "seed": 20261026,
+            "outcome": "panda",
+            "plies": 33
+          },
+          {
+            "seed": 20261027,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261028,
+            "outcome": "human",
+            "plies": 30
+          },
+          {
+            "seed": 20261029,
+            "outcome": "panda",
+            "plies": 29
+          },
+          {
+            "seed": 20261030,
+            "outcome": "panda",
+            "plies": 45
+          },
+          {
+            "seed": 20261031,
+            "outcome": "human",
+            "plies": 28
+          },
+          {
+            "seed": 20261032,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261033,
+            "outcome": "human",
+            "plies": 18
+          },
+          {
+            "seed": 20261034,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261035,
+            "outcome": "panda",
+            "plies": 37
+          },
+          {
+            "seed": 20261036,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261037,
+            "outcome": "human",
+            "plies": 44
+          },
+          {
+            "seed": 20261038,
+            "outcome": "human",
+            "plies": 60
+          },
+          {
+            "seed": 20261039,
+            "outcome": "panda",
+            "plies": 25
+          },
+          {
+            "seed": 20261040,
+            "outcome": "human",
+            "plies": 36
+          },
+          {
+            "seed": 20261041,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261042,
+            "outcome": "human",
+            "plies": 34
+          },
+          {
+            "seed": 20261043,
+            "outcome": "human",
+            "plies": 54
+          },
+          {
+            "seed": 20261044,
+            "outcome": "human",
+            "plies": 56
+          },
+          {
+            "seed": 20261045,
+            "outcome": "human",
+            "plies": 46
+          },
+          {
+            "seed": 20261046,
+            "outcome": "human",
+            "plies": 58
+          },
+          {
+            "seed": 20261047,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261048,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261049,
+            "outcome": "panda",
+            "plies": 35
+          },
+          {
+            "seed": 20261050,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261051,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261052,
+            "outcome": "human",
+            "plies": 30
+          },
+          {
+            "seed": 20261053,
+            "outcome": "human",
+            "plies": 26
+          },
+          {
+            "seed": 20261054,
+            "outcome": "human",
+            "plies": 40
+          },
+          {
+            "seed": 20261055,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261056,
+            "outcome": "human",
+            "plies": 28
+          },
+          {
+            "seed": 20261057,
+            "outcome": "panda",
+            "plies": 27
+          },
+          {
+            "seed": 20261058,
+            "outcome": "panda",
+            "plies": 31
+          },
+          {
+            "seed": 20261059,
+            "outcome": "human",
+            "plies": 18
+          },
+          {
+            "seed": 20261060,
+            "outcome": "panda",
+            "plies": 25
+          },
+          {
+            "seed": 20261061,
+            "outcome": "human",
+            "plies": 18
+          },
+          {
+            "seed": 20261062,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261063,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261064,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261065,
+            "outcome": "human",
+            "plies": 44
+          },
+          {
+            "seed": 20261066,
+            "outcome": "human",
+            "plies": 38
+          },
+          {
+            "seed": 20261067,
+            "outcome": "human",
+            "plies": 30
+          },
+          {
+            "seed": 20261068,
+            "outcome": "panda",
+            "plies": 29
+          },
+          {
+            "seed": 20261069,
+            "outcome": "human",
+            "plies": 40
+          },
+          {
+            "seed": 20261070,
+            "outcome": "panda",
+            "plies": 27
+          },
+          {
+            "seed": 20261071,
+            "outcome": "human",
+            "plies": 46
+          },
+          {
+            "seed": 20261072,
+            "outcome": "human",
+            "plies": 34
+          },
+          {
+            "seed": 20261073,
+            "outcome": "human",
+            "plies": 108
+          },
+          {
+            "seed": 20261074,
+            "outcome": "human",
+            "plies": 68
+          },
+          {
+            "seed": 20261075,
+            "outcome": "panda",
+            "plies": 27
+          },
+          {
+            "seed": 20261076,
+            "outcome": "human",
+            "plies": 100
+          },
+          {
+            "seed": 20261077,
+            "outcome": "human",
+            "plies": 78
+          },
+          {
+            "seed": 20261078,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261079,
+            "outcome": "panda",
+            "plies": 49
+          },
+          {
+            "seed": 20261080,
+            "outcome": "human",
+            "plies": 62
+          },
+          {
+            "seed": 20261081,
+            "outcome": "panda",
+            "plies": 27
+          },
+          {
+            "seed": 20261082,
+            "outcome": "panda",
+            "plies": 25
+          },
+          {
+            "seed": 20261083,
+            "outcome": "panda",
+            "plies": 31
+          },
+          {
+            "seed": 20261084,
+            "outcome": "human",
+            "plies": 26
+          },
+          {
+            "seed": 20261085,
+            "outcome": "human",
+            "plies": 26
+          },
+          {
+            "seed": 20261086,
+            "outcome": "panda",
+            "plies": 25
+          },
+          {
+            "seed": 20261087,
+            "outcome": "human",
+            "plies": 88
+          },
+          {
+            "seed": 20261088,
+            "outcome": "panda",
+            "plies": 25
+          },
+          {
+            "seed": 20261089,
+            "outcome": "panda",
+            "plies": 33
+          },
+          {
+            "seed": 20261090,
+            "outcome": "human",
+            "plies": 28
+          },
+          {
+            "seed": 20261091,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261092,
+            "outcome": "human",
+            "plies": 34
+          },
+          {
+            "seed": 20261093,
+            "outcome": "human",
+            "plies": 42
+          },
+          {
+            "seed": 20261094,
+            "outcome": "human",
+            "plies": 140
+          },
+          {
+            "seed": 20261095,
+            "outcome": "human",
+            "plies": 130
+          },
+          {
+            "seed": 20261096,
+            "outcome": "human",
+            "plies": 50
+          },
+          {
+            "seed": 20261097,
+            "outcome": "human",
+            "plies": 58
+          },
+          {
+            "seed": 20261098,
+            "outcome": "human",
+            "plies": 34
+          },
+          {
+            "seed": 20261099,
+            "outcome": "panda",
+            "plies": 33
+          },
+          {
+            "seed": 20261100,
+            "outcome": "human",
+            "plies": 40
+          },
+          {
+            "seed": 20261101,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261102,
+            "outcome": "human",
+            "plies": 106
+          },
+          {
+            "seed": 20261103,
+            "outcome": "human",
+            "plies": 60
+          },
+          {
+            "seed": 20261104,
+            "outcome": "panda",
+            "plies": 37
+          },
+          {
+            "seed": 20261105,
+            "outcome": "panda",
+            "plies": 29
+          },
+          {
+            "seed": 20261106,
+            "outcome": "panda",
+            "plies": 45
+          },
+          {
+            "seed": 20261107,
+            "outcome": "human",
+            "plies": 48
+          },
+          {
+            "seed": 20261108,
+            "outcome": "human",
+            "plies": 26
+          },
+          {
+            "seed": 20261109,
+            "outcome": "human",
+            "plies": 40
+          },
+          {
+            "seed": 20261110,
+            "outcome": "human",
+            "plies": 40
+          },
+          {
+            "seed": 20261111,
+            "outcome": "panda",
+            "plies": 31
+          },
+          {
+            "seed": 20261112,
+            "outcome": "panda",
+            "plies": 49
+          },
+          {
+            "seed": 20261113,
+            "outcome": "panda",
+            "plies": 37
+          },
+          {
+            "seed": 20261114,
+            "outcome": "panda",
+            "plies": 33
+          },
+          {
+            "seed": 20261115,
+            "outcome": "panda",
+            "plies": 45
+          },
+          {
+            "seed": 20261116,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261117,
+            "outcome": "human",
+            "plies": 18
+          },
+          {
+            "seed": 20261118,
+            "outcome": "panda",
+            "plies": 29
+          },
+          {
+            "seed": 20261119,
+            "outcome": "human",
+            "plies": 76
+          },
+          {
+            "seed": 20261120,
+            "outcome": "human",
+            "plies": 124
+          },
+          {
+            "seed": 20261121,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261122,
+            "outcome": "panda",
+            "plies": 81
+          },
+          {
+            "seed": 20261123,
+            "outcome": "human",
+            "plies": 26
+          },
+          {
+            "seed": 20261124,
+            "outcome": "human",
+            "plies": 62
+          },
+          {
+            "seed": 20261125,
+            "outcome": "panda",
+            "plies": 37
+          },
+          {
+            "seed": 20261126,
+            "outcome": "panda",
+            "plies": 33
+          },
+          {
+            "seed": 20261127,
+            "outcome": "human",
+            "plies": 30
+          },
+          {
+            "seed": 20261128,
+            "outcome": "human",
+            "plies": 28
+          },
+          {
+            "seed": 20261129,
+            "outcome": "panda",
+            "plies": 25
+          },
+          {
+            "seed": 20261130,
+            "outcome": "panda",
+            "plies": 35
+          },
+          {
+            "seed": 20261131,
+            "outcome": "panda",
+            "plies": 35
+          },
+          {
+            "seed": 20261132,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261133,
+            "outcome": "human",
+            "plies": 26
+          },
+          {
+            "seed": 20261134,
+            "outcome": "human",
+            "plies": 62
+          },
+          {
+            "seed": 20261135,
+            "outcome": "human",
+            "plies": 34
+          },
+          {
+            "seed": 20261136,
+            "outcome": "human",
+            "plies": 72
+          },
+          {
+            "seed": 20261137,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261138,
+            "outcome": "human",
+            "plies": 62
+          },
+          {
+            "seed": 20261139,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261140,
+            "outcome": "panda",
+            "plies": 37
+          },
+          {
+            "seed": 20261141,
+            "outcome": "human",
+            "plies": 76
+          },
+          {
+            "seed": 20261142,
+            "outcome": "human",
+            "plies": 18
+          },
+          {
+            "seed": 20261143,
+            "outcome": "human",
+            "plies": 32
+          },
+          {
+            "seed": 20261144,
+            "outcome": "human",
+            "plies": 24
+          },
+          {
+            "seed": 20261145,
+            "outcome": "human",
+            "plies": 50
+          },
+          {
+            "seed": 20261146,
+            "outcome": "human",
+            "plies": 50
+          },
+          {
+            "seed": 20261147,
+            "outcome": "panda",
+            "plies": 33
+          },
+          {
+            "seed": 20261148,
+            "outcome": "human",
+            "plies": 62
+          },
+          {
+            "seed": 20261149,
+            "outcome": "human",
+            "plies": 70
+          },
+          {
+            "seed": 20261150,
+            "outcome": "human",
+            "plies": 50
+          },
+          {
+            "seed": 20261151,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261152,
+            "outcome": "human",
+            "plies": 18
+          },
+          {
+            "seed": 20261153,
+            "outcome": "panda",
+            "plies": 33
+          },
+          {
+            "seed": 20261154,
+            "outcome": "human",
+            "plies": 18
+          },
+          {
+            "seed": 20261155,
+            "outcome": "panda",
+            "plies": 31
+          },
+          {
+            "seed": 20261156,
+            "outcome": "panda",
+            "plies": 37
+          },
+          {
+            "seed": 20261157,
+            "outcome": "human",
+            "plies": 38
+          },
+          {
+            "seed": 20261158,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261159,
+            "outcome": "human",
+            "plies": 18
+          },
+          {
+            "seed": 20261160,
+            "outcome": "panda",
+            "plies": 47
+          },
+          {
+            "seed": 20261161,
+            "outcome": "human",
+            "plies": 86
+          },
+          {
+            "seed": 20261162,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261163,
+            "outcome": "human",
+            "plies": 138
+          },
+          {
+            "seed": 20261164,
+            "outcome": "human",
+            "plies": 40
+          },
+          {
+            "seed": 20261165,
+            "outcome": "human",
+            "plies": 44
+          },
+          {
+            "seed": 20261166,
+            "outcome": "panda",
+            "plies": 27
+          },
+          {
+            "seed": 20261167,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261168,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261169,
+            "outcome": "panda",
+            "plies": 47
+          },
+          {
+            "seed": 20261170,
+            "outcome": "panda",
+            "plies": 29
+          },
+          {
+            "seed": 20261171,
+            "outcome": "human",
+            "plies": 52
+          },
+          {
+            "seed": 20261172,
+            "outcome": "panda",
+            "plies": 27
+          },
+          {
+            "seed": 20261173,
+            "outcome": "panda",
+            "plies": 29
+          },
+          {
+            "seed": 20261174,
+            "outcome": "human",
+            "plies": 118
+          },
+          {
+            "seed": 20261175,
+            "outcome": "human",
+            "plies": 46
+          },
+          {
+            "seed": 20261176,
+            "outcome": "human",
+            "plies": 46
+          },
+          {
+            "seed": 20261177,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261178,
+            "outcome": "panda",
+            "plies": 31
+          },
+          {
+            "seed": 20261179,
+            "outcome": "human",
+            "plies": 46
+          },
+          {
+            "seed": 20261180,
+            "outcome": "human",
+            "plies": 62
+          },
+          {
+            "seed": 20261181,
+            "outcome": "panda",
+            "plies": 27
+          },
+          {
+            "seed": 20261182,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261183,
+            "outcome": "human",
+            "plies": 26
+          },
+          {
+            "seed": 20261184,
+            "outcome": "human",
+            "plies": 36
+          },
+          {
+            "seed": 20261185,
+            "outcome": "panda",
+            "plies": 31
+          },
+          {
+            "seed": 20261186,
+            "outcome": "human",
+            "plies": 36
+          },
+          {
+            "seed": 20261187,
+            "outcome": "panda",
+            "plies": 33
+          },
+          {
+            "seed": 20261188,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261189,
+            "outcome": "human",
+            "plies": 120
+          },
+          {
+            "seed": 20261190,
+            "outcome": "human",
+            "plies": 98
+          },
+          {
+            "seed": 20261191,
+            "outcome": "human",
+            "plies": 82
+          },
+          {
+            "seed": 20261192,
+            "outcome": "human",
+            "plies": 78
+          },
+          {
+            "seed": 20261193,
+            "outcome": "human",
+            "plies": 38
+          },
+          {
+            "seed": 20261194,
+            "outcome": "panda",
+            "plies": 41
+          },
+          {
+            "seed": 20261195,
+            "outcome": "human",
+            "plies": 42
+          },
+          {
+            "seed": 20261196,
+            "outcome": "human",
+            "plies": 60
+          },
+          {
+            "seed": 20261197,
+            "outcome": "panda",
+            "plies": 33
+          },
+          {
+            "seed": 20261198,
+            "outcome": "panda",
+            "plies": 23
+          },
+          {
+            "seed": 20261199,
+            "outcome": "panda",
+            "plies": 51
+          },
+          {
+            "seed": 20261200,
+            "outcome": "human",
+            "plies": 44
+          },
+          {
+            "seed": 20261201,
+            "outcome": "panda",
+            "plies": 75
+          },
+          {
+            "seed": 20261202,
+            "outcome": "human",
+            "plies": 120
+          },
+          {
+            "seed": 20261203,
+            "outcome": "human",
+            "plies": 34
+          },
+          {
+            "seed": 20261204,
+            "outcome": "human",
+            "plies": 26
+          },
+          {
+            "seed": 20261205,
+            "outcome": "human",
+            "plies": 82
+          },
+          {
+            "seed": 20261206,
+            "outcome": "human",
+            "plies": 48
+          },
+          {
+            "seed": 20261207,
+            "outcome": "draw",
+            "plies": 225
+          },
+          {
+            "seed": 20261208,
+            "outcome": "draw",
+            "plies": 225
+          }
+        ]
+      }
+    ]
+  },
+  "demonstrations": [
+    {
+      "humanFirst": true,
+      "seed": 20261131,
+      "outcome": "human",
+      "plies": 19,
+      "timingMs": {
+        "total": 30.226102000000004,
+        "human": 11.196239000000013,
+        "panda": 18.57452399999999,
+        "maxPandaMove": 4.566514999999995
+      },
+      "maxAiEvaluations": 84,
+      "winningLine": [
+        [
+          9,
+          7
+        ],
+        [
+          8,
+          7
+        ],
+        [
+          7,
+          7
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          5,
+          7
+        ]
+      ],
+      "trace": [
+        {
+          "ply": 1,
+          "side": "human-policy",
+          "index": 112,
+          "coordinate": [
+            8,
+            8
+          ],
+          "seed": 2781351262,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 2,
+          "side": "panda",
+          "index": 98,
+          "coordinate": [
+            7,
+            9
+          ],
+          "seed": 2931908349,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 3,
+          "side": "human-policy",
+          "index": 97,
+          "coordinate": [
+            7,
+            8
+          ],
+          "seed": 1954355326,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 4,
+          "side": "panda",
+          "index": 82,
+          "coordinate": [
+            6,
+            8
+          ],
+          "seed": 564855580,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 5,
+          "side": "human-policy",
+          "index": 114,
+          "coordinate": [
+            8,
+            10
+          ],
+          "seed": 977528089,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 6,
+          "side": "panda",
+          "index": 50,
+          "coordinate": [
+            4,
+            6
+          ],
+          "seed": 699883092,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 7,
+          "side": "human-policy",
+          "index": 66,
+          "coordinate": [
+            5,
+            7
+          ],
+          "seed": 2204104890,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 8,
+          "side": "panda",
+          "index": 113,
+          "coordinate": [
+            8,
+            9
+          ],
+          "seed": 3605459466,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 9,
+          "side": "human-policy",
+          "index": 83,
+          "coordinate": [
+            6,
+            9
+          ],
+          "seed": 433073277,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 10,
+          "side": "panda",
+          "index": 143,
+          "coordinate": [
+            10,
+            9
+          ],
+          "seed": 1912011672,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 11,
+          "side": "human-policy",
+          "index": 128,
+          "coordinate": [
+            9,
+            9
+          ],
+          "seed": 3904347478,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 12,
+          "side": "panda",
+          "index": 127,
+          "coordinate": [
+            9,
+            8
+          ],
+          "seed": 3876012956,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 13,
+          "side": "human-policy",
+          "index": 111,
+          "coordinate": [
+            8,
+            7
+          ],
+          "seed": 528557685,
+          "tactic": "build an open three"
+        },
+        {
+          "ply": 14,
+          "side": "panda",
+          "index": 69,
+          "coordinate": [
+            5,
+            10
+          ],
+          "seed": 1636756484,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 15,
+          "side": "human-policy",
+          "index": 96,
+          "coordinate": [
+            7,
+            7
+          ],
+          "seed": 4053362083,
+          "tactic": "create double open three"
+        },
+        {
+          "ply": 16,
+          "side": "panda",
+          "index": 144,
+          "coordinate": [
+            10,
+            10
+          ],
+          "seed": 2842819869,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 17,
+          "side": "human-policy",
+          "index": 81,
+          "coordinate": [
+            6,
+            7
+          ],
+          "seed": 3160812479,
+          "tactic": "create two winning endpoints"
+        },
+        {
+          "ply": 18,
+          "side": "panda",
+          "index": 51,
+          "coordinate": [
+            4,
+            7
+          ],
+          "seed": 2707741483,
+          "tactic": "block"
+        },
+        {
+          "ply": 19,
+          "side": "human-policy",
+          "index": 126,
+          "coordinate": [
+            9,
+            7
+          ],
+          "seed": 621622967,
+          "tactic": "complete five"
+        }
+      ]
+    },
+    {
+      "humanFirst": false,
+      "seed": 20261033,
+      "outcome": "human",
+      "plies": 18,
+      "timingMs": {
+        "total": 14.691532999999993,
+        "human": 7.790980000000005,
+        "panda": 6.758271000000008,
+        "maxPandaMove": 1.1757060000000052
+      },
+      "maxAiEvaluations": 84,
+      "winningLine": [
+        [
+          6,
+          11
+        ],
+        [
+          6,
+          10
+        ],
+        [
+          6,
+          9
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "trace": [
+        {
+          "ply": 1,
+          "side": "panda",
+          "index": 112,
+          "coordinate": [
+            8,
+            8
+          ],
+          "seed": 3804341013,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 2,
+          "side": "human-policy",
+          "index": 113,
+          "coordinate": [
+            8,
+            9
+          ],
+          "seed": 144473353,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 3,
+          "side": "panda",
+          "index": 98,
+          "coordinate": [
+            7,
+            9
+          ],
+          "seed": 722120158,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 4,
+          "side": "human-policy",
+          "index": 126,
+          "coordinate": [
+            9,
+            7
+          ],
+          "seed": 826189794,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 5,
+          "side": "panda",
+          "index": 70,
+          "coordinate": [
+            5,
+            11
+          ],
+          "seed": 2283234743,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 6,
+          "side": "human-policy",
+          "index": 84,
+          "coordinate": [
+            6,
+            10
+          ],
+          "seed": 2349462525,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 7,
+          "side": "panda",
+          "index": 97,
+          "coordinate": [
+            7,
+            8
+          ],
+          "seed": 605212619,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 8,
+          "side": "human-policy",
+          "index": 82,
+          "coordinate": [
+            6,
+            8
+          ],
+          "seed": 404375416,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 9,
+          "side": "panda",
+          "index": 99,
+          "coordinate": [
+            7,
+            10
+          ],
+          "seed": 2743939836,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 10,
+          "side": "human-policy",
+          "index": 96,
+          "coordinate": [
+            7,
+            7
+          ],
+          "seed": 1186025963,
+          "tactic": "stop opposing open four / fork"
+        },
+        {
+          "ply": 11,
+          "side": "panda",
+          "index": 101,
+          "coordinate": [
+            7,
+            12
+          ],
+          "seed": 1342065567,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 12,
+          "side": "human-policy",
+          "index": 100,
+          "coordinate": [
+            7,
+            11
+          ],
+          "seed": 1628671345,
+          "tactic": "block immediate five"
+        },
+        {
+          "ply": 13,
+          "side": "panda",
+          "index": 110,
+          "coordinate": [
+            8,
+            6
+          ],
+          "seed": 2258656790,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 14,
+          "side": "human-policy",
+          "index": 81,
+          "coordinate": [
+            6,
+            7
+          ],
+          "seed": 313662411,
+          "tactic": "create double open three"
+        },
+        {
+          "ply": 15,
+          "side": "panda",
+          "index": 111,
+          "coordinate": [
+            8,
+            7
+          ],
+          "seed": 1068487211,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 16,
+          "side": "human-policy",
+          "index": 83,
+          "coordinate": [
+            6,
+            9
+          ],
+          "seed": 1497829887,
+          "tactic": "create two winning endpoints"
+        },
+        {
+          "ply": 17,
+          "side": "panda",
+          "index": 80,
+          "coordinate": [
+            6,
+            6
+          ],
+          "seed": 56366142,
+          "tactic": "block"
+        },
+        {
+          "ply": 18,
+          "side": "human-policy",
+          "index": 85,
+          "coordinate": [
+            6,
+            11
+          ],
+          "seed": 874038659,
+          "tactic": "complete five"
+        }
+      ],
+      "annotation": {
+        "selection": "Shortest human-second victory among the sampled 200 seeds.",
+        "tactics": [
+          "Ply 10 H(7,7) closes one end of the opposing row-7 three; ply 12 H(7,11) blocks its remaining immediate winning gap.",
+          "Ply 14 H(6,7) creates two open, broken threes: row 6 at columns 7,8,10 and column 7 at rows 6,7,9.",
+          "Panda chooses (8,7), breaking the vertical threat. H(6,9) then fills the horizontal gap, leaving four contiguous stones with two open ends.",
+          "Panda correctly blocks (6,6); H(6,11) makes five. This is a standard fork, not a missed immediate block or rules exploit."
+        ]
+      }
+    },
+    {
+      "humanFirst": false,
+      "seed": 20261065,
+      "outcome": "human",
+      "plies": 44,
+      "timingMs": {
+        "total": 55.69880499999999,
+        "human": 28.837280000000007,
+        "panda": 26.296746999999996,
+        "maxPandaMove": 4.206336999999991
+      },
+      "maxAiEvaluations": 84,
+      "winningLine": [
+        [
+          9,
+          8
+        ],
+        [
+          8,
+          7
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          6,
+          5
+        ],
+        [
+          5,
+          4
+        ]
+      ],
+      "trace": [
+        {
+          "ply": 1,
+          "side": "panda",
+          "index": 112,
+          "coordinate": [
+            8,
+            8
+          ],
+          "seed": 1363264590,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 2,
+          "side": "human-policy",
+          "index": 97,
+          "coordinate": [
+            7,
+            8
+          ],
+          "seed": 3668446437,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 3,
+          "side": "panda",
+          "index": 96,
+          "coordinate": [
+            7,
+            7
+          ],
+          "seed": 3986158262,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 4,
+          "side": "human-policy",
+          "index": 128,
+          "coordinate": [
+            9,
+            9
+          ],
+          "seed": 1119849048,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 5,
+          "side": "panda",
+          "index": 64,
+          "coordinate": [
+            5,
+            5
+          ],
+          "seed": 210901019,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 6,
+          "side": "human-policy",
+          "index": 80,
+          "coordinate": [
+            6,
+            6
+          ],
+          "seed": 525378080,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 7,
+          "side": "panda",
+          "index": 126,
+          "coordinate": [
+            9,
+            7
+          ],
+          "seed": 1687414056,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 8,
+          "side": "human-policy",
+          "index": 111,
+          "coordinate": [
+            8,
+            7
+          ],
+          "seed": 1666016003,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 9,
+          "side": "panda",
+          "index": 140,
+          "coordinate": [
+            10,
+            6
+          ],
+          "seed": 655771927,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 10,
+          "side": "human-policy",
+          "index": 98,
+          "coordinate": [
+            7,
+            9
+          ],
+          "seed": 1015761545,
+          "tactic": "stop opposing open four / fork"
+        },
+        {
+          "ply": 11,
+          "side": "panda",
+          "index": 168,
+          "coordinate": [
+            12,
+            4
+          ],
+          "seed": 1811100170,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 12,
+          "side": "human-policy",
+          "index": 154,
+          "coordinate": [
+            11,
+            5
+          ],
+          "seed": 3263831582,
+          "tactic": "block immediate five"
+        },
+        {
+          "ply": 13,
+          "side": "panda",
+          "index": 83,
+          "coordinate": [
+            6,
+            9
+          ],
+          "seed": 2360844515,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 14,
+          "side": "human-policy",
+          "index": 125,
+          "coordinate": [
+            9,
+            6
+          ],
+          "seed": 263916383,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 15,
+          "side": "panda",
+          "index": 153,
+          "coordinate": [
+            11,
+            4
+          ],
+          "seed": 4079796849,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 16,
+          "side": "human-policy",
+          "index": 138,
+          "coordinate": [
+            10,
+            4
+          ],
+          "seed": 887761900,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 17,
+          "side": "panda",
+          "index": 170,
+          "coordinate": [
+            12,
+            6
+          ],
+          "seed": 2579707426,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 18,
+          "side": "human-policy",
+          "index": 169,
+          "coordinate": [
+            12,
+            5
+          ],
+          "seed": 581359786,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 19,
+          "side": "panda",
+          "index": 155,
+          "coordinate": [
+            11,
+            6
+          ],
+          "seed": 2307858443,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 20,
+          "side": "human-policy",
+          "index": 185,
+          "coordinate": [
+            13,
+            6
+          ],
+          "seed": 3150512936,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 21,
+          "side": "panda",
+          "index": 184,
+          "coordinate": [
+            13,
+            5
+          ],
+          "seed": 3997683538,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 22,
+          "side": "human-policy",
+          "index": 198,
+          "coordinate": [
+            14,
+            4
+          ],
+          "seed": 1219394542,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 23,
+          "side": "panda",
+          "index": 152,
+          "coordinate": [
+            11,
+            3
+          ],
+          "seed": 3428084566,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 24,
+          "side": "human-policy",
+          "index": 136,
+          "coordinate": [
+            10,
+            2
+          ],
+          "seed": 2801270928,
+          "tactic": "stop opposing open four / fork"
+        },
+        {
+          "ply": 25,
+          "side": "panda",
+          "index": 216,
+          "coordinate": [
+            15,
+            7
+          ],
+          "seed": 1662140260,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 26,
+          "side": "human-policy",
+          "index": 200,
+          "coordinate": [
+            14,
+            6
+          ],
+          "seed": 1183287751,
+          "tactic": "block immediate five"
+        },
+        {
+          "ply": 27,
+          "side": "panda",
+          "index": 199,
+          "coordinate": [
+            14,
+            5
+          ],
+          "seed": 1585430392,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 28,
+          "side": "human-policy",
+          "index": 139,
+          "coordinate": [
+            10,
+            5
+          ],
+          "seed": 1284370574,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 29,
+          "side": "panda",
+          "index": 124,
+          "coordinate": [
+            9,
+            5
+          ],
+          "seed": 736932125,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 30,
+          "side": "human-policy",
+          "index": 137,
+          "coordinate": [
+            10,
+            3
+          ],
+          "seed": 1444083358,
+          "tactic": "make a forcing four"
+        },
+        {
+          "ply": 31,
+          "side": "panda",
+          "index": 135,
+          "coordinate": [
+            10,
+            1
+          ],
+          "seed": 3828110391,
+          "tactic": "block"
+        },
+        {
+          "ply": 32,
+          "side": "human-policy",
+          "index": 108,
+          "coordinate": [
+            8,
+            4
+          ],
+          "seed": 637825623,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 33,
+          "side": "panda",
+          "index": 94,
+          "coordinate": [
+            7,
+            5
+          ],
+          "seed": 1047581338,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 34,
+          "side": "human-policy",
+          "index": 79,
+          "coordinate": [
+            6,
+            5
+          ],
+          "seed": 1439911075,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 35,
+          "side": "panda",
+          "index": 110,
+          "coordinate": [
+            8,
+            6
+          ],
+          "seed": 3530416459,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 36,
+          "side": "human-policy",
+          "index": 78,
+          "coordinate": [
+            6,
+            4
+          ],
+          "seed": 2929402789,
+          "tactic": "stop opposing open four / fork"
+        },
+        {
+          "ply": 37,
+          "side": "panda",
+          "index": 77,
+          "coordinate": [
+            6,
+            3
+          ],
+          "seed": 4293429966,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 38,
+          "side": "human-policy",
+          "index": 93,
+          "coordinate": [
+            7,
+            4
+          ],
+          "seed": 79395759,
+          "tactic": "make a forcing four"
+        },
+        {
+          "ply": 39,
+          "side": "panda",
+          "index": 123,
+          "coordinate": [
+            9,
+            4
+          ],
+          "seed": 2251061131,
+          "tactic": "block"
+        },
+        {
+          "ply": 40,
+          "side": "human-policy",
+          "index": 63,
+          "coordinate": [
+            5,
+            4
+          ],
+          "seed": 4150519749,
+          "tactic": "make a forcing four"
+        },
+        {
+          "ply": 41,
+          "side": "panda",
+          "index": 48,
+          "coordinate": [
+            4,
+            4
+          ],
+          "seed": 522074030,
+          "tactic": "block"
+        },
+        {
+          "ply": 42,
+          "side": "human-policy",
+          "index": 95,
+          "coordinate": [
+            7,
+            6
+          ],
+          "seed": 3935862326,
+          "tactic": "create two winning endpoints"
+        },
+        {
+          "ply": 43,
+          "side": "panda",
+          "index": 47,
+          "coordinate": [
+            4,
+            3
+          ],
+          "seed": 3580359820,
+          "tactic": "block"
+        },
+        {
+          "ply": 44,
+          "side": "human-policy",
+          "index": 127,
+          "coordinate": [
+            9,
+            8
+          ],
+          "seed": 642957279,
+          "tactic": "complete five"
+        }
+      ],
+      "annotation": {
+        "selection": "44 plies, the median winning-game length of the 104 human-second victories.",
+        "tactics": [
+          "Human spends the opening contesting threes and blocks immediate fives at plies 12 and 26.",
+          "Ply 30 H(10,3) creates a forcing four; Panda correctly blocks (10,1).",
+          "Ply 38 H(7,4) creates a broken column-4 four; Panda correctly fills its winning gap (9,4).",
+          "Ply 40 H(5,4) makes another forcing column-4 four; Panda correctly blocks (4,4).",
+          "Ply 42 H(7,6) joins H(5,4), H(6,5) and H(8,7) into a diagonal open four. Panda blocks (4,3); H(9,8) wins at the other end."
+        ]
+      }
+    },
+    {
+      "humanFirst": false,
+      "seed": 20261143,
+      "outcome": "human",
+      "plies": 32,
+      "timingMs": {
+        "total": 16.350641999999993,
+        "human": 7.64479799999998,
+        "panda": 8.590577000000025,
+        "maxPandaMove": 1.1250130000000098
+      },
+      "maxAiEvaluations": 84,
+      "winningLine": [
+        [
+          9,
+          13
+        ],
+        [
+          9,
+          12
+        ],
+        [
+          9,
+          11
+        ],
+        [
+          9,
+          10
+        ],
+        [
+          9,
+          9
+        ]
+      ],
+      "trace": [
+        {
+          "ply": 1,
+          "side": "panda",
+          "index": 112,
+          "coordinate": [
+            8,
+            8
+          ],
+          "seed": 3272464276,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 2,
+          "side": "human-policy",
+          "index": 111,
+          "coordinate": [
+            8,
+            7
+          ],
+          "seed": 1155197522,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 3,
+          "side": "panda",
+          "index": 96,
+          "coordinate": [
+            7,
+            7
+          ],
+          "seed": 3548801598,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 4,
+          "side": "human-policy",
+          "index": 128,
+          "coordinate": [
+            9,
+            9
+          ],
+          "seed": 427949581,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 5,
+          "side": "panda",
+          "index": 64,
+          "coordinate": [
+            5,
+            5
+          ],
+          "seed": 3960803081,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 6,
+          "side": "human-policy",
+          "index": 80,
+          "coordinate": [
+            6,
+            6
+          ],
+          "seed": 2367860412,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 7,
+          "side": "panda",
+          "index": 82,
+          "coordinate": [
+            6,
+            8
+          ],
+          "seed": 3005423999,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 8,
+          "side": "human-policy",
+          "index": 97,
+          "coordinate": [
+            7,
+            8
+          ],
+          "seed": 3300417280,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 9,
+          "side": "panda",
+          "index": 68,
+          "coordinate": [
+            5,
+            9
+          ],
+          "seed": 2003061208,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 10,
+          "side": "human-policy",
+          "index": 110,
+          "coordinate": [
+            8,
+            6
+          ],
+          "seed": 208858669,
+          "tactic": "stop opposing open four / fork"
+        },
+        {
+          "ply": 11,
+          "side": "panda",
+          "index": 40,
+          "coordinate": [
+            3,
+            11
+          ],
+          "seed": 78153626,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 12,
+          "side": "human-policy",
+          "index": 54,
+          "coordinate": [
+            4,
+            10
+          ],
+          "seed": 2563310652,
+          "tactic": "block immediate five"
+        },
+        {
+          "ply": 13,
+          "side": "panda",
+          "index": 125,
+          "coordinate": [
+            9,
+            6
+          ],
+          "seed": 4052028729,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 14,
+          "side": "human-policy",
+          "index": 65,
+          "coordinate": [
+            5,
+            6
+          ],
+          "seed": 3716706565,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 15,
+          "side": "panda",
+          "index": 95,
+          "coordinate": [
+            7,
+            6
+          ],
+          "seed": 4210483329,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 16,
+          "side": "human-policy",
+          "index": 81,
+          "coordinate": [
+            6,
+            7
+          ],
+          "seed": 3474481829,
+          "tactic": "build an open three"
+        },
+        {
+          "ply": 17,
+          "side": "panda",
+          "index": 113,
+          "coordinate": [
+            8,
+            9
+          ],
+          "seed": 2130963394,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 18,
+          "side": "human-policy",
+          "index": 49,
+          "coordinate": [
+            4,
+            5
+          ],
+          "seed": 3579669147,
+          "tactic": "make a forcing four"
+        },
+        {
+          "ply": 19,
+          "side": "panda",
+          "index": 33,
+          "coordinate": [
+            3,
+            4
+          ],
+          "seed": 2231323081,
+          "tactic": "block"
+        },
+        {
+          "ply": 20,
+          "side": "human-policy",
+          "index": 83,
+          "coordinate": [
+            6,
+            9
+          ],
+          "seed": 3039633649,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 21,
+          "side": "panda",
+          "index": 69,
+          "coordinate": [
+            5,
+            10
+          ],
+          "seed": 1560417916,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 22,
+          "side": "human-policy",
+          "index": 70,
+          "coordinate": [
+            5,
+            11
+          ],
+          "seed": 498347710,
+          "tactic": "contest opposing open three"
+        },
+        {
+          "ply": 23,
+          "side": "panda",
+          "index": 114,
+          "coordinate": [
+            8,
+            10
+          ],
+          "seed": 1751986080,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 24,
+          "side": "human-policy",
+          "index": 115,
+          "coordinate": [
+            8,
+            11
+          ],
+          "seed": 1121907691,
+          "tactic": "develop / connect stones"
+        },
+        {
+          "ply": 25,
+          "side": "panda",
+          "index": 98,
+          "coordinate": [
+            7,
+            9
+          ],
+          "seed": 425579211,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 26,
+          "side": "human-policy",
+          "index": 130,
+          "coordinate": [
+            9,
+            11
+          ],
+          "seed": 166044859,
+          "tactic": "stop opposing open four / fork"
+        },
+        {
+          "ply": 27,
+          "side": "panda",
+          "index": 85,
+          "coordinate": [
+            6,
+            11
+          ],
+          "seed": 1755775658,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 28,
+          "side": "human-policy",
+          "index": 131,
+          "coordinate": [
+            9,
+            12
+          ],
+          "seed": 13583458,
+          "tactic": "create double open three"
+        },
+        {
+          "ply": 29,
+          "side": "panda",
+          "index": 99,
+          "coordinate": [
+            7,
+            10
+          ],
+          "seed": 1267312155,
+          "tactic": "bounded evaluation"
+        },
+        {
+          "ply": 30,
+          "side": "human-policy",
+          "index": 129,
+          "coordinate": [
+            9,
+            10
+          ],
+          "seed": 2200308168,
+          "tactic": "create two winning endpoints"
+        },
+        {
+          "ply": 31,
+          "side": "panda",
+          "index": 127,
+          "coordinate": [
+            9,
+            8
+          ],
+          "seed": 1205829621,
+          "tactic": "block"
+        },
+        {
+          "ply": 32,
+          "side": "human-policy",
+          "index": 132,
+          "coordinate": [
+            9,
+            13
+          ],
+          "seed": 2636538361,
+          "tactic": "complete five"
+        }
+      ],
+      "annotation": {
+        "selection": "32-ply victory near the lower quartile of second-seat winning lengths.",
+        "tactics": [
+          "Human blocks an immediate five at ply 12, builds an open three at ply 16 and creates a forcing four at ply 18, which Panda correctly blocks.",
+          "Ply 28 H(9,12) builds a double open-three threat; after Panda defends, H(9,10) creates a horizontal open four.",
+          "Panda correctly blocks (9,8); H(9,13) wins at the other end."
+        ]
+      }
+    }
+  ]
+}

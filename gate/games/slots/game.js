@@ -1,5 +1,5 @@
-import { slotSymbols, drawReels, slotsWin, slotsBonus, reelDurations, reelPosition } from './slots-engine.js';
-import { symbolDefinitions } from './slot-symbols.js';
+import { slotSymbols, drawReels, slotsWin, slotsBonus, reelDurations, reelPosition } from './engine.js';
+import { symbolDefinitions } from '../../common/slot-symbols.js';
 export function createSlotsGame(root, changed, _tryEnter, clock = () => performance.now(), random = Math.random) {
   const strip = Array.from({ length:56 }, (_, index) => `<div class="slot-cell"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#slot-${slotSymbols[index % 7]}" width="64" height="64"/></svg></div>`).join('');
   root.innerHTML = `${symbolDefinitions}<div class="slot-machine"><div class="slot-reels" role="group" aria-label="Three independent reels">${[0,1,2].map(index=>`<div class="slot-reel" role="img" aria-label="Reel ${index+1}"><div class="slot-strip" aria-hidden="true">${strip}</div></div>`).join('')}<span class="slot-sparkles" aria-hidden="true">${Array.from({length:6},()=>'<i>✦</i>').join('')}</span></div><button id="lever" type="button" aria-label="Pull lever to spin all three reels"><span class="lever-base" aria-hidden="true"></span><span class="lever-arm" aria-hidden="true"><span class="lever-knob"></span></span></button></div>`;

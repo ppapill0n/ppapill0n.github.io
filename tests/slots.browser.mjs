@@ -1,5 +1,7 @@
 // Run with a local server and PLAYWRIGHT_MODULE pointing to an installed playwright module.
 import assert from 'node:assert/strict';
+import selection from './browser-selection.cjs';
+const { resetToGame } = selection;
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browser = await chromium.launch({ executablePath:process.env.CHROMIUM_PATH || '/usr/bin/chromium', args:['--no-sandbox'] });
 const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:8765';
@@ -8,7 +10,7 @@ try {
     const context = await browser.newContext({ viewport:mobile ? {width:390,height:844} : {width:1280,height:900}, hasTouch:mobile, isMobile:mobile });
     const page = await context.newPage();
     const errors=[];page.on('pageerror',error=>errors.push(error.message));
-    await page.addInitScript(()=>{window.draws=[];Math.random=()=>window.draws.length ? window.draws.shift() : .8;});
+    await page.addInitScript(()=>{window.draws=[];Math.random=()=>window.__gateTestDraws?.length ? window.__gateTestDraws.shift() : window.draws.length ? window.draws.shift() : 2.5/7;});
     await page.clock.install();
     await page.goto(`${base}/gate/`);
     await page.clock.pauseAt(new Date(Date.now()+1000));
@@ -51,16 +53,16 @@ try {
     await draw([6,6,6]);await page.locator('#lever').press('Space');
     assert.equal(await isLocked(),true);assert.equal(await page.locator('.is-result').count(),0);
     await page.locator('#lever').dispatchEvent('keydown',{key:'Enter',repeat:true});
-    await page.locator('#new-target').click();await page.clock.runFor(3000);
+    await resetToGame(page,'slots');await page.clock.runFor(3000);
     assert.equal(await isLocked(),true);assert.equal(await phase(),'idle');
     // Reset during celebration cancels its timer and removes effects.
-    await draw([1,1,1]);await spin();await finish();await page.locator('#new-target').click();
+    await draw([1,1,1]);await spin();await finish();await resetToGame(page,'slots');
     assert.equal(await page.locator('.is-result').count(),0);assert.equal(await isLocked(),true);
     // Background interruption cannot settle into a win later.
     await draw([6,6,6]);await spin();await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await finish();assert.equal(await isLocked(),true);
     // Global random selection still reaches the two other games.
-    for(const [random,id] of [[0,'dial'],[.5,'cannon'],[.9,'slots']]){
-      await page.evaluate(value=>{window.draws=[value];},random);await page.locator('#new-target').click();
+    for(const [random,id] of [[.5/7,'dial'],[1.5/7,'cannon'],[2.5/7,'slots']]){
+      await resetToGame(page,id,random);
       assert.equal(await page.locator('#game').getAttribute('data-game'),id);
     }
     assert.deepEqual(errors,[]);

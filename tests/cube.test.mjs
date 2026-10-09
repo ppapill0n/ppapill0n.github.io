@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { FACES, solvedCube, turn, isSolved, scramble, rotate } from '../gate/cube-engine.js';
+import { FACES, solvedCube, turn, isSolved, scramble, rotate } from '../gate/common/cube-engine.js';
 import { createRegistry, chooseGame } from '../gate/registry.js';
 const key=cube=>JSON.stringify(cube);
 test('six conventional centers, opposite colors, 54 unique stickers',()=>{
@@ -42,9 +42,9 @@ test('solved predicate accepts all 24 whole-cube orientations and rejects a turn
   }
   assert.equal(seen.size,24);
 });
-test('six uniform game slots; cube hides target and supplies a fresh legal scramble',()=>{
-  const registry=createRegistry();assert.equal(registry.length,6);
-  assert.deepEqual([.08,.25,.42,.58,.75,.92].map(n=>chooseGame(registry,()=>n).id),['dial','cannon','slots','soda','cube','cube2']);
+test('seven uniform game slots; cube hides target and supplies a fresh legal scramble',()=>{
+  const registry=createRegistry();assert.equal(registry.length,7);
+  assert.deepEqual([.5,1.5,2.5,3.5,4.5,5.5,6.5].map(n=>n/7).map(n=>chooseGame(registry,()=>n).id),['dial','cannon','slots','soda','cube','cube2','gomoku']);
   const cube=registry.find(g=>g.id==='cube');assert.ok(cube.hideTarget);assert.ok(!isSolved(cube.next().stickers));assert.notEqual(key(cube.next().stickers),key(cube.next().stickers));
 });
 

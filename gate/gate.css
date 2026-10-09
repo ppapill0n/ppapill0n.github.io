@@ -86,3 +86,24 @@ main.cube-mode { width:min(420px,calc(100% - 2rem)); }
 .cube-mode #enter { margin-top:1.5rem; }
 #cube[data-pointer-focus]:focus-visible { outline:none; }
 #entry-error { font-size:.8rem; color:var(--green); margin:.75rem 0 0; }
+
+main.gomoku-mode { width:min(500px,calc(100% - 2rem)); }
+.gomoku-mode .target-row { justify-content:flex-end; }
+.gomoku-heading { display:flex; align-items:center; justify-content:space-between; min-height:40px; margin:.25rem 0 .6rem; font-size:.85rem; color:var(--green); }
+.gomoku-players { display:flex; align-items:center; gap:.45rem; color:var(--muted); font-size:.7rem; }
+.gomoku-players svg { width:30px; height:28px; image-rendering:pixelated; }
+.gomoku-board { position:relative; display:grid; grid-template-rows:repeat(15,1fr); width:100%; aspect-ratio:1; background:#edf0df; border:1px solid #c4ccb2; border-radius:10px; user-select:none; -webkit-touch-callout:none; touch-action:manipulation; }
+.gomoku-board [role="row"] { display:grid; grid-template-columns:repeat(15,minmax(0,1fr)); min-height:0; }
+.gomoku-lines { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; stroke:#9fa98e; stroke-width:.8; fill:#8b997c; }
+.gomoku-cell { position:relative; display:grid; place-items:center; width:100%; height:100%; min-width:0; min-height:0; border:0; padding:1px; background:none; border-radius:50%; touch-action:manipulation; }
+.gomoku-cell svg { width:100%; height:100%; padding:1px; background:#d0e5ae; border:1px solid #63934a; border-radius:50%; image-rendering:pixelated; pointer-events:none; }
+.gomoku-cell[data-stone="2"] svg { background:#fafaf4; border-color:#849079; }
+.gomoku-cell[aria-disabled="true"] { cursor:default; }
+.gomoku-cell[aria-disabled="false"]:hover { background:#1d5c4318; }
+.gomoku-cell:focus-visible { z-index:1; outline:2px solid var(--green); outline-offset:0; }
+.gomoku-cell.last-stone svg { box-shadow:0 0 0 1px #1d5c43; }
+.gomoku-cell.winning svg { box-shadow:0 0 0 2px #b28b20; }
+.gomoku-rematch { display:flex; justify-content:center; min-height:55px; padding:.55rem 0; }
+#rematch { color:var(--green); background:transparent; border:1px solid #bfd0c4; border-radius:100px; padding:.3rem 1.1rem; font-size:.8rem; min-height:36px; }
+#rematch[hidden] { display:none; }
+@media(max-height:700px) { main.gomoku-mode { padding:1rem 0; width:min(420px,calc(100% - 2rem)); } }

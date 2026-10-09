@@ -1,6 +1,6 @@
 export const defaultRules = Object.freeze({ requireStopped: true, tolerance: 0 });
 export const formatValue = value => String(value).padStart(4, '0');
-export const canEnter = (target, state, rules = defaultRules) => target !== null && Number.isInteger(state.value) && Math.abs(state.value - target) <= (rules.tolerance ?? 0) && (!rules.requireStopped || state.stopped);
+export const canEnter = (target, state, rules = defaultRules) => !!state && (rules.humanVictory ? state.outcome === 'human' : Number.isInteger(target) && Number.isInteger(state.value) && Math.abs(state.value - target) <= (rules.tolerance ?? 0)) && (!rules.requireStopped || state.stopped);
 export function createGate(rules = defaultRules, random = Math.random) {
   let target = null;
   return {

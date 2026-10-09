@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {PASS_KEY,PASS_TTL,validPass,readPass,issuePass,clearPass} from '../gate/session-pass.js';
-import {enterPersonal} from '../gate/entry.js';
+import {PASS_KEY,PASS_TTL,validPass,readPass,issuePass,clearPass} from '../gate/common/session-pass.js';
+import {enterPersonal} from '../gate/common/entry.js';
 const now=1800000000000;
 const valid={version:1,issuedAt:now,expiresAt:now+PASS_TTL};
 const memory=()=>{const data=new Map();return {getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)};};
@@ -28,11 +28,12 @@ test('only explicit valid settled entry issues a pass; navigation waits for a su
   globalThis.sessionStorage={setItem(){throw Error('blocked');}};assert.equal(enterPersonal(12,{value:12,stopped:true},undefined,navigate),'unavailable');assert.equal(navigations,1);
 });
 
-test('all six adapters require settled matching state, issue the same hour pass, and reset clears it',async()=>{
+test('all seven adapters require settled success, issue the same hour pass, and reset clears it',async()=>{
   const {createRegistry}=await import('../gate/registry.js');
   for(const game of createRegistry(()=>.31)){
     globalThis.sessionStorage=memory();const {target}=game.next();let visits=0;
-    assert.equal(enterPersonal(target,{value:target,stopped:false},game.rules,()=>visits++),'locked');assert.equal(readPass().status,'missing');
-    assert.equal(enterPersonal(target,{value:target,stopped:true},game.rules,()=>visits++),'entered');assert.equal(visits,1);const record=JSON.parse(sessionStorage.getItem(PASS_KEY));assert.equal(record.expiresAt-record.issuedAt,3600000);assert.ok(clearPass());assert.equal(readPass().status,'missing');
+    if(game.rules?.humanVictory)for(const outcome of ['playing','ai','draw',null])assert.equal(enterPersonal(target,{value:1,outcome,stopped:true},game.rules,()=>visits++),'locked');
+    assert.equal(enterPersonal(target,{value:target,outcome:'human',stopped:false},game.rules,()=>visits++),'locked');assert.equal(readPass().status,'missing');
+    assert.equal(enterPersonal(target,{value:target,outcome:'human',stopped:true},game.rules,()=>visits++),'entered');assert.equal(visits,1);const record=JSON.parse(sessionStorage.getItem(PASS_KEY));assert.equal(record.expiresAt-record.issuedAt,3600000);assert.ok(clearPass());assert.equal(readPass().status,'missing');
   }
 });

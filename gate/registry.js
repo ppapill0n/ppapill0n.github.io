@@ -1,10 +1,13 @@
-import { createGate, defaultRules } from './engine.js';
-import { createDialGame } from './dial-game.js';
-import { createCannonGame } from './cannon-game.js';
-import { createSodaGame } from './soda-game.js';
-import { createCubeGame } from './cube-game.js';
-import { scramble } from './cube-engine.js';
-import { createSlotsGame } from './slots-game.js';
+import { createGate, defaultRules } from './common/engine.js';
+import { createDialGame } from './games/dial/game.js';
+import { createCannonGame } from './games/cannon/game.js';
+import { createSodaGame } from './games/soda/game.js';
+import { createCubeGame } from './games/cube/game.js';
+import { createCube2Game } from './games/cube2/game.js';
+import { scramble } from './common/cube-engine.js';
+import { createSlotsGame } from './games/slots/game.js';
+import { createGomokuGame } from './games/gomoku/game.js';
+export { chooseGame, createGameSelector } from './common/selection.js';
 export function createRegistry(random = Math.random) {
   const dialTargets = createGate(undefined, random);
   return [
@@ -12,8 +15,8 @@ export function createRegistry(random = Math.random) {
     { id:'cannon', rules:{ ...defaultRules, tolerance:5 }, create:createCannonGame, next:()=>({ target:1 + Math.floor(random() * 1000) }) },
     { id:'slots', create:createSlotsGame, next:()=>({ target:777 }), formatTarget:String },
     { id:'soda', create:createSodaGame, next:()=>({ target:Math.floor(random() * 3001) }) },
-    { id:'cube', create:(root,changed)=>createCubeGame(root,changed), next:()=>({ target:1, ...scramble(random) }), hideTarget:true, cube:true },
-    { id:'cube2', create:(root,changed)=>createCubeGame(root,changed,2), next:()=>({ target:1, ...scramble(random,15,2) }), hideTarget:true, cube:true }
+    { id:'cube', create:createCubeGame, next:()=>({ target:1, ...scramble(random) }), hideTarget:true, cube:true },
+    { id:'cube2', create:createCube2Game, next:()=>({ target:1, ...scramble(random,15,2) }), hideTarget:true, cube:true },
+    { id:'gomoku', create:createGomokuGame, next:()=>({}), hideTarget:true, rules:{requireStopped:true,humanVictory:true} }
   ];
 }
-export function chooseGame(registry, random = Math.random) { return registry[Math.floor(random() * registry.length)]; }

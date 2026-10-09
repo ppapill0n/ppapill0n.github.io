@@ -1,6 +1,7 @@
 // Run with a static server at GATE_URL (default http://127.0.0.1:8765/gate/).
 // Requires Playwright and a Chromium executable; never changes production state.
 const { chromium } = require('playwright');
+const { resetToGame } = require('./browser-selection.cjs');
 const assert = require('node:assert/strict');
 const url=process.env.GATE_URL || 'http://127.0.0.1:8765/gate/';
 (async()=>{
@@ -9,7 +10,7 @@ const url=process.env.GATE_URL || 'http://127.0.0.1:8765/gate/';
   async function open(mobile=false,code=2400) {
     const context=await browser.newContext(mobile?{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3}:{viewport:{width:1200,height:900}});
     const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
-    await page.addInitScript(code=>{let n=0;Math.random=()=>n++%2===0?.7:(code+.5)/3001;},code);
+    await page.addInitScript(code=>{let n=0;Math.random=()=>window.__gateTestDraws?.length?window.__gateTestDraws.shift():n++%2===0?3.5/7:(code+.5)/3001;},code);
     await page.goto(url);await page.waitForSelector('canvas');return page;
   }
   const volume=async p=>parseFloat(await p.locator('#volume').innerText());
@@ -41,12 +42,12 @@ const url=process.env.GATE_URL || 'http://127.0.0.1:8765/gate/';
     if(type==='blur'){assert.ok(await page.locator('#enter').isDisabled());await page.evaluate(()=>window.dispatchEvent(new Event('focus')));}
     await waitIdle(page);await page.locator('#empty-cup').click();
   }
-  // Global reset destroys the old RAF and capture even in mid-pour; same soda is allowed.
+  // Global reset destroys the old RAF and capture mid-pour; returning creates a fresh soda game.
   await grab(page);await page.waitForTimeout(600);
-  await page.evaluate(()=>document.querySelector('#new-target').click());await page.mouse.up();
+  await resetToGame(page,'soda',(2400+.5)/3001);await page.mouse.up();
   assert.equal(await volume(page),0);await page.waitForTimeout(800);assert.equal(await volume(page),0);
   await grab(page);await page.waitForTimeout(600);
-  await page.evaluate(()=>{Math.random=()=>0;document.querySelector('#new-target').click();});await page.mouse.up();
+  await resetToGame(page,'dial');await page.mouse.up();
   await page.waitForTimeout(800);assert.equal(await page.locator('#game').getAttribute('data-game'),'dial');assert.equal(await page.locator('canvas').count(),0);
   // Real CDP touch events, including touchCancel; scale and portrait/landscape resize.
   const mobile=await open(true);const cdp=await mobile.context().newCDPSession(mobile);
@@ -71,8 +72,8 @@ const url=process.env.GATE_URL || 'http://127.0.0.1:8765/gate/';
   await zero.locator('#enter').click();await zero.waitForURL('**/personal/');
   const max=await open(false,3000);assert.equal(await max.locator('#target').innerText(),'3000');assert.ok(await max.locator('#enter').isDisabled());
   // Smoke-test unchanged mouse controls and explicit submission rules in all three older games.
-  for(const [random,id] of [[0,'dial'],[.3,'cannon'],[.5,'slots']]) {
-    await max.evaluate(r=>{Math.random=()=>r;document.querySelector('#new-target').click();},random);
+  for(const [random,id] of [[.5/7,'dial'],[1.5/7,'cannon'],[2.5/7,'slots']]) {
+    await resetToGame(max,id,random);
     assert.equal(await max.locator('#game').getAttribute('data-game'),id);
     if(id==='dial'){await max.locator('.direction').last().click();await max.waitForTimeout(1200);assert.ok(await max.locator('#enter').isDisabled());}
     if(id==='cannon'){await max.locator('#fire').click();await max.waitForTimeout(2000);assert.notEqual(await max.locator('#distance').innerText(),'—');}

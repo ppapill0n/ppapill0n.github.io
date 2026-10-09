@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { slotSymbols, drawReels, slotsWin, slotsBonus, reelDurations, reelPosition } from '../gate/slots-engine.js';
+import { slotSymbols, drawReels, slotsWin, slotsBonus, reelDurations, reelPosition } from '../gate/games/slots/engine.js';
 import { createRegistry, chooseGame } from '../gate/registry.js';
-import { canEnter } from '../gate/engine.js';
+import { canEnter } from '../gate/common/engine.js';
 test('exactly seven symbols, three separate uniform draws, every combination possible',()=>{
   assert.deepEqual(slotSymbols,['cherry','lemon','grapes','gem','nokyong','panda','seven']);
   const counts=Array.from({length:3},()=>Array(7).fill(0));let wins=0,bonuses=0;
@@ -31,7 +31,7 @@ test('all seven settled triples unlock entry; six non-seven triples also celebra
 test('fixed 777 formatting and equal registry partitions; repeated slots selection allowed',()=>{
   const registry=createRegistry(()=>{throw Error('Fixed target must not draw randomness');});
   const slots=registry.find(game=>game.id==='slots');assert.equal(slots.next().target,777);assert.equal(slots.formatTarget(777),'777');
-  assert.deepEqual([0,.2,.4,.6,.8,.99999].map(r=>chooseGame(registry,()=>r).id),['dial','cannon','slots','soda','cube','cube2']);
+  assert.deepEqual([.5,1.5,2.5,3.5,4.5,5.5,6.5].map(n=>n/7).map(r=>chooseGame(registry,()=>r).id),['dial','cannon','slots','soda','cube','cube2','gomoku']);
   assert.equal(slots.next().target,777);
 });
 test('each reel finishes independently, all outcomes fit the strip, timing is frame-rate independent',()=>{

@@ -1,5 +1,5 @@
-import { advance, physics, wrap } from './motion.js';
-export { wrap } from './motion.js';
+import { advance, physics, wrap } from '../../common/motion.js';
+export { wrap } from '../../common/motion.js';
 export class InertiaDial {
   constructor(element, onChange, buttons = []) {
     this.element = element;

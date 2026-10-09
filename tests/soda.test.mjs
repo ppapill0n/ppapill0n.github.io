@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { SodaPhysics, STEP } from '../gate/soda-physics.js';
+import { SodaPhysics, STEP } from '../gate/games/soda/physics.js';
 import { createRegistry, chooseGame } from '../gate/registry.js';
-import { canEnter } from '../gate/engine.js';
+import { canEnter } from '../gate/common/engine.js';
 const near=(a,b,eps=1e-7)=>assert.ok(Math.abs(a-b)<eps,`${a} != ${b}`);
 function pour(x,seconds=5,fps=60,y=155) {
   const m=new SodaPhysics(); m.grab();m.move(x,y);
@@ -10,10 +10,10 @@ function pour(x,seconds=5,fps=60,y=155) {
   m.release();for(let n=0;n<8*fps;n++) m.advance(1/fps);
   return m;
 }
-test('uniform inclusive 0000–3000; six equal game partitions; same game can recur',()=>{
+test('uniform inclusive 0000–3000; seven equal game partitions; same game can recur',()=>{
   for(let n=0;n<=3000;n++) assert.equal(createRegistry(()=>(n+.5)/3001).find(g=>g.id==='soda').next().target,n);
   const registry=createRegistry();
-  assert.deepEqual([0,.2,.4,.6,.8,.999999].map(r=>chooseGame(registry,()=>r).id),['dial','cannon','slots','soda','cube','cube2']);
+  assert.deepEqual([.5,1.5,2.5,3.5,4.5,5.5,6.5].map(n=>n/7).map(r=>chooseGame(registry,()=>r).id),['dial','cannon','slots','soda','cube','cube2','gomoku']);
 });
 test('zero is stable indefinitely; matching is exact rounded tenths, only after settling',()=>{
   const m=new SodaPhysics();m.advance(20);assert.equal(m.bottle,450);assert.ok(m.stopped);assert.equal(m.value,0);

@@ -1,4 +1,4 @@
-import { SodaPhysics, bottleGeometry, CUP } from './soda-physics.js';
+import { SodaPhysics, bottleGeometry, CUP } from './physics.js';
 export function createSodaGame(root, changed) {
   root.innerHTML=`<div class="soda-field"><canvas id="soda" width="840" height="880" tabindex="0" aria-label="Green soda bottle. Drag the bottle toward the cup to tilt and pour; drag left or release to right it. Arrow keys move the bottle while Space is held."></canvas></div><div class="soda-readout"><output id="volume" aria-label="Soda in cup">0.0<span>mL</span></output><button id="empty-cup" type="button" aria-label="Empty cup and refill bottle; keep target"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 7h11l-1 13H7L5 7ZM9 3h8l3 3m0-4v4h-4M9 11v5m3-5v5"/></svg></button></div>`;
   const canvas=root.querySelector('canvas'), ctx=canvas.getContext('2d'), output=root.querySelector('output');
