@@ -3,7 +3,7 @@ import { canEnter, formatValue } from '../gate/common/engine.js';
 import { readPass } from '../gate/common/session-pass.js';
 import { createAccessGuard } from '../gate/common/access-guard.js';
 import { createFreeplayController, selectedGame } from './controller.js';
-import { copy } from './copy.js';
+import { copy } from './copy.js?v=20261009-gallery';
 
 const registry = createRegistry();
 const root = document.querySelector('#game');
@@ -61,14 +61,20 @@ function setLanguage(lang) {
   document.documentElement.lang = language;
   const text = copy[language];
   document.querySelectorAll('[data-copy]').forEach(el => { el.textContent = text[el.dataset.copy]; });
+  document.querySelectorAll('[data-label]').forEach(el => { el.setAttribute('aria-label', text[el.dataset.label]); });
   document.querySelectorAll('[data-lang]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.lang === language)));
   const list = document.querySelector('#game-list');
-  list.replaceChildren(...registry.map(game => {
-    const link = document.createElement('a'), name = document.createElement('strong'), summary = document.createElement('small'), arrow = document.createElement('span');
+  list.replaceChildren(...registry.map((game, index) => {
+    const link = document.createElement('a'), name = document.createElement('strong'), preview = document.createElement('span'), thumbnail = document.createElement('img');
     link.className = 'game-choice'; link.href = `?game=${game.id}`; link.dataset.selectGame = game.id;
-    link.setAttribute('aria-label', `${text.games[game.id].name} · ${text.play}`);
-    name.textContent = text.games[game.id].name; summary.textContent = text.games[game.id].summary;
-    arrow.textContent = '→'; arrow.setAttribute('aria-hidden', 'true'); link.append(name, summary, arrow); return link;
+    preview.className = 'game-preview'; preview.setAttribute('aria-hidden', 'true');
+    thumbnail.src = `thumbnails/${game.id}.webp?v=20261009-gallery`; thumbnail.alt = '';
+    thumbnail.width = 600; thumbnail.height = 450; thumbnail.decoding = 'async';
+    thumbnail.loading = index < 3 ? 'eager' : 'lazy';
+    // A failed preview keeps its reserved space and leaves the named link usable.
+    thumbnail.addEventListener('error', () => { thumbnail.hidden = true; }, { once:true });
+    name.textContent = text.games[game.id].name; preview.append(thumbnail);
+    link.append(preview, name); return link;
   }));
   document.title = text.pageTitle;
   renderGameCopy(); renderStatus(); decorateGame();
@@ -98,7 +104,6 @@ document.querySelector('#all-games').addEventListener('click', event => {
 document.querySelector('#restart').addEventListener('click', () => { controller.restart(); });
 document.querySelectorAll('[data-lang]').forEach(button => button.addEventListener('click', () => setLanguage(button.dataset.lang)));
 window.addEventListener('popstate', () => route({ focus:true }));
-document.querySelector('#year').textContent = new Date().getFullYear();
 setLanguage(language);
 guard = createAccessGuard({
   onValid: () => { if (!controller.id) route(); },

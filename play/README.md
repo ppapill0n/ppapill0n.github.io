@@ -22,3 +22,9 @@
 - With a static server and Playwright/Chromium: `SITE_URL=http://127.0.0.1:8765 node tests/freeplay-browser.cjs`
 
 The DOM test uses real game adapters but stubs canvas drawing and worker transport. It is not layout or physical-device verification. The browser suite exercises routing, access, responsive widths and pointer controls separately.
+
+## Gallery thumbnails
+
+The chooser contains only a gameplay thumbnail and the localized game name per link. Its page heading remains screen-reader-only; the back arrow retains a localized accessible name. The gallery uses three desktop columns and two compact columns at 650 px and below. Image dimensions reserve a 4:3 frame; a failed image hides only the broken image, leaving the link and name usable. Below-the-fold previews load lazily.
+
+`thumbnails/*.webp` are real screenshots captured from the deployed shared games on 2026-10-09 at commit `7b6148deca908593686cd485161aa1e659190239`, through normal browser play after earning a gate pass. They are cropped/resized and padded to 600 × 450; no generated or reconstructed game imagery is used. The seven previews total less than 50 kB. A future game-art change should refresh its screenshot and the gallery asset version together.

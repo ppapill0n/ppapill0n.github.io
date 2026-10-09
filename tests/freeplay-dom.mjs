@@ -32,6 +32,28 @@ await import(`../play/play.js?dom=${Date.now()}`);
 assert.ok(!document.documentElement.hasAttribute('data-private-pending'));
 assert.equal(document.querySelectorAll('[data-select-game]').length,7);assert.equal(workers.length,0);assert.equal(frames.size,0);
 assert.equal(document.querySelector('#enter'),null);
+// Each image and name is one accessible link, with no selection descriptions.
+const gameNames = ['Inertia dial','Cannon','Lucky reels','Soda pour','3 × 3 cube','2 × 2 cube','Gomoku'];
+const cards = [...document.querySelectorAll('[data-select-game]')];
+assert.equal(document.querySelector('#hub-title').className, 'sr-only');
+assert.equal(document.querySelector('#selection p, #selection small'), null);
+assert.equal(document.querySelector('.back-link').textContent, '←');
+assert.equal(document.querySelector('.back-link').getAttribute('aria-label'), 'Back to personal');
+cards.forEach((card, index) => {
+  assert.equal(card.textContent, gameNames[index]);
+  assert.equal(card.querySelectorAll('img').length, 1);
+  const image = card.querySelector('img');
+  assert.equal(image.alt, ''); assert.equal(image.width, 600); assert.equal(image.height, 450);
+  assert.equal(image.parentElement.getAttribute('aria-hidden'), 'true');
+  assert.equal(card.getAttribute('href'), `?game=${card.dataset.selectGame}`);
+  assert.ok(image.src.endsWith(`/thumbnails/${card.dataset.selectGame}.webp?v=20261009-gallery`));
+});
+const missingImage = cards[0].querySelector('img');
+missingImage.dispatchEvent(new window.Event('error'));
+assert.ok(missingImage.hidden); assert.equal(cards[0].textContent, 'Inertia dial');
+cards[0].click(); assert.equal(document.querySelector('#game').dataset.game, 'dial');
+document.querySelector('#all-games').click();
+
 const selection=()=>document.querySelector('#selection');
 const choose=id=>document.querySelector(`[data-select-game="${id}"]`).click();
 const back=()=>document.querySelector('#all-games').click();
@@ -58,7 +80,7 @@ back();assert.equal(frames.size,0);assert.ok(!root().classList.contains('slots-s
 // Language changes keep the same game/worker and stored pass.
 choose('gomoku');const worker=workers.at(-1),stale=worker.onmessage,id=worker.sent.id;
 const count=workers.length;document.querySelector('[data-lang="ko"]').click();assert.equal(document.documentElement.lang,'ko');assert.equal(workers.length,count);assert.equal(document.querySelector('#game-title').textContent,'오목');
-assert.equal(document.querySelector('#all-games').textContent,'← 모든 게임');assert.equal(sessionStorage.getItem(PASS_KEY),original);
+assert.equal(document.querySelector('#all-games').textContent,'← 모든 게임');assert.equal(document.querySelector('.back-link').getAttribute('aria-label'),'개인 공간으로');assert.equal(document.querySelector('[data-select-game=gomoku]').textContent,'오목');assert.equal(sessionStorage.getItem(PASS_KEY),original);
 back();assert.ok(worker.terminated);stale({data:{id,index:112}});clock.advance(1200);await flush();assert.equal(root().childElementCount,0);assert.equal(document.querySelector('#state').textContent,'');
 // Safe unknown-query fallback, followed by popstate selection and bfcache rebuild.
 window.history.pushState(null,'','?game=%3Cscript%3E');window.dispatchEvent(new window.PopStateEvent('popstate'));assert.equal(window.location.search,'');assert.ok(!selection().hidden);

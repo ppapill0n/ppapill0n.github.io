@@ -141,6 +141,24 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
     assert.equal(await page.locator('[data-select-game]').count(), 7);
     assert.deepEqual(await page.locator('[data-select-game]').evaluateAll(links => links.map(link => link.dataset.selectGame)), ids);
     assert.deepEqual(await workerEvents(page), [], 'The chooser must not create an AI worker');
+    assert.equal(await page.locator('#selection p, #selection small').count(), 0);
+    assert.equal(await page.locator('.game-choice img').count(), 7);
+    const cardNames = ['Inertia dial','Cannon','Lucky reels','Soda pour','3 × 3 cube','2 × 2 cube','Gomoku'];
+    for (let i = 0; i < ids.length; i++) {
+      const card = page.locator(`[data-select-game="${ids[i]}"]`);
+      assert.equal(await card.innerText(), cardNames[i]);
+      assert.equal(await card.getAttribute('href'), `?game=${ids[i]}`);
+      await card.scrollIntoViewIfNeeded();
+      await card.locator('img').evaluate(image => image.decode());
+      assert.ok(await card.locator('img').evaluate(image => image.naturalWidth === 600 && image.naturalHeight === 450));
+    }
+    // A missing screenshot never removes the name or disables selection.
+    await page.route('**/thumbnails/dial.webp*', route => route.abort());
+    await page.reload(); await ready(page);
+    await page.waitForFunction(() => document.querySelector('[data-select-game="dial"] img').hidden);
+    assert.equal(await page.locator('[data-select-game="dial"]').innerText(), 'Inertia dial');
+    await page.unroute('**/thumbnails/dial.webp*');
+
     // A marker survives only same-document selection and history changes.
     await page.evaluate(() => { window.freeplayDocumentMarker = 'same-document'; });
     await choose(page, 'dial');
@@ -367,7 +385,7 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
       }
       await responsive.locator('#all-games').click();
       await responsive.locator('[data-lang="ko"]').click();
-      assert.equal(await responsive.locator('#hub-title').innerText(), '골라서 놀아요.');
+      assert.equal(await responsive.locator('#hub-title').textContent(), '게임');
       await responsive.reload(); await ready(responsive);
       assert.equal(await responsive.locator('html').getAttribute('lang'), 'ko', 'Language persists across refresh');
       await immutable(responsive, responsivePass, `${width}px language toggle/refresh`);
