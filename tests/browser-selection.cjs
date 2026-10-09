@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const histories = new WeakMap();
 
-// The production selector keeps three IDs of history. Inject only random draws;
+// Mirror visits for the pure reference weights. Inject only random draws;
 // every transition still uses the real Reset button, teardown, and new adapter.
 async function resetToGame(page, id, challengeRandom = 0) {
   const current = await page.locator('#game').getAttribute('data-game');
@@ -25,6 +25,5 @@ async function resetToGame(page, id, challengeRandom = 0) {
   assert.equal(selected, id);
   assert.notEqual(selected, history.at(-1), 'Reset must leave the current game');
   history.push(selected);
-  if (history.length > 3) history.shift();
 }
 module.exports = { resetToGame };

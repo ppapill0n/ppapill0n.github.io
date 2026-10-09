@@ -1,26 +1,57 @@
-// A light recency nudge, not a shuffle bag: every game except the current one
-// remains eligible on every reset. All identities receive the same treatment.
-export const RECENT_GAME_WEIGHT = 0.85;
-export const GAME_HISTORY_LENGTH = 3;
+// Recency recovery, not a shuffle bag. Exclude current when alternatives exist.
+// Keep these independent of catalog size: more games already mean fewer repeats.
+export const GAME_RECENCY = Object.freeze({ strength: 0.35, halfLife: 2 });
 
-/**
- * History is an oldest-to-newest array of game IDs, including the current game.
- * Only the final three entries matter. Multiple appearances do not compound
- * the penalty, so a short alternating run is possible rather than forbidden.
- */
-export function gameSelectionWeights(registry, history = []) {
-  const recent = history.slice(-GAME_HISTORY_LENGTH);
-  const current = recent.at(-1);
-  const seen = new Set(recent);
-  return registry.map(game => ({
-    game,
-    weight: game.id === current ? 0 : seen.has(game.id) ? RECENT_GAME_WEIGHT : 1
-  }));
+function parameters(options) {
+  const config = { ...GAME_RECENCY, ...options };
+  const { strength, halfLife } = config;
+  // After 55 half-lives, the penalty is below a quarter of the IEEE-754
+  // spacing below 1, with margin for arithmetic rounding. The weight is 1.
+  config.maxAge = 1 + Math.ceil(55 * halfLife);
+  if (!Number.isFinite(strength) || strength < 0 || strength >= 1 ||
+      !Number.isFinite(halfLife) || halfLife <= 0 || !Number.isSafeInteger(config.maxAge)) {
+    throw new RangeError('Recency needs 0 <= strength < 1 and a positive, safely bounded half-life.');
+  }
+  return config;
 }
 
-/** Pure selection, preserving registry order and object identity. */
-export function chooseGame(registry, random = Math.random, history = []) {
-  const candidates = gameSelectionWeights(registry, history).filter(item => item.weight > 0);
+function validateRegistry(registry) {
+  if (!Array.isArray(registry) || !registry.length || registry.some(game => !game || typeof game.id !== 'string' || !game.id)) {
+    throw new TypeError('Games must have nonempty string IDs.');
+  }
+  const ids = new Set(registry.map(game => game.id));
+  if (ids.size !== registry.length) throw new TypeError('Game IDs must be unique.');
+  return ids;
+}
+
+function weightsFromAges(registry, ages, { strength, halfLife }) {
+  return registry.map(game => {
+    const age = ages.get(game.id);
+    return {
+      game,
+      weight: registry.length === 1 ? 1 : age === 0 ? 0 : age === undefined ? 1 : 1 - strength * 0.5 ** ((age - 1) / halfLife)
+    };
+  });
+}
+
+/**
+ * Pure reference API: history is an oldest-to-newest list including current.
+ * Only the latest occurrence of each ID matters. If A then B were visited,
+ * A's age d is 1 and its weight is 1 - strength * 0.5 ** ((d - 1) / halfLife).
+ * Production keeps bounded ages instead of retaining the whole visit history.
+ */
+export function gameSelectionWeights(registry, history = [], options = GAME_RECENCY) {
+  validateRegistry(registry);
+  const config = parameters(options), ages = new Map();
+  for (let index = history.length - 1; index >= 0; index--) {
+    const id = history[index];
+    if (!ages.has(id)) ages.set(id, Math.min(history.length - 1 - index, config.maxAge));
+  }
+  return weightsFromAges(registry, ages, config);
+}
+
+function drawGame(weights, random) {
+  const candidates = weights.filter(item => item.weight > 0);
   if (!candidates.length) throw new RangeError('No different game is available.');
   const draw = random();
   if (!Number.isFinite(draw) || draw < 0 || draw >= 1) {
@@ -35,22 +66,29 @@ export function chooseGame(registry, random = Math.random, history = []) {
   return candidates.at(-1).game;
 }
 
-/** One selector per mounted gate; history lives only for that page visit. */
-export function createGameSelector(registry, random = Math.random) {
-  if (!registry.length || registry.some(game => typeof game.id !== 'string' || !game.id)) {
-    throw new TypeError('Games must have nonempty string IDs.');
-  }
-  if (new Set(registry.map(game => game.id)).size !== registry.length) {
-    throw new TypeError('Game IDs must be unique.');
-  }
-  const history = [];
+/** Pure selection, preserving registry order and object identity. */
+export function chooseGame(registry, random = Math.random, history = [], options = GAME_RECENCY) {
+  return drawGame(gameSelectionWeights(registry, history, options), random);
+}
+
+/** One selector per mounted gate; one bounded age per ID, no session counter. */
+export function createGameSelector(registry, random = Math.random, options = GAME_RECENCY) {
+  validateRegistry(registry);
+  const config = parameters(options), ages = new Map();
   return {
     next() {
-      const game = chooseGame(registry, random, history);
-      history.push(game.id);
-      if (history.length > GAME_HISTORY_LENGTH) history.shift();
+      // IDs, not labels/array positions, identify games. Appended games start
+      // unseen; replacing/reordering a game preserves its age when its ID stays.
+      const ids = validateRegistry(registry);
+      const game = drawGame(weightsFromAges(registry, ages, config), random);
+      // Mutate only after a valid selection, including after a bad RNG result.
+      for (const [id, age] of ages) {
+        if (!ids.has(id)) ages.delete(id);
+        else ages.set(id, Math.min(age + 1, config.maxAge));
+      }
+      ages.set(game.id, 0);
       return game;
     },
-    getHistory: () => history.slice()
+    getRecency: () => new Map(ages)
   };
 }

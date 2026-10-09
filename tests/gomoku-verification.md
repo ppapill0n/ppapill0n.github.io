@@ -2,7 +2,7 @@
 
 ## Status
 
-- Passed: `node --test tests/*.test.mjs`, 69 tests including all existing pure game/session tests plus Gomoku rules, actual Node Worker protocol, fake adapter, controller lifecycle, evaluator, directory-layout and selector tests.
+- Passed: `node --test tests/*.test.mjs`, 74 tests including all existing pure game/session tests plus Gomoku rules, actual Node Worker protocol, fake adapter, controller lifecycle, evaluator, directory-layout and selector tests.
 - Passed: six full, legal, seeded game replays with `node tests/gomoku-winnability.mjs --verify`.
 - Passed: independent DOM implementation (happy-dom 20.0.11) with `HAPPY_DOM_MODULE=<installed happy-dom entry> node tests/gomoku-dom.mjs`: second-player opening, duplicate and occupied clicks, obsolete request/reset, blur/focus, keyboard focus, win/loss/draw/rematch, illegal engine response/retry, destruction and explicit one-hour entry.
 - Passed on the deployed HTTPS site in the provided cloud Chromium browser: rendered desktop board and reused artwork, Panda-first opening and genuine Worker replies; loss stays locked; two complete 225-stone draws stay locked; Rematch after loss/draw; all seven games render across 26 actual global Resets with no current-game repeat.
@@ -57,16 +57,9 @@ The user prefers human second when reasonably winnable, so Panda opens in produc
 
 ## Reset selection
 
-Compare uniform exclusion (every noncurrent game 1/6) with a weak recency penalty:
+The original .85 / last-three-visits nudge was replaced by an exponentially recovering last-visit penalty. Current game is excluded when alternatives exist; unseen IDs have weight 1; other IDs use `1 - .35 * .5 ** ((d - 1) / 2)`, where d = 1 after A → B when considering A again. Settings remain fixed as more games are added. No bag, quota, or cumulative frequency penalty is used.
 
-- The first draw is uniform 1/7.
-- Current game is excluded (probability zero).
-- Other identities seen within the last three visits get weight .85; all others get weight 1. A repeated identity is not penalized multiple times.
-- With two distinct recent alternatives, each gets .85/5.7 = 14.912%; the other four each get 1/5.7 = 17.544%.
-- With only one recent alternative, it gets .85/5.85 = 14.530%; the other five each get 1/5.85 = 17.094%.
-- There is no bag, quota, hard exclusion of old games, or forced finite-window balance. A-B-A and A-B-A-B are still possible. Identity symmetry gives equal long-run treatment, not equal probability conditional on history.
-
-At 1,000,000 draws, seed 20261009, uniform exclusion → weak recency: A-B-A 16.676% → 14.875%; A-B-A-B 2.762% → 2.144%; mean unique games in seven draws 4.991 → 5.073; windows containing at most three identities 1.997% → 1.362%. No immediate repeats in either sample. Recency frequencies were 14.256–14.350% across individual games. Command: `node tests/selection-simulation.mjs 1000000`.
+At one million draws, seed 20261009, seven-game uniform exclusion → recovery: A-B-A 16.676% → 12.717%; A-B-A-B 2.762% → 1.556%; mean distinct in seven visits 4.991 → 5.181. Immediate repeats were zero. The [dedicated selector report](selection-verification.md) includes catalogs of 2, 3, 7, 12, 20, and 50, the rejected scaling comparison, exact invariant tests, and singleton behavior. See the [design/configuration guide](../gate/common/selection.md).
 
 ## Preserved behavior
 
