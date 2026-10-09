@@ -12,7 +12,7 @@ export class InertiaDial {
     this.frame = null;
     this.events = new AbortController();
     const listen = (target, name, handler) => target.addEventListener(name, handler, { signal:this.events.signal });
-    const scope = element.closest('main');
+    const scope = element.closest('[data-game-input-scope]') ?? element.closest('main');
     listen(scope, 'keydown', event => this.key(event));
     listen(scope, 'focusout', event => { if (!scope.contains(event.relatedTarget)) this.stop(); });
     listen(window, 'keyup', event => this.release(`key:${event.code || event.key}`));

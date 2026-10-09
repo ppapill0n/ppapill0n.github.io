@@ -1,6 +1,7 @@
+import { personalCue } from '../play/copy.js';
 const copy = {
-  en: {eyebrow:'Beyond research',title:'Coming soon<span>.</span>',message:'This personal space is still taking shape.',back:'Back to research profile →'},
-  ko: {eyebrow:'연구 밖의 공간',title:'준비중<span>.</span>',message:'개인적인 공간을 준비하고 있습니다.',back:'연구 프로필로 돌아가기 →'}
+  en: {eyebrow:'Beyond research',title:'Coming soon<span>.</span>',message:'This personal space is still taking shape.',back:'Back to research profile →',play:personalCue.en},
+  ko: {eyebrow:'연구 밖의 공간',title:'준비중<span>.</span>',message:'개인적인 공간을 준비하고 있습니다.',back:'연구 프로필로 돌아가기 →',play:personalCue.ko}
 };
 function setLanguage(lang) {
   document.documentElement.lang = lang;
