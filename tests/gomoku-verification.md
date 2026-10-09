@@ -2,7 +2,7 @@
 
 ## Status
 
-- Passed: `node --test tests/*.test.mjs`, 64 tests including all existing pure game/session tests plus Gomoku rules, actual Node Worker protocol, fake adapter, controller lifecycle, evaluator, directory-layout and selector tests.
+- Passed: `node --test tests/*.test.mjs`, 69 tests including all existing pure game/session tests plus Gomoku rules, actual Node Worker protocol, fake adapter, controller lifecycle, evaluator, directory-layout and selector tests.
 - Passed: six full, legal, seeded game replays with `node tests/gomoku-winnability.mjs --verify`.
 - Passed: independent DOM implementation (happy-dom 20.0.11) with `HAPPY_DOM_MODULE=<installed happy-dom entry> node tests/gomoku-dom.mjs`: second-player opening, duplicate and occupied clicks, obsolete request/reset, blur/focus, keyboard focus, win/loss/draw/rematch, illegal engine response/retry, destruction and explicit one-hour entry.
 - Passed on the deployed HTTPS site in the provided cloud Chromium browser: rendered desktop board and reused artwork, Panda-first opening and genuine Worker replies; loss stays locked; two complete 225-stone draws stay locked; Rematch after loss/draw; all seven games render across 26 actual global Resets with no current-game repeat.
@@ -11,6 +11,14 @@
 - No site-origin console errors observed; the browser's own extension emitted metadata errors.
 - Not run: the full standalone Playwright browser regression suites. Chromium cannot create its required Unix socket in the cloud shell (`Operation not permitted`), including an approved escalation retry. The supplied browser cannot reach the isolated localhost preview and rejects local file URLs. Its DevTools policy also blocks device emulation. These restrictions were respected; the targeted live-browser checks above were performed separately.
 - Not tested: physical phone hardware, actual/emulated touch events, Safari/WebKit, real-device compute/network/energy use. Timing and one-hour expiry edge cases are covered in Node/DOM rather than waiting an hour in the live browser.
+
+## Turn-feedback follow-up
+
+- All visible informational status text (including turn/thinking/outcome text) is now screen-reader-only; the shared live region remains. Board, winner highlights, Enter, Retry, Rematch, and right-aligned player icons remain.
+- Each Panda turn samples an integer minimum duration uniformly from 500 through 1000 ms inclusive. The timer and worker run together: fast replies wait until the sampled duration; valid slower replies apply when ready, under the unchanged worker timeouts. UI scheduling can extend actual elapsed time. No blocking sleep is used.
+- Added mock-clock coverage for both endpoints, a midpoint, and 32 seeded samples; concurrent computation, a slow response, input/Enter locking, opening/rematch, reset during an already-computed move's delay, blur/pagehide/visibility/stop/destroy timer cleanup, stale responses, errors/Retry, and duplicate Retry/Rematch clicks. Independent DOM checks now advance the same test-only clock.
+- Final local checks: 69 Node tests, independent DOM suite, six seeded legal game replays, browser-test syntax, and `git diff --check` pass. Selection and the AI move algorithm are unchanged.
+- Full standalone browser-suite limitation above still applies. Targeted live verification for this follow-up is recorded separately after publication; earlier live observations above concern the initial implementation. The user reported that touch worked on their Android device before this follow-up; this is user confirmation, not a new device test performed here.
 
 ## Bounded work and payload
 
@@ -23,7 +31,7 @@ Measured on cloud Linux x64, Node v24.19.0. No WASM timing comparison is claimed
 | Adapted evaluator, including full MIT notice | 6,709 | 1,986 |
 | Independent rules | 1,636 | 698 |
 | Full worker dependency graph | 12,459 | 4,427 |
-| UI/controller | 6,807 | 2,499 |
+| UI/controller | 7,665 | 2,823 |
 | Async engine adapter | 2,796 | 1,095 |
 
 The rules module is already required by the UI. The additional lazily requested Worker/AI/evaluator bytes are therefore 10,823 raw / 3,729 gzip-estimate before caching. The search graph is never imported by the main page; a worker is created only when Gomoku asks Panda to move. Other selected games never start it. Panda opens, so selecting Gomoku starts the first worker immediately. Every settled or cancelled request terminates its worker.

@@ -2,6 +2,14 @@
 
 Freestyle 15×15: five or more connected stones wins; there are no forbidden moves. Green Nokyong is the human and plays second; Panda opens. Only a settled human victory grants eligibility for the explicit Enter button. Losing, drawing, loading, worker failure, and paused play remain locked. Rematch keeps Gomoku; the global reset chooses another game.
 
+## Turn feedback and pacing
+
+Turn, thinking, paused, and outcome text is screen-reader-only. The existing shared live region announces it; the visual board, winning line, Enter state, and Rematch/Retry buttons remain. Player icons retain their right alignment.
+
+Every Panda turn, including its opening, rematch opening, Retry, and resumed cancelled turn, samples a fresh uniform integer delay of 500–1000 ms inclusive. The timer runs alongside the asynchronous engine request, so this is a minimum total thinking duration, not an extra wait after computation. A response taking longer than the sampled delay is applied as soon as it arrives and passes validation; existing worker load/compute timeouts still apply. Browser timer scheduling may make the actual visible wait longer. The timer never blocks the UI thread. A custom `random` option supplies a seeded duration sampler for tests; production uses `Math.random`.
+
+During both computation and the remaining delay, Panda retains its turn, board input is ignored, `aria-busy` remains true, and Enter stays locked. Reset, blur, page hiding/navigation, and destroy abort the timer and invalidate obsolete worker responses. Failures clear the timer and offer Retry. Duplicate Retry/Rematch clicks cannot restart a pending turn.
+
 ## Boundaries and replacing the AI
 
 - `rules.js`: legal moves, alternating turns, freestyle wins/draws. No AI dependency.

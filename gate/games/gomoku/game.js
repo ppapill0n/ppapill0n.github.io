@@ -2,12 +2,28 @@ import { symbolDefinitions } from '../../common/slot-symbols.js';
 import { createMatch, HUMAN, PANDA, SIZE, legalMove } from './rules.js';
 import { createWorkerEngine } from './engine-client.js';
 
+// Presentation pacing runs alongside the worker, not after it. A slow valid
+// response still wins over the timer; cancellation always removes the timer.
+function thinkingDelay(signal, random) {
+  return new Promise((resolve, reject) => {
+    const finish = () => { signal.removeEventListener('abort', cancel); resolve(); };
+    const timer = setTimeout(finish, 500 + Math.floor(random() * 501));
+    function cancel() {
+      clearTimeout(timer); signal.removeEventListener('abort', cancel);
+      reject(new DOMException('Thinking cancelled', 'AbortError'));
+    }
+    signal.addEventListener('abort', cancel, { once:true });
+    if (signal.aborted) cancel();
+  });
+}
+
 export function createGomokuGame(root, changed, _enter, options = {}) {
   const engine = options.engine ?? createWorkerEngine();
+  const random = options.random ?? Math.random;
   const humanFirst = options.humanFirst ?? false;
   const events = new AbortController();
   let match, pending = null, epoch = 0, destroyed = false, suspended = false, failed = false, focusIndex = 112;
-  root.innerHTML = `${symbolDefinitions}<div class="gomoku-heading"><span id="gomoku-status"></span><span class="gomoku-players" aria-hidden="true"><svg><use href="#slot-nokyong"/></svg><span>vs</span><svg><use href="#slot-panda"/></svg></span></div><p id="gomoku-help" class="sr-only">You are green Nokyong and move ${humanFirst ? 'first' : 'second'}. Place five or more stones in a row to enter. There are no forbidden moves. Tap an empty intersection, or use arrow keys and Enter. Only your victory unlocks Enter.</p><div class="gomoku-board" role="grid" aria-label="Gomoku board" aria-rowcount="15" aria-colcount="15" aria-describedby="gomoku-help"><svg class="gomoku-lines" viewBox="0 0 450 450" aria-hidden="true">${Array.from({length:15},(_,i)=>`<path d="M15 ${15+i*30}H435 M${15+i*30} 15V435"/>`).join('')}${[3,7,11].flatMap(r=>[3,7,11].map(c=>`<circle cx="${15+c*30}" cy="${15+r*30}" r="2.5"/>`)).join('')}</svg>${Array.from({length:15},(_,r)=>`<div role="row">${Array.from({length:15},(_,c)=>`<button type="button" class="gomoku-cell" role="gridcell" data-index="${r*15+c}" aria-rowindex="${r+1}" aria-colindex="${c+1}" tabindex="${r*15+c===112?0:-1}"></button>`).join('')}</div>`).join('')}</div><div class="gomoku-rematch"><button id="rematch" type="button" hidden>Rematch</button></div>`;
+  root.innerHTML = `${symbolDefinitions}<div class="gomoku-heading"><span id="gomoku-status" class="sr-only"></span><span class="gomoku-players" aria-hidden="true"><svg><use href="#slot-nokyong"/></svg><span>vs</span><svg><use href="#slot-panda"/></svg></span></div><p id="gomoku-help" class="sr-only">You are green Nokyong and move ${humanFirst ? 'first' : 'second'}. Place five or more stones in a row to enter. There are no forbidden moves. Tap an empty intersection, or use arrow keys and Enter. Only your victory unlocks Enter.</p><div class="gomoku-board" role="grid" aria-label="Gomoku board" aria-rowcount="15" aria-colcount="15" aria-describedby="gomoku-help"><svg class="gomoku-lines" viewBox="0 0 450 450" aria-hidden="true">${Array.from({length:15},(_,i)=>`<path d="M15 ${15+i*30}H435 M${15+i*30} 15V435"/>`).join('')}${[3,7,11].flatMap(r=>[3,7,11].map(c=>`<circle cx="${15+c*30}" cy="${15+r*30}" r="2.5"/>`)).join('')}</svg>${Array.from({length:15},(_,r)=>`<div role="row">${Array.from({length:15},(_,c)=>`<button type="button" class="gomoku-cell" role="gridcell" data-index="${r*15+c}" aria-rowindex="${r+1}" aria-colindex="${c+1}" tabindex="${r*15+c===112?0:-1}"></button>`).join('')}</div>`).join('')}</div><div class="gomoku-rematch"><button id="rematch" type="button" hidden>Rematch</button></div>`;
   const cells = [...root.querySelectorAll('.gomoku-cell')], board = root.querySelector('.gomoku-board'), message = root.querySelector('#gomoku-status'), rematch = root.querySelector('#rematch');
   const listen = (element, name, fn) => element.addEventListener(name, fn, { signal: events.signal });
   function getState() { return { outcome: match?.outcome ?? null, stopped: !pending && !suspended && !document.hidden && !failed }; }
@@ -41,14 +57,17 @@ export function createGomokuGame(root, changed, _enter, options = {}) {
     const id = ++epoch, controller = new AbortController(); pending = controller;
     paint();
     try {
-      const index = await engine.findMove(match.board, PANDA, { signal:controller.signal });
+      const [index] = await Promise.all([
+        engine.findMove(match.board, PANDA, { signal:controller.signal }),
+        thinkingDelay(controller.signal, random)
+      ]);
       if (destroyed || epoch !== id || pending !== controller) return;
       pending = null;
       if (!legalMove(match.board, index) || !match.play(index, PANDA)) throw new Error('Invalid engine move');
       paint();
     } catch (error) {
       if (destroyed || epoch !== id || controller.signal.aborted) return;
-      pending = null; failed = true; paint();
+      pending = null; failed = true; controller.abort(); paint();
     }
   }
   function play(index) {
@@ -78,7 +97,7 @@ export function createGomokuGame(root, changed, _enter, options = {}) {
     cells.forEach((cell,i) => cell.tabIndex = i === focusIndex ? 0 : -1);
     paint(); if (!humanFirst) think();
   }
-  listen(rematch, 'click', () => { if (failed) { failed = false; think(); } else reset(); });
+  listen(rematch, 'click', () => { if (failed) { failed = false; think(); } else if (match.outcome) reset(); });
   function suspend() { if (destroyed) return; suspended = true; cancelSearch(); paint(); }
   function resume() { if (destroyed || document.hidden) return; suspended = false; paint(); if (match?.turn === PANDA && !match.outcome && !failed) think(); }
   listen(window, 'blur', suspend); listen(window, 'pagehide', suspend);

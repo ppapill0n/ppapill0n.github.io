@@ -1,6 +1,7 @@
 // Optional DOM lifecycle suite: install happy-dom, or set HAPPY_DOM_MODULE to its
 // entry point. This does not substitute for layout, real browser or phone QA.
 import assert from 'node:assert/strict';
+import { installFakeClock } from './fake-clock.mjs';
 const { Window } = await import(process.env.HAPPY_DOM_MODULE || 'happy-dom');
 import { createGomokuGame } from '../gate/games/gomoku/game.js';
 import { canEnter } from '../gate/common/engine.js';
@@ -8,7 +9,8 @@ import { enterPersonal } from '../gate/common/entry.js';
 import { chooseMove } from '../gate/games/gomoku/ai.js';
 const window=new Window({url:'http://localhost/gate/'});
 Object.assign(globalThis,{window,document:window.document,sessionStorage:window.sessionStorage,AbortController:window.AbortController});
-const tick=()=>new Promise(resolve=>setImmediate(resolve));
+const clock=installFakeClock();
+const tick=()=>{clock.advance(1000);return new Promise(resolve=>setImmediate(resolve));};
 const rules={humanVictory:true,requireStopped:true};
 function fixture({humanFirst=false,moves=[],pending=false}={}) {
  const root=document.createElement('div');document.body.append(root);let state,requests=[],destroyed=0;
@@ -17,7 +19,7 @@ function fixture({humanFirst=false,moves=[],pending=false}={}) {
  return {root,game,requests,get state(){return state;},get destroyed(){return destroyed;},click(index){root.querySelector(`[data-index="${index}"]`).click();},close(){game.destroy();root.remove();}};
 }
 // Human second: opening locks input, settles into one Panda stone.
-const second=fixture({pending:true});assert.equal(second.requests.length,1);assert.equal(second.requests[0].player,2);assert.equal(second.root.dataset.phase,'thinking');second.click(113);assert.equal(second.root.querySelectorAll('[data-stone="1"]').length,0);second.requests[0].resolve(112);await tick();assert.equal(second.root.dataset.phase,'human');assert.equal(second.root.querySelectorAll('[data-stone="2"]').length,1);assert.ok(!canEnter(undefined,second.state,rules));
+const second=fixture({pending:true});assert.ok(second.root.querySelector('#gomoku-status').classList.contains('sr-only'));assert.equal(second.root.querySelector('#gomoku-help').className,'sr-only');assert.equal(second.requests.length,1);assert.equal(second.requests[0].player,2);assert.equal(second.root.dataset.phase,'thinking');second.click(113);assert.equal(second.root.querySelectorAll('[data-stone="1"]').length,0);second.requests[0].resolve(112);await tick();assert.equal(second.root.dataset.phase,'human');assert.equal(second.root.querySelectorAll('[data-stone="2"]').length,1);assert.ok(!canEnter(undefined,second.state,rules));
 second.click(113);second.click(114);second.click(113);assert.equal(second.root.querySelectorAll('[data-stone="1"]').length,1);const old=second.requests.at(-1);second.game.reset();assert.ok(old.signal.aborted);old.resolve(20);await tick();assert.equal(second.root.querySelectorAll('[data-stone="1"]').length,0);assert.equal(second.root.querySelectorAll('[data-stone="2"]').length,0);second.requests.at(-1).resolve(112);await tick();assert.equal(second.root.querySelectorAll('[data-stone="2"]').length,1);
 // Blur/hidden interruption cancels the old request and resumes a fresh one.
 second.click(114);const interrupted=second.requests.at(-1);window.dispatchEvent(new window.Event('blur'));assert.ok(interrupted.signal.aborted);assert.equal(second.root.dataset.phase,'paused');interrupted.resolve(40);await tick();assert.equal(second.root.querySelectorAll('[data-stone="2"]').length,1);window.dispatchEvent(new window.Event('focus'));assert.equal(second.root.dataset.phase,'thinking');second.requests.at(-1).resolve(97);await tick();assert.equal(second.root.dataset.phase,'human');
@@ -31,4 +33,5 @@ const groups=[[],[],[]];for(let r=0;r<15;r++)for(let c=0;c<15;c++)groups[(r+2*c)
 // Bad engine output is locked, retry can recover, destroy rejects stale output.
 const invalid=fixture({pending:true});invalid.requests[0].resolve(-1);await tick();assert.equal(invalid.root.dataset.phase,'error');assert.ok(!canEnter(undefined,invalid.state,rules));assert.equal(invalid.root.querySelector('#rematch').textContent,'Retry');invalid.root.querySelector('#rematch').click();invalid.requests.at(-1).resolve(112);await tick();assert.equal(invalid.root.dataset.phase,'human');invalid.click(113);const late=invalid.requests.at(-1);invalid.close();assert.ok(late.signal.aborted);late.resolve(114);await tick();assert.equal(invalid.root.querySelectorAll('[data-stone="2"]').length,1);
 console.log('PASS independent DOM: second-player opening, duplicate/occupied clicks, reset cancellation, obsolete responses, pause/resume, keyboard focus, human win, explicit one-hour entry, loss/draw/rematch, engine failure/retry, destroy. No layout/browser/physical-device claim.');
+clock.restore();
 await window.happyDOM.close();
