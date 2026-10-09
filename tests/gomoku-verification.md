@@ -2,11 +2,15 @@
 
 ## Status
 
-- Passed: `node --test tests/*.test.mjs`, all existing pure game/session tests plus Gomoku rules, actual Node Worker protocol, fake adapter, controller lifecycle, evaluator, directory-layout and selector tests.
+- Passed: `node --test tests/*.test.mjs`, 64 tests including all existing pure game/session tests plus Gomoku rules, actual Node Worker protocol, fake adapter, controller lifecycle, evaluator, directory-layout and selector tests.
 - Passed: six full, legal, seeded game replays with `node tests/gomoku-winnability.mjs --verify`.
 - Passed: independent DOM implementation (happy-dom 20.0.11) with `HAPPY_DOM_MODULE=<installed happy-dom entry> node tests/gomoku-dom.mjs`: second-player opening, duplicate and occupied clicks, obsolete request/reset, blur/focus, keyboard focus, win/loss/draw/rematch, illegal engine response/retry, destruction and explicit one-hour entry.
-- Not yet run: actual rendered browser regression suites. Chromium cannot create its required Unix socket in the cloud shell (`Operation not permitted`), including an approved escalation retry. The provided cloud browser cannot reach the isolated shell localhost preview; its URL policy rejects local file previews. These restrictions were respected. DOM tests are not visual or real-browser tests.
-- Not tested: physical phone hardware, Safari/WebKit, real-device compute/network/energy use.
+- Passed on the deployed HTTPS site in the provided cloud Chromium browser: rendered desktop board and reused artwork, Panda-first opening and genuine Worker replies; loss stays locked; two complete 225-stone draws stay locked; Rematch after loss/draw; all seven games render across 26 actual global Resets with no current-game repeat.
+- Passed: a deterministic 18-ply second-player browser replay using the unchanged production UI/rules/Worker and only saved RNG seeds. Every rendered board matched the legal fixture. Enter stayed disabled until the genuine human five, then navigated to `/personal/`; same-tab reload stayed authorized. The temporary unlinked test HTML was removed after verification. This is a seeded browser test, not an unseeded human victory or a measured human win rate.
+- Passed: a rendered 393-CSS-pixel responsive-width check using ordinary browser zoom, with no horizontal overflow and a legal move/reply. This is narrow-width desktop rendering, not mobile-device/touch emulation.
+- No site-origin console errors observed; the browser's own extension emitted metadata errors.
+- Not run: the full standalone Playwright browser regression suites. Chromium cannot create its required Unix socket in the cloud shell (`Operation not permitted`), including an approved escalation retry. The supplied browser cannot reach the isolated localhost preview and rejects local file URLs. Its DevTools policy also blocks device emulation. These restrictions were respected; the targeted live-browser checks above were performed separately.
+- Not tested: physical phone hardware, actual/emulated touch events, Safari/WebKit, real-device compute/network/energy use. Timing and one-hour expiry edge cases are covered in Node/DOM rather than waiting an hour in the live browser.
 
 ## Bounded work and payload
 
@@ -59,3 +63,9 @@ At 1,000,000 draws, seed 20261009, uniform exclusion → weak recency: A-B-A 16.
 ## Preserved behavior
 
 The six earlier games' algorithms are unchanged apart from import/artwork paths and 2×2/3×3 entry wrappers. Academic HTML/CSS/JS are untouched. Entry still requires an explicit successful Enter action and writes the same verified one-hour sessionStorage record; no automatic entry on victory. The public static gate remains a same-tab convenience game, not authentication.
+
+## Live publication evidence
+
+Implementation commit: `8ef71f7e05c4004ef7a4093e4ebf90503c3dc8c1`; reviewed tree `2c0fca1b6022b27ef1a2414564bb1020c8b42078` exactly matched the local implementation tree. GitHub Pages [run 37891894069](https://github.com/ppapill0n/ppapill0n.github.io/actions/runs/37891894069) completed successfully. The temporary deterministic harness was introduced by test-only commit `11737a514ea972070fee7db4dd96d3d66b4c7384`, verified after its successful Pages deployment, and removed in the documentation cleanup. Production game code did not change during that test.
+
+Observed live reset sequence: gomoku → cannon → soda → cannon → soda → cube2 → cube → soda → cube → dial → gomoku → cannon → cube → dial → cube → cannon → cube2 → gomoku → dial → cube2 → gomoku → cannon → gomoku → dial → cube → cannon → slots. The early cannon/soda alternation illustrates that the mild selector still allows natural clustering. This small sample is a smoke test, not an estimate of probabilities.
