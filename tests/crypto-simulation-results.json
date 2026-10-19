@@ -1,0 +1,246 @@
+{
+  "seedRange": [
+    1001,
+    2000
+  ],
+  "horizonSeconds": 600,
+  "decisionSeconds": 2,
+  "entryAllocation": 1,
+  "config": {
+    "startingCash": 10000,
+    "target": 50000,
+    "feeRate": 0.0005,
+    "minimumOrder": 1,
+    "leverage": [
+      1,
+      2,
+      5,
+      10,
+      20
+    ],
+    "allocations": [
+      0.25,
+      0.5,
+      0.75,
+      1
+    ],
+    "defaultLeverage": 5,
+    "tickMs": 100,
+    "candleMs": 2000,
+    "historyCandles": 50,
+    "visibleCandles": 60,
+    "startingPrice": 100,
+    "meanRegimeSeconds": 60,
+    "trendDrift": 0.0032,
+    "driftResponseSeconds": 4,
+    "rangeReversion": 0.055,
+    "calmSigma": 0.0042,
+    "volatileSigma": 0.0071,
+    "volatilityResponseSeconds": 15,
+    "volatileProbability": 0.25,
+    "meanJumpSeconds": 110,
+    "jumpSigma": 0.009,
+    "catchupChunkTicks": 1000,
+    "catchupNoticeMs": 1000
+  },
+  "strategies": {
+    "random-5x": {
+      "runs": 1000,
+      "success": 25,
+      "ruin": 0,
+      "censored": 975,
+      "successPercent": 2.5,
+      "ruinPercent": 0,
+      "depletedBelow1000Percent": 13,
+      "successfulSeconds": {
+        "p10": 170,
+        "p25": 236,
+        "median": 340,
+        "p75": 464,
+        "p90": 532
+      },
+      "successesWithin120to240Seconds": 6,
+      "successBy240Percent": 0.7,
+      "allRunTerminalEquity": {
+        "p10": 782.81,
+        "median": 3708.48
+      }
+    },
+    "trend-5x": {
+      "runs": 1000,
+      "success": 927,
+      "ruin": 0,
+      "censored": 73,
+      "successPercent": 92.7,
+      "ruinPercent": 0,
+      "depletedBelow1000Percent": 0,
+      "successfulSeconds": {
+        "p10": 122,
+        "p25": 158,
+        "median": 230,
+        "p75": 344,
+        "p90": 474
+      },
+      "successesWithin120to240Seconds": 419,
+      "successBy240Percent": 49.6,
+      "allRunTerminalEquity": {
+        "p10": 50054.6,
+        "median": 50833.09
+      }
+    },
+    "range-5x": {
+      "runs": 1000,
+      "success": 0,
+      "ruin": 14,
+      "censored": 986,
+      "successPercent": 0,
+      "ruinPercent": 1.4,
+      "depletedBelow1000Percent": 94.5,
+      "successfulSeconds": {
+        "p10": null,
+        "p25": null,
+        "median": null,
+        "p75": null,
+        "p90": null
+      },
+      "successesWithin120to240Seconds": 0,
+      "successBy240Percent": 0,
+      "allRunTerminalEquity": {
+        "p10": 5.54,
+        "median": 57.76
+      }
+    },
+    "random-10x": {
+      "runs": 1000,
+      "success": 108,
+      "ruin": 33,
+      "censored": 859,
+      "successPercent": 10.8,
+      "ruinPercent": 3.3,
+      "depletedBelow1000Percent": 65.3,
+      "successfulSeconds": {
+        "p10": 74,
+        "p25": 118,
+        "median": 206,
+        "p75": 330,
+        "p90": 466
+      },
+      "successesWithin120to240Seconds": 37,
+      "successBy240Percent": 6.4,
+      "allRunTerminalEquity": {
+        "p10": 7.23,
+        "median": 309.96
+      }
+    },
+    "trend-10x": {
+      "runs": 1000,
+      "success": 964,
+      "ruin": 0,
+      "censored": 36,
+      "successPercent": 96.4,
+      "ruinPercent": 0,
+      "depletedBelow1000Percent": 0.3,
+      "successfulSeconds": {
+        "p10": 64,
+        "p25": 80,
+        "median": 128,
+        "p75": 218,
+        "p90": 378
+      },
+      "successesWithin120to240Seconds": 292,
+      "successBy240Percent": 74.3,
+      "allRunTerminalEquity": {
+        "p10": 50232.09,
+        "median": 51800.12
+      }
+    },
+    "range-10x": {
+      "runs": 1000,
+      "success": 4,
+      "ruin": 593,
+      "censored": 403,
+      "successPercent": 0.4,
+      "ruinPercent": 59.3,
+      "depletedBelow1000Percent": 98.6,
+      "successfulSeconds": {
+        "p10": 170,
+        "p25": 170,
+        "median": 176,
+        "p75": 196,
+        "p90": 196
+      },
+      "successesWithin120to240Seconds": 3,
+      "successBy240Percent": 0.3,
+      "allRunTerminalEquity": {
+        "p10": 0.73,
+        "median": 0.94
+      }
+    },
+    "random-20x": {
+      "runs": 1000,
+      "success": 137,
+      "ruin": 845,
+      "censored": 18,
+      "successPercent": 13.7,
+      "ruinPercent": 84.5,
+      "depletedBelow1000Percent": 86,
+      "successfulSeconds": {
+        "p10": 30,
+        "p25": 40,
+        "median": 62,
+        "p75": 118,
+        "p90": 202
+      },
+      "successesWithin120to240Seconds": 22,
+      "successBy240Percent": 12.6,
+      "allRunTerminalEquity": {
+        "p10": 0,
+        "median": 0
+      }
+    },
+    "trend-20x": {
+      "runs": 1000,
+      "success": 968,
+      "ruin": 3,
+      "censored": 29,
+      "successPercent": 96.8,
+      "ruinPercent": 0.3,
+      "depletedBelow1000Percent": 1.6,
+      "successfulSeconds": {
+        "p10": 34,
+        "p25": 44,
+        "median": 76,
+        "p75": 158,
+        "p90": 322
+      },
+      "successesWithin120to240Seconds": 180,
+      "successBy240Percent": 82.5,
+      "allRunTerminalEquity": {
+        "p10": 50281.43,
+        "median": 52772.27
+      }
+    },
+    "range-20x": {
+      "runs": 1000,
+      "success": 11,
+      "ruin": 959,
+      "censored": 30,
+      "successPercent": 1.1,
+      "ruinPercent": 95.9,
+      "depletedBelow1000Percent": 98.8,
+      "successfulSeconds": {
+        "p10": 98,
+        "p25": 106,
+        "median": 130,
+        "p75": 204,
+        "p90": 342
+      },
+      "successesWithin120to240Seconds": 5,
+      "successBy240Percent": 0.9,
+      "allRunTerminalEquity": {
+        "p10": 0.58,
+        "median": 0.78
+      }
+    }
+  }
+}

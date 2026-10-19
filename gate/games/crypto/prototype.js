@@ -1,0 +1,22 @@
+import { createCryptoGame } from './game.js';
+import { CONFIG } from './config.js';
+import { enterPersonal } from '../../common/entry.js';
+
+const root = document.querySelector('#game');
+const game = createCryptoGame(root, () => {}, () => {
+  // Only this explicit action issues the shared pass. Failed storage never charges.
+  let result;
+  const paid = game.pay(state => {
+    result = enterPersonal(CONFIG.target, state, undefined, () => {});
+    return result === 'entered';
+  });
+  if (paid) window.location.assign('../../../personal/');
+  if (result === 'unavailable') game.message('Session storage is unavailable. Enable it to enter; your cash has not been spent.');
+});
+document.querySelector('#restart').addEventListener('click', () => game.reset());
+// A seed URL is useful for a reproducible review. Restart always draws a new path.
+const raw = new URLSearchParams(location.search).get('seed');
+const seed = raw !== null && /^\d{1,10}$/.test(raw) && Number(raw) <= 0xFFFFFFFF ? Number(raw) : undefined;
+game.reset({ seed });
+// The adapter reconciles elapsed time after background throttling / bfcache.
+// Reload starts a new run; this prototype does not persist an account.
