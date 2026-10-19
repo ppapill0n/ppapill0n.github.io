@@ -2,7 +2,7 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
 const base=process.env.SITE_URL||'http://127.0.0.1:8765';const KEY='personal-gate-pass',TTL=3600000;
 (async()=>{
   const browser=await chromium.launch({executablePath:process.env.CHROMIUM||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});const errors=[];
-  async function open(context){const p=await (context||await browser.newContext()).newPage();p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(()=>{let n=0;Math.random=()=>n++===0?3.5/7:0;});return p;}
+  async function open(context){const p=await (context||await browser.newContext()).newPage();p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(()=>{let n=0;Math.random=()=>n++===0?3.5/8:0;});return p;}
   const raw=p=>p.evaluate(key=>sessionStorage.getItem(key),KEY);
   async function win(p){await p.goto(base+'/gate/');await p.waitForFunction(()=>!document.querySelector('#enter').disabled);assert.equal(await raw(p),null);await p.locator('#enter').click();await p.waitForURL('**/personal/');await p.waitForFunction(()=>!document.documentElement.hasAttribute('data-private-pending'));}
   const p=await open();
@@ -36,7 +36,7 @@ const base=process.env.SITE_URL||'http://127.0.0.1:8765';const KEY='personal-gat
   const adapters=await open();await adapters.goto(base+'/gate/');const results=await adapters.evaluate(async()=>{
     const {createRegistry}=await import('/gate/registry.js'),{enterPersonal}=await import('/gate/common/entry.js'),{clearPass,readPass,PASS_KEY}=await import('/gate/common/session-pass.js'),{solvedCube}=await import('/gate/common/cube-engine.js'),{trajectory,landingCode}=await import('/gate/games/cannon/physics.js');
     const results=[];
-    for(const definition of createRegistry(()=>0).filter(game=>game.id!=='gomoku')){
+    for(const definition of createRegistry(()=>0).filter(game=>!['gomoku','crypto'].includes(game.id))){
       clearPass();let time=0,navigations=0,result=null;const host=document.createElement('main');document.body.append(host);
       const challenge=definition.id==='dial'?{target:42,start:42}:definition.cube?{target:1,stickers:solvedCube(definition.id==='cube2'?2:3)}:definition.id==='cannon'?{target:landingCode(trajectory(45,.5).distance)}:definition.id==='slots'?{target:777}:{target:0};
       const game=definition.create(host,()=>{},()=>{},()=>time,()=>0);game.reset(challenge);

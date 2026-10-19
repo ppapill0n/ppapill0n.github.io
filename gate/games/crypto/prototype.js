@@ -1,12 +1,12 @@
-import { createCryptoGame } from './game.js?v=20261019-sweeps';
+import { createCryptoGame } from './game.js?v=20261019-orders';
 import { CONFIG } from './config.js?v=20261019-sweeps';
 import { enterPersonal } from '../../common/entry.js';
 
 const root = document.querySelector('#game');
-const game = createCryptoGame(root, () => {}, () => {
+const game = createCryptoGame(root, () => {}, async () => {
   // Only this explicit action issues the shared pass. Failed storage never charges.
   let result;
-  const paid = game.pay(state => {
+  const paid = await game.pay(state => {
     result = enterPersonal(CONFIG.target, state, undefined, () => {});
     return result === 'entered';
   });

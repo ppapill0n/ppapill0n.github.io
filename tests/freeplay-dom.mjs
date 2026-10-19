@@ -17,7 +17,7 @@ class FakeWorker {
   postMessage(data){this.sent=data;}
   terminate(){this.terminated=true;}
 }
-Object.assign(globalThis,{window,document,sessionStorage:window.sessionStorage,localStorage:window.localStorage,AbortController:window.AbortController,Worker:FakeWorker,
+Object.assign(globalThis,{window,document,sessionStorage:window.sessionStorage,localStorage:window.localStorage,AbortController:window.AbortController,Worker:FakeWorker,ResizeObserver:window.ResizeObserver,
   requestAnimationFrame:fn=>{frames.set(++frameId,fn);return frameId;},cancelAnimationFrame:id=>frames.delete(id)});
 const canvasContext=new Proxy({}, {get:(object,key)=>object[key]??(()=>{}),set:(object,key,value)=>{object[key]=value;return true;}});
 window.HTMLCanvasElement.prototype.getContext=()=>canvasContext;
@@ -30,10 +30,10 @@ function tickFrame(now=performance.now()+16){const batch=[...frames.values()];fr
 const passNow=Date.now();assert.ok(issuePass(passNow));const original=sessionStorage.getItem(PASS_KEY);
 await import(`../play/play.js?dom=${Date.now()}`);
 assert.ok(!document.documentElement.hasAttribute('data-private-pending'));
-assert.equal(document.querySelectorAll('[data-select-game]').length,7);assert.equal(workers.length,0);assert.equal(frames.size,0);
+assert.equal(document.querySelectorAll('[data-select-game]').length,8);assert.equal(workers.length,0);assert.equal(frames.size,0);
 assert.equal(document.querySelector('#enter'),null);
 // Each image and name is one accessible link, with no selection descriptions.
-const gameNames = ['Inertia dial','Cannon','Lucky reels','Soda pour','3 × 3 cube','2 × 2 cube','Gomoku'];
+const gameNames = ['Inertia dial','Cannon','Lucky reels','Soda pour','3 × 3 cube','2 × 2 cube','Gomoku','Paper market'];
 const cards = [...document.querySelectorAll('[data-select-game]')];
 assert.equal(document.querySelector('#hub-title').className, 'sr-only');
 assert.equal(document.querySelector('#selection p, #selection small'), null);
@@ -58,7 +58,7 @@ const selection=()=>document.querySelector('#selection');
 const choose=id=>document.querySelector(`[data-select-game="${id}"]`).click();
 const back=()=>document.querySelector('#all-games').click();
 const root=()=>document.querySelector('#game');
-for (const id of ['dial','cannon','slots','soda','cube','cube2','gomoku']) {
+for (const id of ['dial','cannon','slots','soda','cube','cube2','gomoku','crypto']) {
   choose(id);assert.equal(root().dataset.game,id);assert.equal(window.location.search,`?game=${id}`);assert.ok(selection().hidden);
   assert.doesNotMatch(root().textContent,/unlock|activate Enter|to enter/);
   tickFrame();assert.equal(sessionStorage.getItem(PASS_KEY),original);
@@ -108,4 +108,4 @@ for (const id of ['dial','cannon']) {
   assert.equal(denied,1);assert.equal(host.childElementCount,0);assert.equal(frames.size,0);assert.doesNotThrow(()=>tickFrame());host.remove();
 }
 window.dispatchEvent(new window.Event('pagehide'));clock.restore();await window.happyDOM.close();
-console.log('PASS actual seven adapters in freeplay DOM: create/restart/switch, frame cleanup, input scoping, no Enter/pass renewal, localization without restart, lazy/cancelled Gomoku, stale responses, invalid routing, pagehide/pageshow, expiry inside real dial/cannon renders. Canvas drawing is stubbed; no layout/browser/device claim.');
+console.log('PASS actual eight adapters in freeplay DOM: create/restart/switch, frame cleanup, input scoping, no Enter/pass renewal, localization without restart, lazy/cancelled Gomoku, stale responses, invalid routing, pagehide/pageshow, expiry inside real dial/cannon renders. Canvas drawing is stubbed; no layout/browser/device claim.');

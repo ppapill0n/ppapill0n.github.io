@@ -220,9 +220,10 @@ test('player positions never influence market, and a new session resets all acco
   assert.equal(reset.snapshot().elapsed, 0); assert.equal(reset.snapshot().account.cash, 10000);
 });
 
-test('prototype stays out of random selection and shares completion eligibility', async () => {
+test('crypto is registered with payment eligibility and preserves the standalone completion route', async () => {
   const registry = await readFile(new URL('../gate/registry.js', import.meta.url), 'utf8');
-  assert.doesNotMatch(registry, /crypto/);
+  assert.match(registry, /id:'crypto'/);
+  assert.match(registry, /payment:true/);
   assert.equal(canEnter(CONFIG.target, { value: CONFIG.target, stopped: true }), true);
   assert.equal(canEnter(CONFIG.target, { value: CONFIG.target, stopped: false }), false);
   const shell = await readFile(new URL('../gate/games/crypto/prototype.js', import.meta.url), 'utf8');

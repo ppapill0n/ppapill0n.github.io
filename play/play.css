@@ -29,6 +29,7 @@ body.play-page { display:flex; flex-direction:column; min-height:100svh; }
 .play-page .dial-mode #game-area { width:min(300px,100%); }
 .play-page .cannon-mode #game-area { width:min(720px,100%); }
 .play-page .gomoku-mode #game-area { width:min(500px,100%); }
+.play-page .crypto-mode #game-area { width:min(780px,100%); }
 .play-page .target-row { justify-content:flex-start; }
 .play-page #target { font-size:1.5rem; letter-spacing:.04em; }
 .play-state { min-height:1.5em; margin:.5rem 0 0; text-align:center; color:var(--green); font-size:.8rem; }

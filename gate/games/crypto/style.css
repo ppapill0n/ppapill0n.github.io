@@ -1,89 +1,82 @@
-:root { color-scheme:light; --paper:#fcfcf8; --ink:#17251e; --green:#1d5c43; --muted:#647068; --line:#d8e1d8; --soft:#e8f0e9; --red:#99564c; }
-* { box-sizing:border-box; }
-body { margin:0; color:var(--ink); background:var(--paper); font:400 15px/1.5 system-ui,sans-serif; }
-main { width:min(780px,calc(100% - 48px)); margin:0 auto; padding:16px 0; }
-button,a { -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
-button { min-height:44px; font:inherit; color:inherit; cursor:pointer; }
-button:disabled { cursor:default; opacity:.42; }
-button:focus-visible,a:focus-visible { outline:2px solid var(--green); outline-offset:4px; }
-[hidden] { display:none!important; }
-.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
-.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-.back { display:grid; place-items:center; width:44px; height:44px; margin-left:-12px; font-size:24px; text-decoration:none; color:var(--green); border-radius:50%; }
-.back:hover { background:var(--soft); }
-#restart { display:grid; place-items:center; width:44px; border:1px solid #bfd0c4; background:transparent; border-radius:50%; padding:0; font-size:17px; color:var(--green); }
-.balance { display:flex; align-items:center; justify-content:space-between; }
-.label { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
-#equity { font-size:32px; font-weight:500; letter-spacing:-1px; line-height:1.15; font-variant-numeric:tabular-nums; }
-progress { display:block; width:100%; height:3px; margin:12px 0 16px; border:0; border-radius:8px; overflow:hidden; color:var(--green); background:var(--soft); }
-progress::-webkit-progress-bar { background:var(--soft); } progress::-webkit-progress-value { background:var(--green); } progress::-moz-progress-bar { background:var(--green); }
-.market { border:1px solid var(--line); border-radius:12px; overflow:hidden; }
-.market-heading { display:flex; align-items:center; justify-content:space-between; padding:14px 18px 0; }
-.market-heading strong { font-weight:600; font-size:14px; }
-.market-heading strong span { font-weight:400; color:var(--muted); font-size:11px; }
-.market-meta { display:block; font-size:10px; color:var(--muted); margin-top:2px; }
-.quote { text-align:right; font-variant-numeric:tabular-nums; }
-.quote strong { display:block; font-size:20px; line-height:1.2; font-weight:500; }
-#price-change { font-size:10px; }
-.positive { color:var(--green); } .negative { color:var(--red); }
-.chart-wrap { position:relative; margin:8px 4px 0; }
-#chart { display:block; width:100%; height:240px; overflow:hidden; }
-.grid-line { stroke:var(--line); stroke-width:.6; }
-.axis { fill:var(--muted); font:10px ui-monospace,monospace; }
-.candle path { stroke-width:1; }
-.candle.up { fill:#42775c; stroke:#42775c; } .candle.down { fill:#b47b6e; stroke:#b47b6e; }
-.marker-line { fill:none; stroke-width:1; stroke-dasharray:3 4; }
-.price-marker .marker-line { stroke:var(--green); } .price-marker rect { fill:var(--green); } .price-marker text { fill:white; }
-.entry-marker .marker-line { stroke:#6b7e91; } .entry-marker rect { fill:#edf0f3; } .entry-marker text { fill:#445a6f; }
-.liquidation-marker .marker-line { stroke:var(--red); } .liquidation-marker rect { fill:#f5e8e2; } .liquidation-marker text { fill:#914e44; }
-.price-marker text,.entry-marker text,.liquidation-marker text { font:10px ui-monospace,monospace; }
-.chart-footer { display:flex; align-items:center; justify-content:space-between; min-height:36px; padding:0 14px; color:var(--muted); font-size:10px; }
-.live-dot { display:inline-block; width:5px; height:5px; background:#5b8568; border-radius:50%; margin-right:6px; }
-[data-phase="catching-up"] .live-dot,[data-phase="bankrupt"] .live-dot { background:#9b9282; }
-#catchup-layer { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; background:#fcfcf8e8; border-radius:6px; text-align:center; padding:20px; }
-#catchup-layer strong { font-size:22px; font-weight:500; } #catchup-layer span { font-size:12px; color:var(--muted); }
-#retry { margin-top:10px; padding:0 24px; border:1px solid var(--green); border-radius:100px; color:var(--green); background:var(--soft); font-size:13px; }
-.position { padding:12px 0; border-bottom:1px solid var(--line); }
-.position-heading { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; font-size:12px; }
-.position-heading strong { font-weight:500; } #position-size { color:var(--muted); font-size:10px; font-variant-numeric:tabular-nums; }
-.account-stats { display:grid; grid-template-columns:1fr 1fr 1.2fr; gap:12px; }
-.account-stats > div:last-child { text-align:right; }
-.account-stats strong { font-size:13px; font-weight:500; font-variant-numeric:tabular-nums; white-space:nowrap; }
-.selectors { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:12px 0; }
-.mobile-selectors { display:none; }
-fieldset { min-width:0; margin:0; padding:0; border:0; }
-legend { font-size:11px; margin-bottom:8px; padding:0; }
-legend span { color:var(--muted); font-size:10px; }
-.segments { display:flex; padding:3px; border:1px solid var(--line); border-radius:8px; gap:2px; }
-.segments button { flex:1; min-width:0; border:0; background:none; border-radius:5px; font-size:12px; padding:0 4px; }
-.segments button[aria-pressed="true"] { color:var(--green); background:var(--soft); font-weight:600; }
-.segments button:disabled[aria-pressed="true"] { opacity:.8; }
-.trade-buttons { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-.trade-buttons button { border:1px solid var(--line); border-radius:8px; min-height:48px; font-size:14px; font-weight:500; background:transparent; }
-#long { color:var(--green); background:var(--soft); border-color:#c3d7c8; }
-#short { color:#884b42; background:#f4e9e3; border-color:#e4cec2; }
-.trade-buttons button:hover:not(:disabled),.segments button:hover:not(:disabled),#restart:hover { filter:brightness(.96); }
-#status:not(.sr-only) { margin:12px 0 0; font-size:12px; line-height:1.5; color:var(--green); text-align:center; }
-[data-phase="bankrupt"] #status { color:var(--red); }
-#pay { display:flex; align-items:center; justify-content:center; gap:18px; width:100%; margin-top:12px; border:1px solid var(--green); border-radius:100px; background:var(--green); color:white; min-height:48px; font-size:14px; }
-#pay:disabled { background:transparent; color:var(--green); opacity:.48; }
+.crypto-game { --paper:#fcfcf8; --ink:#17251e; --green:#1d5c43; --muted:#647068; --line:#d8e1d8; --soft:#e8f0e9; --red:#99564c; color:var(--ink); font:400 15px/1.5 system-ui,sans-serif; text-align:left; }
+.crypto-game * { box-sizing:border-box; }
+.crypto-game section { margin:0; }
+.crypto-game button { min-height:44px; font:inherit; color:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+.crypto-game button:disabled { cursor:default; opacity:.42; }
+.crypto-game button:focus-visible { outline:2px solid var(--green); outline-offset:4px; }
+.crypto-game [hidden] { display:none!important; }
+.crypto-game .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+:where(.crypto-game) .balance { display:flex; align-items:center; justify-content:space-between; }
+:where(.crypto-game) .label { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
+:where(.crypto-game) #equity { font-size:32px; font-weight:500; letter-spacing:-1px; line-height:1.15; font-variant-numeric:tabular-nums; }
+:where(.crypto-game) progress { display:block; width:100%; height:3px; margin:12px 0 16px; border:0; border-radius:8px; overflow:hidden; color:var(--green); background:var(--soft); }
+:where(.crypto-game) progress::-webkit-progress-bar { background:var(--soft); } :where(.crypto-game) progress::-webkit-progress-value { background:var(--green); } :where(.crypto-game) progress::-moz-progress-bar { background:var(--green); }
+:where(.crypto-game) .market { border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+:where(.crypto-game) .market-heading { display:flex; align-items:center; justify-content:space-between; padding:14px 18px 0; }
+:where(.crypto-game) .market-heading strong { font-weight:600; font-size:14px; }
+:where(.crypto-game) .market-heading strong span { font-weight:400; color:var(--muted); font-size:11px; }
+:where(.crypto-game) .market-meta { display:block; font-size:10px; color:var(--muted); margin-top:2px; }
+:where(.crypto-game) .quote { text-align:right; font-variant-numeric:tabular-nums; }
+:where(.crypto-game) .quote strong { display:block; font-size:20px; line-height:1.2; font-weight:500; }
+:where(.crypto-game) #price-change { font-size:10px; }
+:where(.crypto-game) .positive { color:var(--green); } :where(.crypto-game) .negative { color:var(--red); }
+:where(.crypto-game) .chart-wrap { position:relative; margin:8px 4px 0; }
+:where(.crypto-game) #chart { display:block; width:100%; height:240px; overflow:hidden; }
+:where(.crypto-game) .grid-line { stroke:var(--line); stroke-width:.6; }
+:where(.crypto-game) .axis { fill:var(--muted); font:10px ui-monospace,monospace; }
+:where(.crypto-game) .candle path { stroke-width:1; }
+:where(.crypto-game) .candle.up { fill:#42775c; stroke:#42775c; } :where(.crypto-game) .candle.down { fill:#b47b6e; stroke:#b47b6e; }
+:where(.crypto-game) .marker-line { fill:none; stroke-width:1; stroke-dasharray:3 4; }
+:where(.crypto-game) .price-marker .marker-line { stroke:var(--green); } :where(.crypto-game) .price-marker rect { fill:var(--green); } :where(.crypto-game) .price-marker text { fill:white; }
+:where(.crypto-game) .entry-marker .marker-line { stroke:#6b7e91; } :where(.crypto-game) .entry-marker rect { fill:#edf0f3; } :where(.crypto-game) .entry-marker text { fill:#445a6f; }
+:where(.crypto-game) .liquidation-marker .marker-line { stroke:var(--red); } :where(.crypto-game) .liquidation-marker rect { fill:#f5e8e2; } :where(.crypto-game) .liquidation-marker text { fill:#914e44; }
+:where(.crypto-game) .price-marker text,:where(.crypto-game) .entry-marker text,:where(.crypto-game) .liquidation-marker text { font:10px ui-monospace,monospace; }
+:where(.crypto-game) .chart-footer { display:flex; align-items:center; justify-content:space-between; min-height:36px; padding:0 14px; color:var(--muted); font-size:10px; }
+:where(.crypto-game) .live-dot { display:inline-block; width:5px; height:5px; background:#5b8568; border-radius:50%; margin-right:6px; }
+:where(.crypto-game)[data-phase="catching-up"] .live-dot,:where(.crypto-game)[data-phase="bankrupt"] .live-dot { background:#9b9282; }
+:where(.crypto-game) #catchup-layer { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; background:#fcfcf8e8; border-radius:6px; text-align:center; padding:20px; }
+:where(.crypto-game) #catchup-layer strong { font-size:22px; font-weight:500; } :where(.crypto-game) #catchup-layer span { font-size:12px; color:var(--muted); }
+:where(.crypto-game) #retry { margin-top:10px; padding:0 24px; border:1px solid var(--green); border-radius:100px; color:var(--green); background:var(--soft); font-size:13px; }
+:where(.crypto-game) .position { padding:12px 0; border-bottom:1px solid var(--line); }
+:where(.crypto-game) .position-heading { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; font-size:12px; }
+:where(.crypto-game) .position-heading strong { font-weight:500; } :where(.crypto-game) #position-size { color:var(--muted); font-size:10px; font-variant-numeric:tabular-nums; }
+:where(.crypto-game) .account-stats { display:grid; grid-template-columns:1fr 1fr 1.2fr; gap:12px; }
+:where(.crypto-game) .account-stats > div:last-child { text-align:right; }
+:where(.crypto-game) .account-stats strong { font-size:13px; font-weight:500; font-variant-numeric:tabular-nums; white-space:nowrap; }
+:where(.crypto-game) .selectors { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:12px 0; }
+:where(.crypto-game) .mobile-selectors { display:none; }
+:where(.crypto-game) fieldset { min-width:0; margin:0; padding:0; border:0; }
+:where(.crypto-game) legend { font-size:11px; margin-bottom:8px; padding:0; }
+:where(.crypto-game) legend span { color:var(--muted); font-size:10px; }
+:where(.crypto-game) .segments { display:flex; padding:3px; border:1px solid var(--line); border-radius:8px; gap:2px; }
+:where(.crypto-game) .segments button { flex:1; min-width:0; border:0; background:none; border-radius:5px; font-size:12px; padding:0 4px; }
+:where(.crypto-game) .segments button[aria-pressed="true"] { color:var(--green); background:var(--soft); font-weight:600; }
+:where(.crypto-game) .segments button:disabled[aria-pressed="true"] { opacity:.8; }
+:where(.crypto-game) .trade-buttons { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+:where(.crypto-game) .trade-buttons button { border:1px solid var(--line); border-radius:8px; min-height:48px; font-size:14px; font-weight:500; background:transparent; }
+:where(.crypto-game) #long { color:var(--green); background:var(--soft); border-color:#c3d7c8; }
+:where(.crypto-game) #short { color:#884b42; background:#f4e9e3; border-color:#e4cec2; }
+:where(.crypto-game) .trade-buttons button:hover:not(:disabled),:where(.crypto-game) .segments button:hover:not(:disabled),:where(.crypto-game) #restart:hover { filter:brightness(.96); }
+:where(.crypto-game) #status:not(.sr-only) { margin:12px 0 0; font-size:12px; line-height:1.5; color:var(--green); text-align:center; }
+:where(.crypto-game)[data-phase="bankrupt"] #status { color:var(--red); }
+:where(.crypto-game) #pay { display:flex; align-items:center; justify-content:center; gap:18px; width:100%; margin-top:12px; border:1px solid var(--green); border-radius:100px; background:var(--green); color:white; min-height:48px; font-size:14px; }
+:where(.crypto-game) #pay:disabled { background:transparent; color:var(--green); opacity:.48; }
 @media(max-width:550px) {
-  main { width:calc(100% - 28px); padding:12px 0; }
-  #equity { font-size:28px; } progress { margin-bottom:16px; }
-  .market-heading { padding:12px 12px 0; }
-  #chart { height:190px; } .chart-wrap { margin-inline:0; }
-  .position { padding:12px 0; } .account-stats { gap:8px; grid-template-columns:1fr 1fr; }
-  .account-stats > div:last-child { grid-column:1/-1; display:flex; justify-content:space-between; text-align:left; margin-top:2px; }
-  .account-stats > div:nth-child(2) { text-align:right; }
-  .account-stats > div:last-child strong { font-size:11px; }
-  .selectors { display:none; }
-  .mobile-selectors { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
-  .mobile-selectors label { color:var(--muted); font-size:11px; }
-  .mobile-selectors select { display:block; width:100%; height:44px; margin-top:4px; padding:0 10px; border:1px solid var(--line); border-radius:6px; background:var(--paper); color:var(--green); font:16px system-ui,sans-serif; }
-  .mobile-selectors select:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
-  .mobile-selectors select:disabled { opacity:.6; }
-  legend { margin-bottom:5px; } .segments { padding:2px; }
-  .trade-buttons { gap:8px; }
-  #status:not(.sr-only) { font-size:11px; }
+  :where(.crypto-game) #equity { font-size:28px; } :where(.crypto-game) progress { margin-bottom:16px; }
+  :where(.crypto-game) .market-heading { padding:12px 12px 0; }
+  :where(.crypto-game) #chart { height:190px; } :where(.crypto-game) .chart-wrap { margin-inline:0; }
+  :where(.crypto-game) .position { padding:12px 0; } :where(.crypto-game) .account-stats { gap:8px; grid-template-columns:1fr 1fr; }
+  :where(.crypto-game) .account-stats > div:last-child { grid-column:1/-1; display:flex; justify-content:space-between; text-align:left; margin-top:2px; }
+  :where(.crypto-game) .account-stats > div:nth-child(2) { text-align:right; }
+  :where(.crypto-game) .account-stats > div:last-child strong { font-size:11px; }
+  :where(.crypto-game) .selectors { display:none; }
+  :where(.crypto-game) .mobile-selectors { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
+  :where(.crypto-game) .mobile-selectors label { color:var(--muted); font-size:11px; }
+  :where(.crypto-game) .mobile-selectors select { display:block; width:100%; height:44px; margin-top:4px; padding:0 10px; border:1px solid var(--line); border-radius:6px; background:var(--paper); color:var(--green); font:16px system-ui,sans-serif; }
+  :where(.crypto-game) .mobile-selectors select:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
+  :where(.crypto-game) .mobile-selectors select:disabled { opacity:.6; }
+  :where(.crypto-game) legend { margin-bottom:5px; } :where(.crypto-game) .segments { padding:2px; }
+  :where(.crypto-game) .trade-buttons { gap:8px; }
+  :where(.crypto-game) #status:not(.sr-only) { font-size:11px; }
 }
-@media(prefers-reduced-motion:reduce) { * { scroll-behavior:auto; } }
+@media(prefers-reduced-motion:reduce) { :where(.crypto-game) * { scroll-behavior:auto; } }

@@ -5,7 +5,7 @@ import { createGameSelector, GAME_RECENCY } from '../gate/common/selection.js';
 import { createRegistry } from '../gate/registry.js';
 
 export const GAME_IDS = createRegistry().map(game => game.id);
-export const GROWTH_COUNTS = [2, 3, 7, 12, 20, 50];
+export const GROWTH_COUNTS = [2, 3, 7, 8, 12, 20, 50];
 export const MODES = ['uniform-exclusion', 'decaying-recency', 'capped-scaled-recency'];
 
 export function seededRandom(seed) {

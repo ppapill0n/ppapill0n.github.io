@@ -68,6 +68,9 @@ main.slots-mode { width:min(440px,calc(100% - 3rem)); }
 @keyframes slot-sparkle { 20% { opacity:1; transform:scale(1.15); } 100% { opacity:0; transform:translateY(-5px); } }
 @media(prefers-reduced-motion:reduce) { .slots-bonus .is-result svg,.slots-bonus .slot-sparkles i { animation:none; transform:none; } .slots-bonus .slot-sparkles i { opacity:1; } }
 main.soda-mode { width:min(420px,calc(100% - 2rem)); }
+main.crypto-mode { width:min(780px,calc(100% - 2rem)); padding:1rem 0; }
+.crypto-mode > .target-row { justify-content:flex-end; margin-bottom:1rem; }
+.crypto-mode #enter { margin-top:12px; min-height:48px; }
 .soda-field { margin:.5rem 0 0; }
 #soda { display:block; width:100%; aspect-ratio:420/440; touch-action:none; user-select:none; -webkit-touch-callout:none; }
 #soda:focus-visible { outline:2px solid #9db6a5; outline-offset:2px; border-radius:8px; }

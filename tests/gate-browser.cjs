@@ -10,7 +10,7 @@ const url=process.env.GATE_URL || 'http://127.0.0.1:8765/gate/';
   async function open(mobile=false,code=2400) {
     const context=await browser.newContext(mobile?{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3}:{viewport:{width:1200,height:900}});
     const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
-    await page.addInitScript(code=>{let n=0;Math.random=()=>window.__gateTestDraws?.length?window.__gateTestDraws.shift():n++%2===0?3.5/7:(code+.5)/3001;},code);
+    await page.addInitScript(code=>{let n=0;Math.random=()=>window.__gateTestDraws?.length?window.__gateTestDraws.shift():n++%2===0?3.5/8:(code+.5)/3001;},code);
     await page.goto(url);await page.waitForSelector('canvas');return page;
   }
   const volume=async p=>parseFloat(await p.locator('#volume').innerText());
@@ -72,12 +72,12 @@ const url=process.env.GATE_URL || 'http://127.0.0.1:8765/gate/';
   await zero.locator('#enter').click();await zero.waitForURL('**/personal/');
   const max=await open(false,3000);assert.equal(await max.locator('#target').innerText(),'3000');assert.ok(await max.locator('#enter').isDisabled());
   // Smoke-test unchanged mouse controls and explicit submission rules in all three older games.
-  for(const [random,id] of [[.5/7,'dial'],[1.5/7,'cannon'],[2.5/7,'slots']]) {
+  for(const [random,id] of [[.5/8,'dial'],[1.5/8,'cannon'],[2.5/8,'slots']]) {
     await resetToGame(max,id,random);
     assert.equal(await max.locator('#game').getAttribute('data-game'),id);
     if(id==='dial'){await max.locator('.direction').last().click();await max.waitForTimeout(1200);assert.ok(await max.locator('#enter').isDisabled());}
     if(id==='cannon'){await max.locator('#fire').click();await max.waitForTimeout(2000);assert.notEqual(await max.locator('#distance').innerText(),'—');}
-    if(id==='slots'){await max.locator('#lever').click();await max.waitForTimeout(2500);assert.equal(await max.locator('#target').innerText(),'777');assert.ok(await max.locator('#enter').isEnabled());}
+    if(id==='slots'){await max.evaluate(()=>{window.__gateTestDraws=[0,0,0];});await max.locator('#lever').click();await max.waitForTimeout(2500);assert.equal(await max.locator('#target').innerText(),'777');assert.ok(await max.locator('#enter').isEnabled());}
   }
   assert.deepEqual(errors,[]);console.log('PASS desktop mouse, actual mobile touch, delayed arrival, overpour/retry, interruptions, global reset, 0000/3000, explicit Enter, all prior games; no browser errors');
   await browser.close();

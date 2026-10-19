@@ -34,7 +34,7 @@ export function createFreeplayController({ registry, root, allowed, selected = (
         }
         changed(state, game, challenge);
       };
-      const instance = game.create(root, notify, () => {}); // Dial's Enter key is harmless in freeplay.
+      const instance = game.create(root, notify, () => {}, game.payment ? { mode:'freeplay' } : undefined); // No pass API in freeplay.
       if (current !== generation) { instance.destroy(); return false; }
       active = instance;
       active.reset(challenge);

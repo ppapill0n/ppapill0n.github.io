@@ -1,5 +1,5 @@
 import { CONFIG } from './config.js?v=20261019-sweeps';
-import { createAccount } from './account.js';
+import { createAccount } from './account.js?v=20261019-orders';
 import { createMarket } from './market.js?v=20261019-sweeps';
 
 // Fixed-time simulation clock, separate from rendering and trading input.

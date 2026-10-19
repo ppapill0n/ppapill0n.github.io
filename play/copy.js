@@ -15,7 +15,8 @@ export const copy = {
       soda: { name: 'Soda pour', help: 'Drag the bottle toward the cup to pour. Release to right it. The cup button empties and refills, keeping the target.' },
       cube: { name: '3 × 3 cube', help: 'Drag a row or column to turn it. Drag outside the cube to look around. Keyboard: U R F D L B; Shift reverses.' },
       cube2: { name: '2 × 2 cube', help: 'Drag a row or column to turn it. Drag outside the cube to look around. Keyboard: U R F D L B; Shift reverses.' },
-      gomoku: { name: 'Gomoku', help: 'You are green Nokyong and play second. Connect five stones to win. Tap an empty intersection, or use arrow keys and Enter.' }
+      gomoku: { name: 'Gomoku', help: 'You are green Nokyong and play second. Connect five stones to win. Tap an empty intersection, or use arrow keys and Enter.' },
+      crypto: { name: 'Paper market', help: 'Trade the fictional coin with Long, Short and Close. Settle $50,000 cash to pay.' }
     }
   },
   ko: {
@@ -32,7 +33,8 @@ export const copy = {
       soda: { name: '소다 따르기', help: '병을 컵 쪽으로 끌어 소다를 따라요. 놓으면 병이 바로 서요. 컵 버튼을 누르면 목표는 그대로 두고 다시 따를 수 있어요.' },
       cube: { name: '3 × 3 큐브', help: '행이나 열을 끌어 돌려요. 큐브 바깥을 끌면 보는 방향이 바뀌어요. 키보드: U R F D L B, Shift는 반대 방향.' },
       cube2: { name: '2 × 2 큐브', help: '행이나 열을 끌어 돌려요. 큐브 바깥을 끌면 보는 방향이 바뀌어요. 키보드: U R F D L B, Shift는 반대 방향.' },
-      gomoku: { name: '오목', help: '초록 녹용이가 내 돌이고, 판다가 먼저 둬요. 다섯 돌을 이어 보세요. 빈 교차점을 누르거나 방향키와 Enter를 사용해요.' }
+      gomoku: { name: '오목', help: '초록 녹용이가 내 돌이고, 판다가 먼저 둬요. 다섯 돌을 이어 보세요. 빈 교차점을 누르거나 방향키와 Enter를 사용해요.' },
+      crypto: { name: '모의투자', help: '가상 코인을 Long, Short, Close로 거래해요. 포지션을 정리하고 현금 $50,000으로 결제해 보세요.' }
     }
   }
 };

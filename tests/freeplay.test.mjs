@@ -39,7 +39,7 @@ test('shared adapter creation/reset notifications are buffered; only final state
     assert.equal(f.controller.id, id); assert.equal(f.root.dataset.game, id);
     assert.deepEqual(f.states.at(-1), {state:{value:1,stopped:true},id});
   }
-  assert.equal(f.states.length,7);
+  assert.equal(f.states.length,f.registry.length);
   assert.ok(f.instances.slice(0,-1).every(i=>i.destroyed===1));
   f.controller.close(); assert.equal(f.instances.at(-1).destroyed,1);
 });
@@ -68,7 +68,7 @@ test('controller failures clear the old adapter and keep restart available', () 
   const controller=createFreeplayController({root:f.root,registry:[game],allowed:()=>true,failed:()=>failures++});
   assert.equal(controller.select('test'),false);assert.equal(failures,1);assert.equal(controller.id,'test');assert.equal(controller.restart(),true);controller.close();
 });
-test('seven localized names and help entries match the shared registry; personal wording is exact', () => {
+test('eight localized names and help entries match the shared registry; personal wording is exact', () => {
   assert.equal(personalCue.en, "can't leave yet?");
   for (const lang of ['en','ko']) for (const {id} of createRegistry()) {
     assert.ok(copy[lang].games[id].name);assert.equal(copy[lang].games[id].summary, undefined);assert.ok(copy[lang].games[id].help);
@@ -87,10 +87,10 @@ test('changed page assets and the freeplay dial graph use matching rollout versi
   const files=await Promise.all(['../index.html','../personal/index.html','../play/index.html','../play/play.js','../gate/registry.js','../gate/games/dial/game.js'].map(path=>readFile(new URL(path,import.meta.url),'utf8')));
   for(const html of files.slice(0,3)) assert.match(html,/academic\.css\?v=20261009-freeplay/);
   assert.match(files[0],/academic\.js\?v=20261009-freeplay/);
-  assert.match(files[2],/play\.js\?v=20261009-orbit/);
+  assert.match(files[2],/play\.js\?v=20261019-orders/);
   assert.match(files[1],/coming-soon\.js\?v=20261009-freeplay/);
   assert.match(files[1],/data-copy="play">can't leave yet\?/);
-  assert.match(files[3],/registry\.js\?v=20261009-orbit/);
+  assert.match(files[3],/registry\.js\?v=20261019-orders/);
   assert.match(files[4],/games\/dial\/game\.js\?v=20261009-freeplay/);
   assert.match(files[5],/dial\.js\?v=20261009-freeplay/);
 });
@@ -102,8 +102,8 @@ test('gallery shell shows names and screenshots without explanatory copy', async
   assert.match(html, /id="hub-title" class="sr-only"/);
   assert.doesNotMatch(html, /hub-intro|eyebrow|data-copy="intro"|data-copy="back"|<footer/);
   assert.match(html, /data-label="back" aria-label="Back to personal"/);
-  assert.match(html, /play\.css\?v=20261009-gallery/);
-  assert.match(source, /copy\.js\?v=20261009-gallery/);
+  assert.match(html, /play\.css\?v=20261019-orders/);
+  assert.match(source, /copy\.js\?v=20261019-orders/);
   assert.match(source, /thumbnails\/\$\{game.id\}\.webp\?v=20261009-gallery/);
   assert.match(css, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(css, /@media\(max-width:650px\)\s*{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
@@ -111,7 +111,7 @@ test('gallery shell shows names and screenshots without explanatory copy', async
   assert.match(css, /focus-visible/);
   assert.match(css, /prefers-reduced-motion/);
 });
-test('seven real screenshot assets are optimized WebP files', async () => {
+test('eight real screenshot assets are optimized WebP files', async () => {
   let total = 0;
   for (const { id } of createRegistry()) {
     const bytes = await readFile(new URL(`../play/thumbnails/${id}.webp`, import.meta.url));
@@ -120,10 +120,10 @@ test('seven real screenshot assets are optimized WebP files', async () => {
     assert.ok(bytes.length > 1000 && bytes.length < 80000, `${id}: sensible thumbnail size`);
     total += bytes.length;
   }
-  assert.ok(total < 300000, 'all seven thumbnails stay below 300 kB');
+  assert.ok(total < 300000, 'all eight thumbnails stay below 300 kB');
 });
 
 test('gate and freeplay invalidate the complete changed cube module graph together', async () => {
   const graph=[['../gate/index.html','gate.js'],['../play/index.html','play.js'],['../gate/gate.js','./registry.js'],['../play/play.js','../gate/registry.js'],['../gate/registry.js','./games/cube/game.js'],['../gate/registry.js','./games/cube2/game.js'],['../gate/games/cube/game.js','../../common/cube-game.js'],['../gate/games/cube2/game.js','../../common/cube-game.js'],['../gate/common/cube-game.js','./cube-gestures.js']];
-  for(const [file,dependency] of graph){const source=await readFile(new URL(file,import.meta.url),'utf8');assert.ok(source.includes(`${dependency}?v=20261009-orbit`),`${file} must invalidate ${dependency}`);}
+  for(const [file,dependency] of graph){const source=await readFile(new URL(file,import.meta.url),'utf8');assert.ok(source.includes(`${dependency}?v=${dependency.endsWith('registry.js') || dependency === 'gate.js' || dependency === 'play.js' ? '20261019-orders' : '20261009-orbit'}`),`${file} must invalidate ${dependency}`);}
 });

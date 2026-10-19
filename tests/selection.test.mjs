@@ -22,7 +22,7 @@ test('initial selection is uniform for every catalog size without a manual ID li
   }
 });
 
-test('approved seven-game decay starts at .65, halves its penalty every two visits, and tends to 1', () => {
+test('approved catalog-wide decay starts at .65, halves its penalty every two visits, and tends to 1', () => {
   assert.deepEqual(GAME_RECENCY, { strength: .35, halfLife: 2 });
   assert.ok(Object.isFrozen(GAME_RECENCY));
   let previous = 0;
@@ -35,7 +35,7 @@ test('approved seven-game decay starts at .65, halves its penalty every two visi
   }
   const history = games.map(game => game.id);
   const actual = weights(games, history);
-  [0.9381281566461771, .9125, .8762563132923542, .825, .7525126265847084, .65, 0]
+  [.95625, 0.9381281566461771, .9125, .8762563132923542, .825, .7525126265847084, .65, 0]
     .forEach((expected, i) => close(actual[i], expected));
   assert.equal(previous, 1);
 });
@@ -62,12 +62,12 @@ test('only current is excluded; every other identity has selectable support at a
 test('weights normalize over eligible games rather than promising uniform conditionals', () => {
   const history = [games[0].id, games[1].id];
   const actual = weights(games, history), total = actual.reduce((sum, value) => sum + value, 0);
-  assert.deepEqual(actual, [.65, 0, 1, 1, 1, 1, 1]);
-  close(total, 5.65);
-  close(actual[0] / total, .65 / 5.65);
-  close(actual[2] / total, 1 / 5.65);
+  assert.deepEqual(actual, [.65, 0, ...Array(games.length - 2).fill(1)]);
+  close(total, (games.length - 1.35));
+  close(actual[0] / total, .65 / (games.length - 1.35));
+  close(actual[2] / total, 1 / (games.length - 1.35));
   // A-B-A does not compound A's old visit or force a third identity.
-  assert.deepEqual(weights(games, [games[0].id, games[1].id, games[0].id]), [0, .65, 1, 1, 1, 1, 1]);
+  assert.deepEqual(weights(games, [games[0].id, games[1].id, games[0].id]), [0, .65, ...Array(games.length - 2).fill(1)]);
 });
 
 test('last visit alone matters, old visits recover smoothly, and pure inputs are unchanged', () => {

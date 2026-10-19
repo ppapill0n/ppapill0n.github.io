@@ -1,14 +1,16 @@
 import { CONFIG } from './config.js?v=20261019-sweeps';
-import { createSession } from './session.js?v=20261019-sweeps';
+import { createSession } from './session.js?v=20261019-orders';
 import { drawChart } from './chart.js';
 import { createWallClock, createReconciler } from './live-clock.js';
+import { createOrderQueue } from './orders.js?v=20261019-orders';
 
 const money = value => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
 const signedMoney = value => `${value > 0 ? '+' : value < 0 ? '−' : ''}${money(Math.abs(value))}`;
 const priceText = price => price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const freshSeed = () => crypto.getRandomValues(new Uint32Array(1))[0];
 
-export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}) {
+export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, { mode = 'standalone' } = {}) {
+  root.classList.add('crypto-game');
   root.innerHTML = `
     <section class="balance" aria-label="Account summary">
       <div><span class="label" aria-label="Total equity">Equity</span><strong id="equity">$10,000.00</strong></div>
@@ -35,7 +37,7 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}) 
   const el = id => root.querySelector(`#${id}`);
   const events = new AbortController();
   const listen = (target, type, callback) => target.addEventListener(type, callback, { signal: events.signal });
-  let session, reconciler, state, leverage = CONFIG.defaultLeverage, allocation = 1, catching = false, destroyed = false;
+  let session, reconciler, orders, state, leverage = CONFIG.defaultLeverage, allocation = 1, catching = false, destroyed = false, suspended = false;
   let timer = 0, frame = 0, generation = 0, notified = '', priorLiquidations = 0;
   let status = '';
   function message(text, visible = false) {
@@ -67,9 +69,9 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}) 
     el('position-size').textContent = p ? `${p.quantity.toFixed(3)} MOTH` : '';
     el('levels').textContent = p ? `$${priceText(p.entry)} / ${a.liquidationPrice > 0 ? `$${priceText(a.liquidationPrice)}` : 'none'}` : '— / —';
     el('leverage-note').textContent = p ? '· locked while holding' : '· more risk, more reward';
-    const stopped = catching || document.hidden || a.bankrupt || a.paid;
+    const stopped = document.hidden || suspended || a.bankrupt || a.paid;
     for (const button of root.querySelectorAll('[data-leverage]')) {
-      button.disabled = !!p || stopped;
+      button.disabled = !!p || orders.pending || stopped;
       button.setAttribute('aria-pressed', String(Number(button.dataset.leverage) === leverage));
     }
     for (const button of root.querySelectorAll('[data-allocation]')) {
@@ -77,19 +79,20 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}) 
       button.setAttribute('aria-pressed', String(Number(button.dataset.allocation) === allocation));
     }
     el('mobile-leverage').value = String(leverage);
-    el('mobile-leverage').disabled = !!p || stopped;
+    el('mobile-leverage').disabled = !!p || orders.pending || stopped;
     el('mobile-allocation').value = String(allocation);
     el('mobile-allocation').disabled = stopped;
     el('long').disabled = stopped || a.cash * allocation < CONFIG.minimumOrder || p?.side === -1;
     el('short').disabled = stopped || a.cash * allocation < CONFIG.minimumOrder || p?.side === 1;
     el('close').disabled = stopped || !p;
     el('pay').disabled = stopped || !a.canPay;
-    el('pay-help').textContent = a.paid ? 'Paid. Opening the personal page…' : a.canPay ? 'You made it. Pay to open the personal page.' : p && a.cashAfterClose >= CONFIG.target ? 'Goal in reach. Close 100% to secure your cash.' : 'Close your position and hold $50,000 cash to enter.';
+    el('pay').hidden = mode === 'gate';
+    el('pay-help').textContent = a.paid ? 'Paid. Goal complete.' : a.canPay ? 'Goal reached. Payment is available.' : p && a.cashAfterClose >= CONFIG.target ? 'Goal in reach. Close 100% to secure your cash.' : 'Close your position and hold $50,000 cash to pay.';
     el('order-hint').textContent = p ? `${allocation * 100}% close · ${(p.quantity * allocation).toFixed(3)} MOTH · ${money(p.quantity * allocation * m.price * CONFIG.feeRate)} fee`
       : `${money(a.cash * allocation)} cash · ${leverage}× leverage · entry fee included`;
     el('market-state').textContent = a.bankrupt ? 'ended' : a.paid ? 'complete' : catching ? 'catching up' : 'live';
     root.dataset.phase = a.bankrupt ? 'bankrupt' : a.paid ? 'paid' : catching ? 'catching-up' : 'trading';
-    el('catchup-layer').hidden = !stopped;
+    el('catchup-layer').hidden = !stopped && !catching;
     el('catchup-title').textContent = a.bankrupt ? 'Out of cash' : a.paid ? 'Paid' : 'Catching up';
     el('catchup-help').textContent = a.bankrupt ? 'A fresh $10,000 and a new chart await.' : a.paid ? 'Your fictional entry is complete.' : 'The market kept moving. Updating every missed price…';
     el('retry').hidden = !a.bankrupt;
@@ -102,21 +105,27 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}) 
     const next = JSON.stringify(getState());
     if (next !== notified) { notified = next; changed(getState()); }
   }
-  function schedule(delay) { clearTimeout(timer); timer = setTimeout(pump, delay); }
+  function schedule(delay) {
+    clearTimeout(timer);
+    const current = generation;
+    timer = setTimeout(() => { if (current === generation) pump(); }, delay);
+  }
   function pump() {
-    if (destroyed || !session) return;
+    if (destroyed || suspended || !session) return;
     clearTimeout(timer); cancelAnimationFrame(frame);
     const result = reconciler.reconcile(CONFIG.catchupChunkTicks);
+    orders.flush();
     if (result.lagMs >= CONFIG.catchupNoticeMs || document.hidden) catching = true;
     render();
-    if (result.ended) return;
-    if (result.remainingMs >= CONFIG.tickMs) { catching = true; render(); schedule(0); return; }
+    if (session.ended && !orders.pending) return;
+    if (reconciler.pending() || orders.pending) { catching = true; render(); schedule(0); return; }
     if (document.hidden) { schedule(CONFIG.tickMs); return; }
     if (!catching) { schedule(CONFIG.tickMs / 2); return; }
-    // Keep controls locked until the reconciled quote has had a paint. If time
-    // advances during that paint, reconcile again before enabling anything.
+    // Catch-up may yield between chunks, but accepted orders stay queued and
+    // trading controls remain usable. Painting is never a condition for a fill.
     const current = generation;
     frame = requestAnimationFrame(() => {
+      if (destroyed || current !== generation) return;
       frame = requestAnimationFrame(() => {
         if (destroyed || current !== generation) return;
         if (reconciler.pending() || document.hidden) { pump(); return; }
@@ -126,43 +135,42 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}) 
       });
     });
   }
-  function readyForInput() {
-    if (destroyed || !session || document.hidden || catching || session.ended) return false;
-    if (reconciler.pending() || state.elapsed !== session.elapsed) {
-      // A stale click updates the view and asks for a new click; it cannot fill
-      // either an old quote or a newly computed price the player hasn't seen.
-      catching = true;
-      message('Price updated. Tap again.', true);
-      pump();
-      return false;
-    }
-    return true;
-  }
+  const readyForInput = () => !destroyed && !suspended && !!session && !document.hidden && !session.ended;
   function trade(action) {
     if (!readyForInput()) return;
-    // Input reconciliation never executes an order at an unseen future price.
-    const fillPrice = state.market.price;
-    if (action === 'close') {
-      if (session.close(allocation)) message(`Closed ${allocation * 100}% at $${priceText(fillPrice)}. Margin and net P&L returned to cash.`);
-    } else {
-      if (session.enter(action === 'long' ? 1 : -1, allocation, leverage)) message(`${state.account.position ? 'Added to' : 'Opened'} ${action} at $${priceText(fillPrice)} · ${leverage}×.`);
-    }
-    render();
+    const current = generation, fraction = allocation, selectedLeverage = leverage;
+    const result = orders.submit({ action, allocation: fraction, leverage: selectedLeverage, positionId: state.account.position?.id ?? null });
+    pump();
+    result.then(fill => {
+      if (destroyed || current !== generation || fill.status === 'cancelled') return;
+      if (fill.status === 'filled') message(action === 'close'
+        ? `Closed ${fraction * 100}% at $${priceText(fill.price)}.`
+        : `${fill.added ? 'Added to' : 'Opened'} ${action} at $${priceText(fill.price)} · ${selectedLeverage}×.`);
+      else if (!status.startsWith('Liquidated')) message('Order unavailable: the position or available cash changed.');
+      render();
+    });
   }
   for (const side of ['long', 'short', 'close']) listen(el(side), 'click', () => trade(side));
   for (const button of root.querySelectorAll('[data-leverage]')) listen(button, 'click', () => { if (!state?.account.position && readyForInput()) { leverage = Number(button.dataset.leverage); render(); } });
   for (const button of root.querySelectorAll('[data-allocation]')) listen(button, 'click', () => { if (readyForInput()) allocation = Number(button.dataset.allocation); render(); });
   listen(el('mobile-leverage'), 'change', () => { if (!state?.account.position && readyForInput()) leverage = Number(el('mobile-leverage').value); render(); });
   listen(el('mobile-allocation'), 'change', () => { if (readyForInput()) allocation = Number(el('mobile-allocation').value); render(); });
-  listen(el('pay'), 'click', () => { if (readyForInput() && state?.account.canPay) tryEnter(); });
+  listen(el('pay'), 'click', () => { if (readyForInput()) { if (mode === 'freeplay') pay(); else tryEnter(); } });
   listen(el('retry'), 'click', () => reset());
   listen(document, 'visibilitychange', () => { catching = true; pump(); });
-  listen(window, 'pageshow', event => { if (event.persisted) { catching = true; pump(); } });
+  listen(window, 'pagehide', () => { suspended = true; generation++; orders?.cancel(); clearTimeout(timer); cancelAnimationFrame(frame); });
+  listen(window, 'pageshow', event => {
+    if (event.persisted) {
+      if (suspended) orders = createOrderQueue(session, reconciler);
+      suspended = false; catching = true; pump();
+    }
+  });
   const observer = new ResizeObserver(() => render()); observer.observe(root);
   function reset({ seed = freshSeed() } = {}) {
     if (destroyed) return;
-    generation++; clearTimeout(timer); cancelAnimationFrame(frame);
+    generation++; orders?.cancel(); clearTimeout(timer); cancelAnimationFrame(frame);
     session = createSession(seed); reconciler = createReconciler(session, createWallClock());
+    orders = createOrderQueue(session, reconciler); suspended = false;
     leverage = CONFIG.defaultLeverage; allocation = 1; catching = document.hidden;
     priorLiquidations = 0; notified = '';
     message('');
@@ -170,16 +178,16 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}) 
     render();
     schedule(CONFIG.tickMs / 2);
   }
-  return {
-    reset, getState, message,
-    pay(complete = () => true) {
-      if (!readyForInput() || !state.account.canPay) return false;
-      // Synchronous transaction: eligibility is sampled once, before the shared
-      // completion callback. A storage failure keeps all fictional cash intact.
-      if (complete(getState()) !== true) return false;
-      if (!session.pay()) return false;
-      clearTimeout(timer); render(); return true;
-    },
-    destroy() { destroyed = true; generation++; clearTimeout(timer); cancelAnimationFrame(frame); observer.disconnect(); events.abort(); root.replaceChildren(); },
+  function pay(complete = () => true) {
+    if (!readyForInput()) return Promise.resolve(false);
+    const current = generation, result = orders.submit({ action: 'pay', complete });
+    pump();
+    return result.then(fill => {
+      if (destroyed || current !== generation) return false;
+      render(); return fill.status === 'filled';
+    });
+  }
+  return { reset, getState, message, pay,
+    destroy() { destroyed = true; generation++; orders?.cancel(); clearTimeout(timer); cancelAnimationFrame(frame); observer.disconnect(); events.abort(); root.classList.remove('crypto-game'); root.replaceChildren(); },
   };
 }

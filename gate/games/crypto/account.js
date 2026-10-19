@@ -4,7 +4,7 @@ const validPrice = price => Number.isFinite(price) && price > 0;
 const EPSILON = 1e-8;
 
 export function createAccount(config = CONFIG) {
-  let cash = config.startingCash, position = null, fees = 0, paid = false;
+  let cash = config.startingCash, position = null, fees = 0, paid = false, nextPositionId = 0;
   const pnl = price => position ? position.side * position.quantity * (price - position.entry) : 0;
   const exitFee = price => position ? position.quantity * price * config.feeRate : 0;
   const collateral = price => position ? position.margin + pnl(price) : 0;
@@ -50,7 +50,7 @@ export function createAccount(config = CONFIG) {
         position.quantity += quantity;
         position.margin += margin;
       } else {
-        position = { side, leverage, entry: price, quantity, margin };
+        position = { id: ++nextPositionId, side, leverage, entry: price, quantity, margin };
       }
       cash = Math.max(0, cash - budget);
       fees += fee;

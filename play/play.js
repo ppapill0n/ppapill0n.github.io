@@ -1,9 +1,9 @@
-import { createRegistry } from '../gate/registry.js?v=20261009-orbit';
+import { createRegistry } from '../gate/registry.js?v=20261019-orders';
 import { canEnter, formatValue } from '../gate/common/engine.js';
 import { readPass } from '../gate/common/session-pass.js';
 import { createAccessGuard } from '../gate/common/access-guard.js';
-import { createFreeplayController, selectedGame } from './controller.js';
-import { copy } from './copy.js?v=20261009-gallery';
+import { createFreeplayController, selectedGame } from './controller.js?v=20261019-orders';
+import { copy } from './copy.js?v=20261019-orders';
 
 const registry = createRegistry();
 const root = document.querySelector('#game');
@@ -21,7 +21,7 @@ const controller = createFreeplayController({
     selection.hidden = !!game; stage.hidden = !game;
     stage.className = game ? `${game.id}-mode` : '';
     status.textContent = '';
-    status.classList.toggle('sr-only', game?.id === 'gomoku');
+    status.classList.toggle('sr-only', game?.id === 'gomoku' || game?.id === 'crypto');
     renderGameCopy();
   },
   changed(state) { lastState = state; renderStatus(); decorateGame(); },
@@ -32,6 +32,7 @@ function renderGameCopy() {
   const text = copy[language], gameText = text.games[activeGame.id];
   document.querySelector('#game-title').textContent = gameText.name;
   document.querySelector('#game-help').textContent = gameText.help;
+  document.querySelector('#game-help').classList.toggle('sr-only', activeGame.id === 'crypto');
   document.querySelector('#target-row').hidden = !!activeGame.hideTarget || activeGame.id === 'slots';
   const value = activeChallenge?.target;
   document.querySelector('#target').textContent = activeGame.hideTarget ? '' : activeGame.id === 'cannon' ? `${(value / 10).toFixed(1)} m` : activeGame.id === 'soda' ? `${(value / 10).toFixed(1)} mL` : (activeGame.formatTarget ?? formatValue)(value);

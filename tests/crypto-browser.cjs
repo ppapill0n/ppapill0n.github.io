@@ -113,27 +113,26 @@ const numeric = text => Number(text.replace(/[^\d.-]/g, ''));
     }
     console.log('PASS 320/390/768/1280px, mouse/touch, keyboard, no overflow, adds/partial closes/leverage lock, restart; screenshots saved');
 
-    // A click after a timer stall must neither fill the old quote nor trade at
-    // the newly reconciled price before the user has seen it.
+    // A click after a timer stall preserves the intent and fills the latest
+    // current tick, with no second tap and no extra future simulation.
     const stale = await open();
     const origin = await stale.evaluate(() => Date.now());
     const oldPrice = await stale.locator('#quote').textContent();
     await stale.clock.setSystemTime(new Date(origin + 5000));
     await click(stale, '#long');
-    assert.equal(await stale.locator('#position-name').textContent(), 'Flat');
-    assert.equal(await cash(stale), 10000);
+    assert.equal(await stale.locator('#position-name').textContent(), 'Long · 1×');
+    assert.equal(await cash(stale), 0);
     assert.equal(await phase(stale), 'catching-up');
     assert.notEqual(await stale.locator('#quote').textContent(), oldPrice);
-    assert.match(await stale.locator('#status').textContent(), /Price updated/);
-    assert.doesNotMatch(await stale.locator('#status').getAttribute('class'), /sr-only/, 'Rejected stale clicks still explain the necessary retry');
+    assert.match(await stale.locator('#status').textContent(), /Opened long/);
+    assert.match(await stale.locator('#status').getAttribute('class'), /sr-only/, 'Successful orders add no explanatory UI');
     await stale.clock.runFor(64);
     assert.equal(await phase(stale), 'trading');
     const shown = await stale.locator('#quote').textContent();
-    await click(stale, '#long');
     assert.match(await stale.locator('#levels').textContent(), new RegExp(shown.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
     assert.equal(await cash(stale), 0);
     await stale.context().close();
-    console.log('PASS stale-input reconciliation rejects order, paints latest quote, then permits a new order');
+    console.log('PASS stale Long intent fills exactly once at the current price without a second tap');
 
     const absent = await open(390);
     await select(absent, 'leverage', 20);
@@ -145,8 +144,8 @@ const numeric = text => Number(text.replace(/[^\d.-]/g, ''));
     await absent.clock.setSystemTime(new Date(start + 3600000));
     await hidden(absent, false);
     assert.equal(await phase(absent), 'catching-up');
-    assert.equal(await absent.locator('#long').isDisabled(), true);
-    assert.equal(await absent.locator('#close').isDisabled(), true);
+    assert.equal(await absent.locator('#long').isDisabled(), false, 'Catch-up still accepts valid trading intents');
+    assert.equal(await absent.locator('#close').isDisabled(), true, 'The position already liquidated in the first catch-up chunk');
     // Chunking yields to the event loop before all 36,000 missing ticks finish.
     assert.notEqual(await absent.locator('#elapsed').textContent(), '60:00');
     await absent.screenshot({ path: path.join(output, 'crypto-catching-up.png'), fullPage: true });

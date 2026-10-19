@@ -22,7 +22,7 @@ export function createWallClock(wallNow = () => Date.now(), monotonicNow = () =>
 
 // Advance toward an absolute clock target. Repeated timer, visibility and input
 // callbacks cannot charge the same elapsed interval twice. Work is bounded per
-// call; the UI yields between chunks, with all order controls disabled.
+// call; the UI yields between chunks while accepted orders wait in their queue.
 export function createReconciler(session, clock, config = CONFIG) {
   function remaining() {
     if (session.ended) return 0;

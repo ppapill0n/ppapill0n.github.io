@@ -7,8 +7,8 @@ const assert = require('node:assert/strict');
 const base = (process.env.SITE_URL || 'http://127.0.0.1:8765').replace(/\/?$/, '/');
 const url = path => new URL(path, base).href;
 const KEY = 'personal-gate-pass', TTL = 3600000;
-const ids = ['dial', 'cannon', 'slots', 'soda', 'cube', 'cube2', 'gomoku'];
-const selectors = { dial:'#dial', cannon:'#fire', slots:'#lever', soda:'#soda', cube:'#cube', cube2:'#cube', gomoku:'.gomoku-board' };
+const ids = ['dial', 'cannon', 'slots', 'soda', 'cube', 'cube2', 'gomoku', 'crypto'];
+const selectors = { dial:'#dial', cannon:'#fire', slots:'#lever', soda:'#soda', cube:'#cube', cube2:'#cube', gomoku:'.gomoku-board', crypto:'#chart' };
 const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?:entering|entry)|unlock (?:the|your) personal|개인 공간.*입장/iu;
 
 (async () => {
@@ -39,7 +39,11 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
       });
     });
     if (clock) await page.clock.install({ time:new Date('2026-10-09T12:00:00Z') });
+    // Establish the origin without executing the unrelated academic homepage's
+    // storage code when this fixture deliberately disables all browser storage.
+    if (storageBlocked) await page.route(url(''), route => route.fulfill({ contentType:'text/html', body:'<!doctype html><title>Storage fixture</title>' }));
     await page.goto(url(''));
+    if (storageBlocked) await page.unroute(url(''));
     if (!storageBlocked) await page.evaluate(() => localStorage.setItem('academic-language', 'en'));
     return page;
   }
@@ -138,12 +142,12 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
 
     const page = await open(), original = await grant(page);
     await direct(page);
-    assert.equal(await page.locator('[data-select-game]').count(), 7);
+    assert.equal(await page.locator('[data-select-game]').count(), 8);
     assert.deepEqual(await page.locator('[data-select-game]').evaluateAll(links => links.map(link => link.dataset.selectGame)), ids);
     assert.deepEqual(await workerEvents(page), [], 'The chooser must not create an AI worker');
     assert.equal(await page.locator('#selection p, #selection small').count(), 0);
-    assert.equal(await page.locator('.game-choice img').count(), 7);
-    const cardNames = ['Inertia dial','Cannon','Lucky reels','Soda pour','3 × 3 cube','2 × 2 cube','Gomoku'];
+    assert.equal(await page.locator('.game-choice img').count(), 8);
+    const cardNames = ['Inertia dial','Cannon','Lucky reels','Soda pour','3 × 3 cube','2 × 2 cube','Gomoku','Paper market'];
     for (let i = 0; i < ids.length; i++) {
       const card = page.locator(`[data-select-game="${ids[i]}"]`);
       assert.equal(await card.innerText(), cardNames[i]);
@@ -201,14 +205,14 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
       assert.equal(new URL(page.url()).searchParams.get('game'), id);
       await immutable(page, original, `${id} direct route`);
     }
-    await page.reload(); await ready(page, 'gomoku'); await humanTurn(page);
+    await page.reload(); await ready(page, 'crypto');
     await immutable(page, original, 'refresh');
     for (const suffix of ['?game=not-a-game', '?game=GOMOKU', '?game=', '?game=%3Cscript%3E', '?other=value']) {
       await page.goto(url(`play/${suffix}`)); await ready(page);
       assert.equal(new URL(page.url()).search, '', 'An invalid route falls back to the canonical chooser URL');
       await immutable(page, original, suffix);
     }
-    console.log('PASS all seven deep links, canonical invalid-ID fallback, same-document switch/history, lazy workers, no entry action, immutable pass');
+    console.log('PASS all eight deep links, canonical invalid-ID fallback, same-document switch/history, lazy workers, no entry action, immutable pass');
 
     // User-visible wins in the real page: reels, empty-target soda, and both cubes.
     await choose(page, 'slots'); await page.locator('#lever').click();
@@ -249,7 +253,7 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
       ]);
       const pass = sessionStorage.getItem(key), results = [];
       const frame = () => new Promise(requestAnimationFrame);
-      for (const original of createRegistry(() => 0)) {
+      for (const original of createRegistry(() => 0).filter(game => game.id !== 'crypto')) {
         let time = 0, latest = null, definition = null, challenge = null;
         const host = document.createElement('div'); host.dataset.gameInputScope = ''; document.body.append(host);
         const aiMoves = [30, 32, 34, 36];
@@ -285,7 +289,7 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
       }
       return results;
     }, { key:KEY });
-    assert.deepEqual(adapterResults.map(result => result.id), ids);
+    assert.deepEqual(adapterResults.map(result => result.id), ids.filter(id => id !== 'crypto'));
     for (const result of adapterResults) { assert.ok(result.won, `${result.id} must reach a real adapter win`); assert.ok(result.passUnchanged, result.id); }
     await immutable(page, original, 'all adapter win/restart integrations');
     console.log('PASS real slot/soda and keyboard cube wins, seven adapter win/restart outcomes, no pass issuance or renewal');
@@ -324,9 +328,8 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
 
     // Touch-capable Chromium exercises real pointer events at both phone widths.
     for (const width of [320, 390, 1200]) {
-      const touch = width < 1200, responsive = await open({ width, touch });
-      const responsivePass = await grant(responsive); await direct(responsive);
-      const cdp = touch ? await responsive.context().newCDPSession(responsive) : null;
+      const touch = width < 1200;
+      let responsive, responsivePass, cdp;
       async function gesture(selector, start, end, hold=0, cancelTouch=false) {
         const element = responsive.locator(selector); await element.scrollIntoViewIfNeeded();
         const box = await element.boundingBox(); assert.ok(box);
@@ -344,8 +347,16 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
           await responsive.mouse.up();
         }
       }
-      await noOverflow(responsive, `${width}px chooser`);
       for (const id of ids) {
+        // Keep native input scenarios independent. This Chromium build can
+        // suppress compatibility clicks after earlier CDP canvas swipes (also
+        // reproduced on the unchanged seven-game revision). Same-document
+        // switches and worker teardown are exercised separately above.
+        await responsive?.context().close();
+        responsive = await open({ width, touch });
+        responsivePass = await grant(responsive); await direct(responsive);
+        cdp = touch ? await responsive.context().newCDPSession(responsive) : null;
+        await noOverflow(responsive, `${width}px chooser`);
         await choose(responsive, id); if (id === 'gomoku') await humanTurn(responsive);
         await noOverflow(responsive, `${width}px ${id}`); await noGateUI(responsive);
         if (id === 'dial') {
@@ -366,10 +377,20 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
           const before = await responsive.locator('#cube-accessible').textContent();
           await gesture('#cube', [.5, .5], [.5, .75]); await idle(responsive);
           assert.notEqual(await responsive.locator('#cube-accessible').textContent(), before, `${width}px ${id} pointer turn`);
+        } else if (id === 'crypto') {
+          assert.equal(await responsive.locator('#mobile-leverage').inputValue(), '1');
+          await (touch ? responsive.locator('#long').tap() : responsive.locator('#long').click());
+          assert.equal(await responsive.locator('#position-name').textContent(), 'Long · 1×');
+          await (touch ? responsive.locator('#close').tap() : responsive.locator('#close').click());
+          assert.equal(await responsive.locator('#position-name').textContent(), 'Flat');
         } else {
           const cell = responsive.locator('.gomoku-cell[data-stone="0"]').first();
-          await (touch ? cell.tap() : cell.click()); await humanTurn(responsive);
-          assert.equal(await responsive.locator('.gomoku-cell[data-stone="1"]').count(), 1);
+          await cell.scrollIntoViewIfNeeded();
+          await (touch ? cell.tap() : cell.click());
+          // Chromium touch clicks may be delivered after tap() returns. Wait
+          // for the actual move before waiting for the following AI turn.
+          await responsive.waitForFunction(() => document.querySelectorAll('.gomoku-cell[data-stone="1"]').length === 1);
+          await humanTurn(responsive);
         }
         await noOverflow(responsive, `${width}px ${id} after interaction`);
         await immutable(responsive, responsivePass, `${width}px ${id} interaction`);
@@ -391,7 +412,7 @@ const gateOnlyHelp = /activat(?:e|ing) Enter|Enter to (?:unlock|enter)|before (?
       await immutable(responsive, responsivePass, `${width}px language toggle/refresh`);
       await responsive.context().close();
     }
-    console.log('PASS 320/390/1200px chooser and seven games, pointer/touch interactions, EN/KO shell/help and persistence, no horizontal overflow');
+    console.log('PASS 320/390/1200px chooser and eight games, pointer/touch interactions, EN/KO shell/help and persistence, no horizontal overflow');
 
     const expiry = await open({ clock:true }), expiringPass = await grant(expiry);
     await direct(expiry, 'soda');

@@ -1,8 +1,8 @@
-# Paper market prototype
+# Paper market
 
-Direct route: `/gate/games/crypto/`. Optional reproducible review path: `/gate/games/crypto/?seed=3` (unsigned 32-bit integer). No registry, random entry selection, gallery, existing game, or personal-page files are changed. No runtime dependencies, API calls, real money, external prices, or external assets.
+Paper market is the eighth game in the random entrance registry and the freeplay gallery, named **모의투자** in Korean. The registry retains its existing recency weighting and current-game exclusion. Its gallery thumbnail is a 600×450 capture of actual gameplay. Existing game engines and the personal page are unchanged. No runtime dependencies, API calls, real money, external prices, or external assets.
 
-Public test link: <https://ppapill0n.github.io/gate/games/crypto/>. This isolated route is published through the site's existing GitHub Pages deployment from `main`. It remains available until explicitly removed; it has no automatic expiration.
+Routes: random entrance at `/gate/`, freeplay at `/play/?game=crypto` with an existing valid session pass, and the retained direct route at `/gate/games/crypto/`. The direct route accepts reproducible review seeds, such as `/gate/games/crypto/?seed=3` (unsigned 32-bit integer). The site publishes through GitHub Pages from `main`.
 
 From the repository root:
 
@@ -14,7 +14,7 @@ Open `http://127.0.0.1:8765/gate/games/crypto/`. This is a local preview, not a 
 
 ## Play and accounting
 
-- Start with $10,000; get flat with at least $50,000 cash, then explicitly press **Pay $50,000**. Payment deducts fictional cash and uses the existing `enterPersonal` / one-hour session-pass interface to navigate to `/personal/`. A storage failure leaves the money untouched. Merely reaching the goal never issues a pass.
+- Start with $10,000; get flat with at least $50,000 cash, then explicitly press **Pay $50,000**. At the gate or direct route, payment deducts fictional cash and uses the existing `enterPersonal` / one-hour session-pass interface to navigate to `/personal/`. A storage failure leaves the money untouched. Merely reaching the goal never issues a pass. In freeplay, payment completes the fictional run without navigation, issuing a pass, or extending the existing pass.
 - One linear isolated-margin position. Long profits on a rise; Short profits on a fall. Opposite-direction entry is disabled until the position is fully closed. Same-direction adds combine quantity, collateral, and quantity-weighted entry price.
 - Leverage: 1/2/5/10/20, initially 1×. Locked while holding. Order size: 25/50/75/100%, initially 100%. Entries allocate that percentage of available cash; closes release that percentage of position quantity and collateral.
 - Each side costs 0.05% of notional. For cash budget `B`, leverage `L`, fee rate `f`, margin is `B/(1+L*f)` and opening fee is `margin*L*f`. Thus 100% entry fits available cash.
@@ -24,7 +24,7 @@ Open `http://127.0.0.1:8765/gate/games/crypto/`. This is a local preview, not a 
 
 ## Market and time
 
-`config.js` holds tunables; `market.js` owns price generation and `sweeps.js` supplies independent mixed shocks; `account.js` owns accounting; `session.js` joins them in fixed 100ms ticks; `live-clock.js` reconciles elapsed time; `chart.js` and `game.js` render/interact; `prototype.js` connects the existing entry flow.
+`config.js` holds tunables; `market.js` owns price generation and `sweeps.js` supplies independent mixed shocks; `account.js` owns accounting; `session.js` joins them in fixed 100ms ticks; `live-clock.js` reconciles elapsed time; `orders.js` holds pending order intents; `chart.js` and `game.js` render/interact. Component CSS is scoped to `.crypto-game`; `standalone.css` and `prototype.js` supply the retained direct route's page shell and entry flow.
 
 The seeded log-price model has hidden up/down/range states with exponentially distributed dwell averaging 60 seconds. Transitions choose a different state. Trend strength varies by ±25%; drift eases over four seconds. Range states mean-revert toward an anchor. Volatility eases over 15 seconds toward calm (~0.59% candle-scale diffusion, varied ±15%) or volatile (~1.00%) targets. Independent jumps average one per 110 seconds, with 0.9% standard deviation capped at ±3.5%. These are stylized game parameters, not calibrated financial data. Numeric price bounds are $0.01–$1 billion for arbitrarily long runs.
 
@@ -34,7 +34,11 @@ Fifty historical candles are generated from 1,000 real warmup ticks. Live OHLC i
 
 **The market never pauses for tab switches.** A wall-clock target includes background timer throttling and device sleep. On wake, every missing tick is processed in order, including intervening liquidation crossings even if price subsequently recovers. The account stops only on bankruptcy or payment. No persistence across reload is implemented.
 
-Catch-up processes at most 1,000 ticks per callback, yields through timers between chunks, and disables order/payment controls. The view must paint the reconciled quote before controls unlock. If an order arrives before a delayed timer updates the screen, that click reconciles the view and is rejected with a request to tap again; it never trades at the old or newly unseen quote. Absolute elapsed targets prevent timer/input/visibility/bfcache callbacks from advancing twice. Catch-up and animation callbacks are invalidated on restart/destruction.
+Catch-up processes at most 1,000 ticks per callback and yields through timers between chunks. **An accepted Long, Short, or Close click survives price updates and fills once at the latest elapsed market tick after catch-up.** It never advances to a future tick or requires another click just because the displayed price changed. Rendering is not a condition for filling an order. Trading controls remain usable while catching up; hidden or ended games do not accept new input.
+
+Pending orders execute in click order. Each captures its selected fraction and leverage; available cash or remaining quantity is measured at execution. Distinct repeated clicks are distinct orders. Adds and closes bind to the original position ID, so liquidation or full closure makes an old position order invalid instead of reopening a position or closing a replacement. Insufficient funds and other impossible orders also fail without debt. Leverage remains locked while holding or while orders are pending.
+
+Absolute elapsed targets prevent timer/input/visibility/bfcache callbacks from advancing twice. Restart, destruction, navigation and pagehide cancel pending orders and invalidate old timer/animation callbacks. A bfcache return resumes elapsed-time catch-up with a fresh queue. Duplicate wakeups cannot replay orders. Payment also uses the queue and synchronously checks actual flat cash, persists the gate pass, and deducts cash at most once.
 
 `Date.now()` supplies wall elapsed time, with `performance.now()` as a monotonic floor. Sleep counts even where the performance clock stops. Backward wall-clock adjustments re-anchor without rewinding and preserve subsequent sleep accounting. Forward adjustments count as elapsed time. There is no server clock, so manually changing device time can affect this local prototype. There is no manual pause control.
 
@@ -72,8 +76,9 @@ Policy definitions are in `tests/crypto-simulation.mjs`: random flips/reopens ev
 node --test tests/*.test.mjs
 node tests/crypto-sweeps-simulation.mjs 2000 60001
 SITE_URL=http://127.0.0.1:8765 ARTIFACT_DIR=/tmp/crypto-review node tests/crypto-browser.cjs
+SITE_URL=http://127.0.0.1:8765 node tests/crypto-integration-browser.cjs
 ```
 
-The browser script needs Playwright and Chromium (`CHROMIUM` can override `/usr/bin/chromium`); the game itself needs no installation or build. It covers 320/390/768/1280px layouts, Chromium mouse/touch and keyboard controls, fees/partial closes/adds, locked leverage, restart, a complete seeded run, successful Pay and storage failure, an hour of chunked hidden catch-up, liquidation while away, rejected stale-price inputs, lifecycle duplication, and restart during catch-up. It writes actual screenshots. Unit tests independently verify accounting conservation, gaps, market OHLC, path independence, render-rate independence, sleep/clock correction behavior, and an interim liquidation followed by price recovery.
+The browser scripts need Playwright and Chromium (`CHROMIUM` can override `/usr/bin/chromium`); the game itself needs no installation or build. They cover 320/390/768/1280px layouts, Chromium mouse/touch and keyboard controls, fees/partial closes/adds, locked leverage, restart, complete seeded runs, successful Pay and storage failure, an hour of chunked hidden catch-up, liquidation while away, current-price execution of delayed inputs, repeated clicks, lifecycle duplication, and restart/navigation during catch-up. The integration suite additionally checks the gate's single payment button, eight-card gallery, freeplay payment isolation, and pass preservation. Both write actual screenshots. Unit tests independently verify accounting conservation, gaps, market OHLC, path independence, render-rate independence, sleep/clock correction behavior, and an interim liquidation followed by price recovery. See [integration verification](../../../tests/crypto-integration-verification.md).
 
-Validation was performed in Chromium, with controlled-clock tests plus an unmocked timer smoke test. Hidden state and sleep are simulated in these tests; no actual handset, OS suspend/resume, Safari or Firefox testing was performed. Screenshots were visually inspected. Publishing this test route does not add it to the random gate selector or freeplay gallery.
+Validation was performed in Chromium, with controlled-clock tests plus an unmocked timer smoke test. Hidden state and sleep are simulated in these tests; no actual handset, OS suspend/resume, Safari or Firefox testing was performed. Screenshots were visually inspected. Homepage integration does not change the market parameters or the 1× default; the mixed-shock simulation results above still describe that same market.

@@ -42,9 +42,9 @@ test('solved predicate accepts all 24 whole-cube orientations and rejects a turn
   }
   assert.equal(seen.size,24);
 });
-test('seven uniform game slots; cube hides target and supplies a fresh legal scramble',()=>{
-  const registry=createRegistry();assert.equal(registry.length,7);
-  assert.deepEqual([.5,1.5,2.5,3.5,4.5,5.5,6.5].map(n=>n/7).map(n=>chooseGame(registry,()=>n).id),['dial','cannon','slots','soda','cube','cube2','gomoku']);
+test('eight uniform game slots; cube hides target and supplies a fresh legal scramble',()=>{
+  const registry=createRegistry();assert.equal(registry.length,8);
+  assert.deepEqual([.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5].map(n=>n/8).map(n=>chooseGame(registry,()=>n).id),['dial','cannon','slots','soda','cube','cube2','gomoku','crypto']);
   const cube=registry.find(g=>g.id==='cube');assert.ok(cube.hideTarget);assert.ok(!isSolved(cube.next().stickers));assert.notEqual(key(cube.next().stickers),key(cube.next().stickers));
 });
 
