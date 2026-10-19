@@ -6,7 +6,7 @@ export const CONFIG = Object.freeze({
   minimumOrder: 1,
   leverage: Object.freeze([1, 2, 5, 10, 20]),
   allocations: Object.freeze([0.25, 0.5, 0.75, 1]),
-  defaultLeverage: 5,
+  defaultLeverage: 1,
   tickMs: 100,
   candleMs: 2_000,
   historyCandles: 50,

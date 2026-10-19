@@ -1,0 +1,4434 @@
+{
+  "seedRange": [
+    20001,
+    40000
+  ],
+  "runs": 20000,
+  "horizonSeconds": 600,
+  "tickMs": 100,
+  "entryTimeSeconds": 0,
+  "execution": "One 100% entry at t=0; observe every actual 100ms tick, liquidate first, otherwise close and pay on first fee-adjusted $50k opportunity. No stop, rebalance or compounding. Perfect observed-tick reaction, not a human timing estimate.",
+  "historyDefinition": "For the last N completed candles, return = last.close / first.open - 1. Negative means net decline, not that every candle is red. Desktop initially displays 50 candles (100s); mobile displays the last 40 (80s). Strict thresholds; only initial visible OHLC decides selection.",
+  "uncertainty": "95% Wilson binomial intervals approximate seed-sampling uncertainty, not model error. Conditions overlap and were fixed before simulation; not independent experiments.",
+  "config": {
+    "startingCash": 10000,
+    "target": 50000,
+    "feeRate": 0.0005,
+    "minimumOrder": 1,
+    "leverage": [
+      1,
+      2,
+      5,
+      10,
+      20
+    ],
+    "allocations": [
+      0.25,
+      0.5,
+      0.75,
+      1
+    ],
+    "defaultLeverage": 1,
+    "tickMs": 100,
+    "candleMs": 2000,
+    "historyCandles": 50,
+    "visibleCandles": 60,
+    "startingPrice": 100,
+    "meanRegimeSeconds": 60,
+    "trendDrift": 0.0032,
+    "driftResponseSeconds": 4,
+    "rangeReversion": 0.055,
+    "calmSigma": 0.0042,
+    "volatileSigma": 0.0071,
+    "volatilityResponseSeconds": 15,
+    "volatileProbability": 0.25,
+    "meanJumpSeconds": 110,
+    "jumpSigma": 0.009,
+    "catchupChunkTicks": 1000,
+    "catchupNoticeMs": 1000
+  },
+  "conditions": [
+    {
+      "id": "all",
+      "window": null,
+      "threshold": null
+    },
+    {
+      "id": "desktop50",
+      "window": 50,
+      "threshold": 0
+    },
+    {
+      "id": "mobile40",
+      "window": 40,
+      "threshold": 0
+    },
+    {
+      "id": "last20",
+      "window": 20,
+      "threshold": 0
+    },
+    {
+      "id": "last10",
+      "window": 10,
+      "threshold": 0
+    },
+    {
+      "id": "last10_3pct",
+      "window": 10,
+      "threshold": 0.03
+    },
+    {
+      "id": "last10_5pct",
+      "window": 10,
+      "threshold": 0.05
+    },
+    {
+      "id": "last20_5pct",
+      "window": 20,
+      "threshold": 0.05
+    },
+    {
+      "id": "last20_10pct",
+      "window": 20,
+      "threshold": 0.1
+    },
+    {
+      "id": "desktop50_10pct",
+      "window": 50,
+      "threshold": 0.1
+    }
+  ],
+  "historyFutureLogReturnCorrelations": {
+    "10": {
+      "30": 0.5726,
+      "60": 0.4793,
+      "120": 0.3545,
+      "240": 0.2435,
+      "600": 0.1417
+    },
+    "20": {
+      "30": 0.5177,
+      "60": 0.4359,
+      "120": 0.3199,
+      "240": 0.2183,
+      "600": 0.1261
+    },
+    "40": {
+      "30": 0.4133,
+      "60": 0.347,
+      "120": 0.2523,
+      "240": 0.168,
+      "600": 0.0971
+    },
+    "50": {
+      "30": 0.3813,
+      "60": 0.3201,
+      "120": 0.2331,
+      "240": 0.1529,
+      "600": 0.0884
+    }
+  },
+  "strategies": {
+    "short20": {
+      "side": -1,
+      "leverage": 20,
+      "boundaries": {
+        "margin": 9900.990099009901,
+        "openingFee": 99.00990099009901,
+        "grossTargetRatio": 0.7975,
+        "netTargetRatio": 0.7971014492753623,
+        "liquidationRatio": 1.0494752623688157,
+        "targetReachable": true,
+        "shortMaximumCashAtZeroPrice": 207920.79207920792
+      },
+      "conditions": {
+        "all": {
+          "selected": 20000,
+          "selectionPercent": 100,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.02
+              ],
+              "ruin": 6426,
+              "ruinPercent": 32.13,
+              "unfinished": 13574,
+              "unfinishedPercent": 67.87,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 49.92
+            },
+            {
+              "seconds": 60,
+              "success": 804,
+              "successPercent": 4.02,
+              "success95Percent": [
+                3.76,
+                4.3
+              ],
+              "ruin": 8441,
+              "ruinPercent": 42.2,
+              "unfinished": 10755,
+              "unfinishedPercent": 53.77,
+              "grossTargetReached": 809,
+              "grossTargetReachedPercent": 4.04,
+              "grossWithoutNetTarget": 5,
+              "futurePriceInSelectedDirectionPercent": 49.88
+            },
+            {
+              "seconds": 120,
+              "success": 3697,
+              "successPercent": 18.48,
+              "success95Percent": [
+                17.95,
+                19.03
+              ],
+              "ruin": 10778,
+              "ruinPercent": 53.89,
+              "unfinished": 5525,
+              "unfinishedPercent": 27.63,
+              "grossTargetReached": 3707,
+              "grossTargetReachedPercent": 18.54,
+              "grossWithoutNetTarget": 10,
+              "futurePriceInSelectedDirectionPercent": 50.06
+            },
+            {
+              "seconds": 240,
+              "success": 5472,
+              "successPercent": 27.36,
+              "success95Percent": [
+                26.75,
+                27.98
+              ],
+              "ruin": 12762,
+              "ruinPercent": 63.81,
+              "unfinished": 1766,
+              "unfinishedPercent": 8.83,
+              "grossTargetReached": 5481,
+              "grossTargetReachedPercent": 27.41,
+              "grossWithoutNetTarget": 9,
+              "futurePriceInSelectedDirectionPercent": 49.96
+            },
+            {
+              "seconds": 600,
+              "success": 6322,
+              "successPercent": 31.61,
+              "success95Percent": [
+                30.97,
+                32.26
+              ],
+              "ruin": 13628,
+              "ruinPercent": 68.14,
+              "unfinished": 50,
+              "unfinishedPercent": 0.25,
+              "grossTargetReached": 6327,
+              "grossTargetReachedPercent": 31.64,
+              "grossWithoutNetTarget": 5,
+              "futurePriceInSelectedDirectionPercent": 49.49
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 57.9,
+            "median": 102.4,
+            "p90": 269.3
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50191.32
+          }
+        },
+        "desktop50": {
+          "selected": 9932,
+          "selectionPercent": 49.66,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1988,
+              "ruinPercent": 20.02,
+              "unfinished": 7944,
+              "unfinishedPercent": 79.98,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 60.91
+            },
+            {
+              "seconds": 60,
+              "success": 595,
+              "successPercent": 5.99,
+              "success95Percent": [
+                5.54,
+                6.47
+              ],
+              "ruin": 3088,
+              "ruinPercent": 31.09,
+              "unfinished": 6249,
+              "unfinishedPercent": 62.92,
+              "grossTargetReached": 600,
+              "grossTargetReachedPercent": 6.04,
+              "grossWithoutNetTarget": 5,
+              "futurePriceInSelectedDirectionPercent": 58.67
+            },
+            {
+              "seconds": 120,
+              "success": 2403,
+              "successPercent": 24.19,
+              "success95Percent": [
+                23.36,
+                25.05
+              ],
+              "ruin": 4387,
+              "ruinPercent": 44.17,
+              "unfinished": 3142,
+              "unfinishedPercent": 31.64,
+              "grossTargetReached": 2409,
+              "grossTargetReachedPercent": 24.25,
+              "grossWithoutNetTarget": 6,
+              "futurePriceInSelectedDirectionPercent": 57.48
+            },
+            {
+              "seconds": 240,
+              "success": 3426,
+              "successPercent": 34.49,
+              "success95Percent": [
+                33.57,
+                35.44
+              ],
+              "ruin": 5512,
+              "ruinPercent": 55.5,
+              "unfinished": 994,
+              "unfinishedPercent": 10.01,
+              "grossTargetReached": 3430,
+              "grossTargetReachedPercent": 34.53,
+              "grossWithoutNetTarget": 4,
+              "futurePriceInSelectedDirectionPercent": 54.99
+            },
+            {
+              "seconds": 600,
+              "success": 3884,
+              "successPercent": 39.11,
+              "success95Percent": [
+                38.15,
+                40.07
+              ],
+              "ruin": 6019,
+              "ruinPercent": 60.6,
+              "unfinished": 29,
+              "unfinishedPercent": 0.29,
+              "grossTargetReached": 3887,
+              "grossTargetReachedPercent": 39.14,
+              "grossWithoutNetTarget": 3,
+              "futurePriceInSelectedDirectionPercent": 52.41
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 56.3,
+            "median": 95.1,
+            "p90": 255.5
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50217.99
+          }
+        },
+        "mobile40": {
+          "selected": 9963,
+          "selectionPercent": 49.81,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1878,
+              "ruinPercent": 18.85,
+              "unfinished": 8085,
+              "unfinishedPercent": 81.15,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 61.94
+            },
+            {
+              "seconds": 60,
+              "success": 615,
+              "successPercent": 6.17,
+              "success95Percent": [
+                5.72,
+                6.66
+              ],
+              "ruin": 3006,
+              "ruinPercent": 30.17,
+              "unfinished": 6342,
+              "unfinishedPercent": 63.66,
+              "grossTargetReached": 620,
+              "grossTargetReachedPercent": 6.22,
+              "grossWithoutNetTarget": 5,
+              "futurePriceInSelectedDirectionPercent": 59.43
+            },
+            {
+              "seconds": 120,
+              "success": 2449,
+              "successPercent": 24.58,
+              "success95Percent": [
+                23.75,
+                25.44
+              ],
+              "ruin": 4328,
+              "ruinPercent": 43.44,
+              "unfinished": 3186,
+              "unfinishedPercent": 31.98,
+              "grossTargetReached": 2456,
+              "grossTargetReachedPercent": 24.65,
+              "grossWithoutNetTarget": 7,
+              "futurePriceInSelectedDirectionPercent": 57.75
+            },
+            {
+              "seconds": 240,
+              "success": 3489,
+              "successPercent": 35.02,
+              "success95Percent": [
+                34.09,
+                35.96
+              ],
+              "ruin": 5449,
+              "ruinPercent": 54.69,
+              "unfinished": 1025,
+              "unfinishedPercent": 10.29,
+              "grossTargetReached": 3495,
+              "grossTargetReachedPercent": 35.08,
+              "grossWithoutNetTarget": 6,
+              "futurePriceInSelectedDirectionPercent": 55.5
+            },
+            {
+              "seconds": 600,
+              "success": 3959,
+              "successPercent": 39.74,
+              "success95Percent": [
+                38.78,
+                40.7
+              ],
+              "ruin": 5972,
+              "ruinPercent": 59.94,
+              "unfinished": 32,
+              "unfinishedPercent": 0.32,
+              "grossTargetReached": 3962,
+              "grossTargetReachedPercent": 39.77,
+              "grossWithoutNetTarget": 3,
+              "futurePriceInSelectedDirectionPercent": 52.6
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 56.1,
+            "median": 94.7,
+            "p90": 255.3
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50220.11
+          }
+        },
+        "last20": {
+          "selected": 9967,
+          "selectionPercent": 49.84,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1550,
+              "ruinPercent": 15.55,
+              "unfinished": 8417,
+              "unfinishedPercent": 84.45,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 64.59
+            },
+            {
+              "seconds": 60,
+              "success": 680,
+              "successPercent": 6.82,
+              "success95Percent": [
+                6.34,
+                7.33
+              ],
+              "ruin": 2720,
+              "ruinPercent": 27.29,
+              "unfinished": 6567,
+              "unfinishedPercent": 65.89,
+              "grossTargetReached": 685,
+              "grossTargetReachedPercent": 6.87,
+              "grossWithoutNetTarget": 5,
+              "futurePriceInSelectedDirectionPercent": 61.88
+            },
+            {
+              "seconds": 120,
+              "success": 2659,
+              "successPercent": 26.68,
+              "success95Percent": [
+                25.82,
+                27.56
+              ],
+              "ruin": 4060,
+              "ruinPercent": 40.73,
+              "unfinished": 3248,
+              "unfinishedPercent": 32.59,
+              "grossTargetReached": 2666,
+              "grossTargetReachedPercent": 26.75,
+              "grossWithoutNetTarget": 7,
+              "futurePriceInSelectedDirectionPercent": 60.02
+            },
+            {
+              "seconds": 240,
+              "success": 3699,
+              "successPercent": 37.11,
+              "success95Percent": [
+                36.17,
+                38.07
+              ],
+              "ruin": 5236,
+              "ruinPercent": 52.53,
+              "unfinished": 1032,
+              "unfinishedPercent": 10.35,
+              "grossTargetReached": 3704,
+              "grossTargetReachedPercent": 37.16,
+              "grossWithoutNetTarget": 5,
+              "futurePriceInSelectedDirectionPercent": 56.94
+            },
+            {
+              "seconds": 600,
+              "success": 4183,
+              "successPercent": 41.97,
+              "success95Percent": [
+                41,
+                42.94
+              ],
+              "ruin": 5759,
+              "ruinPercent": 57.78,
+              "unfinished": 25,
+              "unfinishedPercent": 0.25,
+              "grossTargetReached": 4186,
+              "grossTargetReachedPercent": 42,
+              "grossWithoutNetTarget": 3,
+              "futurePriceInSelectedDirectionPercent": 53.49
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 56,
+            "median": 91.5,
+            "p90": 252.8
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50229.97
+          }
+        },
+        "last10": {
+          "selected": 10008,
+          "selectionPercent": 50.04,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1333,
+              "ruinPercent": 13.32,
+              "unfinished": 8675,
+              "unfinishedPercent": 86.68,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 66.74
+            },
+            {
+              "seconds": 60,
+              "success": 710,
+              "successPercent": 7.09,
+              "success95Percent": [
+                6.61,
+                7.61
+              ],
+              "ruin": 2520,
+              "ruinPercent": 25.18,
+              "unfinished": 6778,
+              "unfinishedPercent": 67.73,
+              "grossTargetReached": 715,
+              "grossTargetReachedPercent": 7.14,
+              "grossWithoutNetTarget": 5,
+              "futurePriceInSelectedDirectionPercent": 63.65
+            },
+            {
+              "seconds": 120,
+              "success": 2775,
+              "successPercent": 27.73,
+              "success95Percent": [
+                26.86,
+                28.61
+              ],
+              "ruin": 3927,
+              "ruinPercent": 39.24,
+              "unfinished": 3306,
+              "unfinishedPercent": 33.03,
+              "grossTargetReached": 2784,
+              "grossTargetReachedPercent": 27.82,
+              "grossWithoutNetTarget": 9,
+              "futurePriceInSelectedDirectionPercent": 61.31
+            },
+            {
+              "seconds": 240,
+              "success": 3846,
+              "successPercent": 38.43,
+              "success95Percent": [
+                37.48,
+                39.39
+              ],
+              "ruin": 5102,
+              "ruinPercent": 50.98,
+              "unfinished": 1060,
+              "unfinishedPercent": 10.59,
+              "grossTargetReached": 3852,
+              "grossTargetReachedPercent": 38.49,
+              "grossWithoutNetTarget": 6,
+              "futurePriceInSelectedDirectionPercent": 58.22
+            },
+            {
+              "seconds": 600,
+              "success": 4356,
+              "successPercent": 43.53,
+              "success95Percent": [
+                42.56,
+                44.5
+              ],
+              "ruin": 5626,
+              "ruinPercent": 56.22,
+              "unfinished": 26,
+              "unfinishedPercent": 0.26,
+              "grossTargetReached": 4359,
+              "grossTargetReachedPercent": 43.56,
+              "grossWithoutNetTarget": 3,
+              "futurePriceInSelectedDirectionPercent": 54.32
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 55.8,
+            "median": 91.1,
+            "p90": 255
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50234.38
+          }
+        },
+        "last10_3pct": {
+          "selected": 6077,
+          "selectionPercent": 30.39,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 617,
+              "ruinPercent": 10.15,
+              "unfinished": 5460,
+              "unfinishedPercent": 89.85,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 77.52
+            },
+            {
+              "seconds": 60,
+              "success": 621,
+              "successPercent": 10.22,
+              "success95Percent": [
+                9.48,
+                11.01
+              ],
+              "ruin": 1223,
+              "ruinPercent": 20.13,
+              "unfinished": 4233,
+              "unfinishedPercent": 69.66,
+              "grossTargetReached": 625,
+              "grossTargetReachedPercent": 10.28,
+              "grossWithoutNetTarget": 4,
+              "futurePriceInSelectedDirectionPercent": 72.37
+            },
+            {
+              "seconds": 120,
+              "success": 2123,
+              "successPercent": 34.94,
+              "success95Percent": [
+                33.75,
+                36.14
+              ],
+              "ruin": 1954,
+              "ruinPercent": 32.15,
+              "unfinished": 2000,
+              "unfinishedPercent": 32.91,
+              "grossTargetReached": 2129,
+              "grossTargetReachedPercent": 35.03,
+              "grossWithoutNetTarget": 6,
+              "futurePriceInSelectedDirectionPercent": 67.99
+            },
+            {
+              "seconds": 240,
+              "success": 2774,
+              "successPercent": 45.65,
+              "success95Percent": [
+                44.4,
+                46.9
+              ],
+              "ruin": 2657,
+              "ruinPercent": 43.72,
+              "unfinished": 646,
+              "unfinishedPercent": 10.63,
+              "grossTargetReached": 2779,
+              "grossTargetReachedPercent": 45.73,
+              "grossWithoutNetTarget": 5,
+              "futurePriceInSelectedDirectionPercent": 61.95
+            },
+            {
+              "seconds": 600,
+              "success": 3059,
+              "successPercent": 50.34,
+              "success95Percent": [
+                49.08,
+                51.59
+              ],
+              "ruin": 3002,
+              "ruinPercent": 49.4,
+              "unfinished": 16,
+              "unfinishedPercent": 0.26,
+              "grossTargetReached": 3061,
+              "grossTargetReachedPercent": 50.37,
+              "grossWithoutNetTarget": 2,
+              "futurePriceInSelectedDirectionPercent": 56.54
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 54.5,
+            "median": 81.6,
+            "p90": 233.9
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 50001.22,
+            "p90": 50254.21
+          }
+        },
+        "last10_5pct": {
+          "selected": 3982,
+          "selectionPercent": 19.91,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.1
+              ],
+              "ruin": 319,
+              "ruinPercent": 8.01,
+              "unfinished": 3663,
+              "unfinishedPercent": 91.99,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 81.97
+            },
+            {
+              "seconds": 60,
+              "success": 510,
+              "successPercent": 12.81,
+              "success95Percent": [
+                11.81,
+                13.88
+              ],
+              "ruin": 685,
+              "ruinPercent": 17.2,
+              "unfinished": 2787,
+              "unfinishedPercent": 69.99,
+              "grossTargetReached": 513,
+              "grossTargetReachedPercent": 12.88,
+              "grossWithoutNetTarget": 3,
+              "futurePriceInSelectedDirectionPercent": 75.97
+            },
+            {
+              "seconds": 120,
+              "success": 1550,
+              "successPercent": 38.93,
+              "success95Percent": [
+                37.42,
+                40.45
+              ],
+              "ruin": 1127,
+              "ruinPercent": 28.3,
+              "unfinished": 1305,
+              "unfinishedPercent": 32.77,
+              "grossTargetReached": 1554,
+              "grossTargetReachedPercent": 39.03,
+              "grossWithoutNetTarget": 4,
+              "futurePriceInSelectedDirectionPercent": 70.17
+            },
+            {
+              "seconds": 240,
+              "success": 1962,
+              "successPercent": 49.27,
+              "success95Percent": [
+                47.72,
+                50.82
+              ],
+              "ruin": 1590,
+              "ruinPercent": 39.93,
+              "unfinished": 430,
+              "unfinishedPercent": 10.8,
+              "grossTargetReached": 1966,
+              "grossTargetReachedPercent": 49.37,
+              "grossWithoutNetTarget": 4,
+              "futurePriceInSelectedDirectionPercent": 63.69
+            },
+            {
+              "seconds": 600,
+              "success": 2146,
+              "successPercent": 53.89,
+              "success95Percent": [
+                52.34,
+                55.44
+              ],
+              "ruin": 1825,
+              "ruinPercent": 45.83,
+              "unfinished": 11,
+              "unfinishedPercent": 0.28,
+              "grossTargetReached": 2148,
+              "grossTargetReachedPercent": 53.94,
+              "grossWithoutNetTarget": 2,
+              "futurePriceInSelectedDirectionPercent": 58.39
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 53.8,
+            "median": 77,
+            "p90": 226.2
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 50012.94,
+            "p90": 50267.36
+          }
+        },
+        "last20_5pct": {
+          "selected": 5928,
+          "selectionPercent": 29.64,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 723,
+              "ruinPercent": 12.2,
+              "unfinished": 5205,
+              "unfinishedPercent": 87.8,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 74.9
+            },
+            {
+              "seconds": 60,
+              "success": 561,
+              "successPercent": 9.46,
+              "success95Percent": [
+                8.74,
+                10.24
+              ],
+              "ruin": 1306,
+              "ruinPercent": 22.03,
+              "unfinished": 4061,
+              "unfinishedPercent": 68.51,
+              "grossTargetReached": 566,
+              "grossTargetReachedPercent": 9.55,
+              "grossWithoutNetTarget": 5,
+              "futurePriceInSelectedDirectionPercent": 70.55
+            },
+            {
+              "seconds": 120,
+              "success": 1987,
+              "successPercent": 33.52,
+              "success95Percent": [
+                32.33,
+                34.73
+              ],
+              "ruin": 2011,
+              "ruinPercent": 33.92,
+              "unfinished": 1930,
+              "unfinishedPercent": 32.56,
+              "grossTargetReached": 1993,
+              "grossTargetReachedPercent": 33.62,
+              "grossWithoutNetTarget": 6,
+              "futurePriceInSelectedDirectionPercent": 66.28
+            },
+            {
+              "seconds": 240,
+              "success": 2624,
+              "successPercent": 44.26,
+              "success95Percent": [
+                43,
+                45.53
+              ],
+              "ruin": 2694,
+              "ruinPercent": 45.45,
+              "unfinished": 610,
+              "unfinishedPercent": 10.29,
+              "grossTargetReached": 2629,
+              "grossTargetReachedPercent": 44.35,
+              "grossWithoutNetTarget": 5,
+              "futurePriceInSelectedDirectionPercent": 60.93
+            },
+            {
+              "seconds": 600,
+              "success": 2891,
+              "successPercent": 48.77,
+              "success95Percent": [
+                47.5,
+                50.04
+              ],
+              "ruin": 3022,
+              "ruinPercent": 50.98,
+              "unfinished": 15,
+              "unfinishedPercent": 0.25,
+              "grossTargetReached": 2894,
+              "grossTargetReachedPercent": 48.82,
+              "grossWithoutNetTarget": 3,
+              "futurePriceInSelectedDirectionPercent": 55.79
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 54.7,
+            "median": 82.1,
+            "p90": 233.3
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50247.9
+          }
+        },
+        "last20_10pct": {
+          "selected": 3269,
+          "selectionPercent": 16.35,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.12
+              ],
+              "ruin": 286,
+              "ruinPercent": 8.75,
+              "unfinished": 2983,
+              "unfinishedPercent": 91.25,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 80.73
+            },
+            {
+              "seconds": 60,
+              "success": 408,
+              "successPercent": 12.48,
+              "success95Percent": [
+                11.39,
+                13.66
+              ],
+              "ruin": 589,
+              "ruinPercent": 18.02,
+              "unfinished": 2272,
+              "unfinishedPercent": 69.5,
+              "grossTargetReached": 412,
+              "grossTargetReachedPercent": 12.6,
+              "grossWithoutNetTarget": 4,
+              "futurePriceInSelectedDirectionPercent": 75.1
+            },
+            {
+              "seconds": 120,
+              "success": 1241,
+              "successPercent": 37.96,
+              "success95Percent": [
+                36.31,
+                39.64
+              ],
+              "ruin": 947,
+              "ruinPercent": 28.97,
+              "unfinished": 1081,
+              "unfinishedPercent": 33.07,
+              "grossTargetReached": 1245,
+              "grossTargetReachedPercent": 38.09,
+              "grossWithoutNetTarget": 4,
+              "futurePriceInSelectedDirectionPercent": 70.08
+            },
+            {
+              "seconds": 240,
+              "success": 1585,
+              "successPercent": 48.49,
+              "success95Percent": [
+                46.78,
+                50.2
+              ],
+              "ruin": 1327,
+              "ruinPercent": 40.59,
+              "unfinished": 357,
+              "unfinishedPercent": 10.92,
+              "grossTargetReached": 1589,
+              "grossTargetReachedPercent": 48.61,
+              "grossWithoutNetTarget": 4,
+              "futurePriceInSelectedDirectionPercent": 63.57
+            },
+            {
+              "seconds": 600,
+              "success": 1744,
+              "successPercent": 53.35,
+              "success95Percent": [
+                51.64,
+                55.05
+              ],
+              "ruin": 1517,
+              "ruinPercent": 46.41,
+              "unfinished": 8,
+              "unfinishedPercent": 0.24,
+              "grossTargetReached": 1746,
+              "grossTargetReachedPercent": 53.41,
+              "grossWithoutNetTarget": 2,
+              "futurePriceInSelectedDirectionPercent": 57.69
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 53.6,
+            "median": 77,
+            "p90": 231.1
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 50011.18,
+            "p90": 50253.98
+          }
+        },
+        "desktop50_10pct": {
+          "selected": 5636,
+          "selectionPercent": 28.18,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.07
+              ],
+              "ruin": 957,
+              "ruinPercent": 16.98,
+              "unfinished": 4679,
+              "unfinishedPercent": 83.02,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 67.6
+            },
+            {
+              "seconds": 60,
+              "success": 443,
+              "successPercent": 7.86,
+              "success95Percent": [
+                7.19,
+                8.59
+              ],
+              "ruin": 1539,
+              "ruinPercent": 27.31,
+              "unfinished": 3654,
+              "unfinishedPercent": 64.83,
+              "grossTargetReached": 448,
+              "grossTargetReachedPercent": 7.95,
+              "grossWithoutNetTarget": 5,
+              "futurePriceInSelectedDirectionPercent": 64.07
+            },
+            {
+              "seconds": 120,
+              "success": 1608,
+              "successPercent": 28.53,
+              "success95Percent": [
+                27.37,
+                29.72
+              ],
+              "ruin": 2225,
+              "ruinPercent": 39.48,
+              "unfinished": 1803,
+              "unfinishedPercent": 31.99,
+              "grossTargetReached": 1611,
+              "grossTargetReachedPercent": 28.58,
+              "grossWithoutNetTarget": 3,
+              "futurePriceInSelectedDirectionPercent": 61.44
+            },
+            {
+              "seconds": 240,
+              "success": 2179,
+              "successPercent": 38.66,
+              "success95Percent": [
+                37.4,
+                39.94
+              ],
+              "ruin": 2865,
+              "ruinPercent": 50.83,
+              "unfinished": 592,
+              "unfinishedPercent": 10.5,
+              "grossTargetReached": 2181,
+              "grossTargetReachedPercent": 38.7,
+              "grossWithoutNetTarget": 2,
+              "futurePriceInSelectedDirectionPercent": 57.26
+            },
+            {
+              "seconds": 600,
+              "success": 2440,
+              "successPercent": 43.29,
+              "success95Percent": [
+                42,
+                44.59
+              ],
+              "ruin": 3179,
+              "ruinPercent": 56.41,
+              "unfinished": 17,
+              "unfinishedPercent": 0.3,
+              "grossTargetReached": 2441,
+              "grossTargetReachedPercent": 43.31,
+              "grossWithoutNetTarget": 1,
+              "futurePriceInSelectedDirectionPercent": 53.76
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 55.1,
+            "median": 85.8,
+            "p90": 245
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50231
+          }
+        }
+      }
+    },
+    "long20": {
+      "side": 1,
+      "leverage": 20,
+      "boundaries": {
+        "margin": 9900.990099009901,
+        "openingFee": 99.00990099009901,
+        "grossTargetRatio": 1.2025000000000001,
+        "netTargetRatio": 1.2031015507753877,
+        "liquidationRatio": 0.9504752376188093,
+        "targetReachable": true,
+        "shortMaximumCashAtZeroPrice": null
+      },
+      "conditions": {
+        "all": {
+          "selected": 20000,
+          "selectionPercent": 100,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 18,
+              "successPercent": 0.09,
+              "success95Percent": [
+                0.06,
+                0.14
+              ],
+              "ruin": 6171,
+              "ruinPercent": 30.86,
+              "unfinished": 13811,
+              "unfinishedPercent": 69.06,
+              "grossTargetReached": 19,
+              "grossTargetReachedPercent": 0.1,
+              "grossWithoutNetTarget": 1,
+              "futurePriceInSelectedDirectionPercent": 50.08
+            },
+            {
+              "seconds": 60,
+              "success": 2029,
+              "successPercent": 10.14,
+              "success95Percent": [
+                9.73,
+                10.57
+              ],
+              "ruin": 8241,
+              "ruinPercent": 41.21,
+              "unfinished": 9730,
+              "unfinishedPercent": 48.65,
+              "grossTargetReached": 2047,
+              "grossTargetReachedPercent": 10.23,
+              "grossWithoutNetTarget": 18,
+              "futurePriceInSelectedDirectionPercent": 50.13
+            },
+            {
+              "seconds": 120,
+              "success": 4750,
+              "successPercent": 23.75,
+              "success95Percent": [
+                23.17,
+                24.34
+              ],
+              "ruin": 10543,
+              "ruinPercent": 52.72,
+              "unfinished": 4707,
+              "unfinishedPercent": 23.54,
+              "grossTargetReached": 4767,
+              "grossTargetReachedPercent": 23.84,
+              "grossWithoutNetTarget": 17,
+              "futurePriceInSelectedDirectionPercent": 49.94
+            },
+            {
+              "seconds": 240,
+              "success": 6359,
+              "successPercent": 31.8,
+              "success95Percent": [
+                31.15,
+                32.44
+              ],
+              "ruin": 12383,
+              "ruinPercent": 61.91,
+              "unfinished": 1258,
+              "unfinishedPercent": 6.29,
+              "grossTargetReached": 6374,
+              "grossTargetReachedPercent": 31.87,
+              "grossWithoutNetTarget": 15,
+              "futurePriceInSelectedDirectionPercent": 50.04
+            },
+            {
+              "seconds": 600,
+              "success": 6970,
+              "successPercent": 34.85,
+              "success95Percent": [
+                34.19,
+                35.51
+              ],
+              "ruin": 13008,
+              "ruinPercent": 65.04,
+              "unfinished": 22,
+              "unfinishedPercent": 0.11,
+              "grossTargetReached": 6980,
+              "grossTargetReachedPercent": 34.9,
+              "grossWithoutNetTarget": 10,
+              "futurePriceInSelectedDirectionPercent": 50.51
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 46.7,
+            "median": 80.9,
+            "p90": 229.2
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50303.79
+          }
+        },
+        "desktop50": {
+          "selected": 10068,
+          "selectionPercent": 50.34,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 16,
+              "successPercent": 0.16,
+              "success95Percent": [
+                0.1,
+                0.26
+              ],
+              "ruin": 1920,
+              "ruinPercent": 19.07,
+              "unfinished": 8132,
+              "unfinishedPercent": 80.77,
+              "grossTargetReached": 16,
+              "grossTargetReachedPercent": 0.16,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 60.93
+            },
+            {
+              "seconds": 60,
+              "success": 1464,
+              "successPercent": 14.54,
+              "success95Percent": [
+                13.87,
+                15.24
+              ],
+              "ruin": 3049,
+              "ruinPercent": 30.28,
+              "unfinished": 5555,
+              "unfinishedPercent": 55.17,
+              "grossTargetReached": 1479,
+              "grossTargetReachedPercent": 14.69,
+              "grossWithoutNetTarget": 15,
+              "futurePriceInSelectedDirectionPercent": 58.8
+            },
+            {
+              "seconds": 120,
+              "success": 3106,
+              "successPercent": 30.85,
+              "success95Percent": [
+                29.96,
+                31.76
+              ],
+              "ruin": 4373,
+              "ruinPercent": 43.43,
+              "unfinished": 2589,
+              "unfinishedPercent": 25.72,
+              "grossTargetReached": 3117,
+              "grossTargetReachedPercent": 30.96,
+              "grossWithoutNetTarget": 11,
+              "futurePriceInSelectedDirectionPercent": 57.26
+            },
+            {
+              "seconds": 240,
+              "success": 4014,
+              "successPercent": 39.87,
+              "success95Percent": [
+                38.92,
+                40.83
+              ],
+              "ruin": 5376,
+              "ruinPercent": 53.4,
+              "unfinished": 678,
+              "unfinishedPercent": 6.73,
+              "grossTargetReached": 4026,
+              "grossTargetReachedPercent": 39.99,
+              "grossWithoutNetTarget": 12,
+              "futurePriceInSelectedDirectionPercent": 55.01
+            },
+            {
+              "seconds": 600,
+              "success": 4354,
+              "successPercent": 43.25,
+              "success95Percent": [
+                42.28,
+                44.22
+              ],
+              "ruin": 5703,
+              "ruinPercent": 56.64,
+              "unfinished": 11,
+              "unfinishedPercent": 0.11,
+              "grossTargetReached": 4361,
+              "grossTargetReachedPercent": 43.32,
+              "grossWithoutNetTarget": 7,
+              "futurePriceInSelectedDirectionPercent": 53.38
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 45.5,
+            "median": 74.5,
+            "p90": 218.9
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50348.99
+          }
+        },
+        "mobile40": {
+          "selected": 10037,
+          "selectionPercent": 50.19,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 16,
+              "successPercent": 0.16,
+              "success95Percent": [
+                0.1,
+                0.26
+              ],
+              "ruin": 1821,
+              "ruinPercent": 18.14,
+              "unfinished": 8200,
+              "unfinishedPercent": 81.7,
+              "grossTargetReached": 17,
+              "grossTargetReachedPercent": 0.17,
+              "grossWithoutNetTarget": 1,
+              "futurePriceInSelectedDirectionPercent": 62.01
+            },
+            {
+              "seconds": 60,
+              "success": 1492,
+              "successPercent": 14.86,
+              "success95Percent": [
+                14.18,
+                15.57
+              ],
+              "ruin": 2960,
+              "ruinPercent": 29.49,
+              "unfinished": 5585,
+              "unfinishedPercent": 55.64,
+              "grossTargetReached": 1505,
+              "grossTargetReachedPercent": 14.99,
+              "grossWithoutNetTarget": 13,
+              "futurePriceInSelectedDirectionPercent": 59.61
+            },
+            {
+              "seconds": 120,
+              "success": 3154,
+              "successPercent": 31.42,
+              "success95Percent": [
+                30.52,
+                32.34
+              ],
+              "ruin": 4292,
+              "ruinPercent": 42.76,
+              "unfinished": 2591,
+              "unfinishedPercent": 25.81,
+              "grossTargetReached": 3166,
+              "grossTargetReachedPercent": 31.54,
+              "grossWithoutNetTarget": 12,
+              "futurePriceInSelectedDirectionPercent": 57.58
+            },
+            {
+              "seconds": 240,
+              "success": 4061,
+              "successPercent": 40.46,
+              "success95Percent": [
+                39.5,
+                41.42
+              ],
+              "ruin": 5286,
+              "ruinPercent": 52.67,
+              "unfinished": 690,
+              "unfinishedPercent": 6.87,
+              "grossTargetReached": 4071,
+              "grossTargetReachedPercent": 40.56,
+              "grossWithoutNetTarget": 10,
+              "futurePriceInSelectedDirectionPercent": 55.53
+            },
+            {
+              "seconds": 600,
+              "success": 4412,
+              "successPercent": 43.96,
+              "success95Percent": [
+                42.99,
+                44.93
+              ],
+              "ruin": 5616,
+              "ruinPercent": 55.95,
+              "unfinished": 9,
+              "unfinishedPercent": 0.09,
+              "grossTargetReached": 4418,
+              "grossTargetReachedPercent": 44.02,
+              "grossWithoutNetTarget": 6,
+              "futurePriceInSelectedDirectionPercent": 53.59
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 45.6,
+            "median": 74.2,
+            "p90": 220.3
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50351.33
+          }
+        },
+        "last20": {
+          "selected": 10033,
+          "selectionPercent": 50.17,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 16,
+              "successPercent": 0.16,
+              "success95Percent": [
+                0.1,
+                0.26
+              ],
+              "ruin": 1450,
+              "ruinPercent": 14.45,
+              "unfinished": 8567,
+              "unfinishedPercent": 85.39,
+              "grossTargetReached": 16,
+              "grossTargetReachedPercent": 0.16,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 64.66
+            },
+            {
+              "seconds": 60,
+              "success": 1616,
+              "successPercent": 16.11,
+              "success95Percent": [
+                15.4,
+                16.84
+              ],
+              "ruin": 2609,
+              "ruinPercent": 26,
+              "unfinished": 5808,
+              "unfinishedPercent": 57.89,
+              "grossTargetReached": 1631,
+              "grossTargetReachedPercent": 16.26,
+              "grossWithoutNetTarget": 15,
+              "futurePriceInSelectedDirectionPercent": 62.06
+            },
+            {
+              "seconds": 120,
+              "success": 3371,
+              "successPercent": 33.6,
+              "success95Percent": [
+                32.68,
+                34.53
+              ],
+              "ruin": 3982,
+              "ruinPercent": 39.69,
+              "unfinished": 2680,
+              "unfinishedPercent": 26.71,
+              "grossTargetReached": 3384,
+              "grossTargetReachedPercent": 33.73,
+              "grossWithoutNetTarget": 13,
+              "futurePriceInSelectedDirectionPercent": 59.83
+            },
+            {
+              "seconds": 240,
+              "success": 4274,
+              "successPercent": 42.6,
+              "success95Percent": [
+                41.63,
+                43.57
+              ],
+              "ruin": 5031,
+              "ruinPercent": 50.14,
+              "unfinished": 728,
+              "unfinishedPercent": 7.26,
+              "grossTargetReached": 4287,
+              "grossTargetReachedPercent": 42.73,
+              "grossWithoutNetTarget": 13,
+              "futurePriceInSelectedDirectionPercent": 56.97
+            },
+            {
+              "seconds": 600,
+              "success": 4647,
+              "successPercent": 46.32,
+              "success95Percent": [
+                45.34,
+                47.29
+              ],
+              "ruin": 5376,
+              "ruinPercent": 53.58,
+              "unfinished": 10,
+              "unfinishedPercent": 0.1,
+              "grossTargetReached": 4655,
+              "grossTargetReachedPercent": 46.4,
+              "grossWithoutNetTarget": 8,
+              "futurePriceInSelectedDirectionPercent": 54.47
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 45.2,
+            "median": 72.8,
+            "p90": 218.9
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50356.56
+          }
+        },
+        "last10": {
+          "selected": 9992,
+          "selectionPercent": 49.96,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 18,
+              "successPercent": 0.18,
+              "success95Percent": [
+                0.11,
+                0.28
+              ],
+              "ruin": 1227,
+              "ruinPercent": 12.28,
+              "unfinished": 8747,
+              "unfinishedPercent": 87.54,
+              "grossTargetReached": 19,
+              "grossTargetReachedPercent": 0.19,
+              "grossWithoutNetTarget": 1,
+              "futurePriceInSelectedDirectionPercent": 66.92
+            },
+            {
+              "seconds": 60,
+              "success": 1708,
+              "successPercent": 17.09,
+              "success95Percent": [
+                16.37,
+                17.84
+              ],
+              "ruin": 2385,
+              "ruinPercent": 23.87,
+              "unfinished": 5899,
+              "unfinishedPercent": 59.04,
+              "grossTargetReached": 1725,
+              "grossTargetReachedPercent": 17.26,
+              "grossWithoutNetTarget": 17,
+              "futurePriceInSelectedDirectionPercent": 63.92
+            },
+            {
+              "seconds": 120,
+              "success": 3492,
+              "successPercent": 34.95,
+              "success95Percent": [
+                34.02,
+                35.89
+              ],
+              "ruin": 3774,
+              "ruinPercent": 37.77,
+              "unfinished": 2726,
+              "unfinishedPercent": 27.28,
+              "grossTargetReached": 3506,
+              "grossTargetReachedPercent": 35.09,
+              "grossWithoutNetTarget": 14,
+              "futurePriceInSelectedDirectionPercent": 61.21
+            },
+            {
+              "seconds": 240,
+              "success": 4441,
+              "successPercent": 44.45,
+              "success95Percent": [
+                43.47,
+                45.42
+              ],
+              "ruin": 4803,
+              "ruinPercent": 48.07,
+              "unfinished": 748,
+              "unfinishedPercent": 7.49,
+              "grossTargetReached": 4451,
+              "grossTargetReachedPercent": 44.55,
+              "grossWithoutNetTarget": 10,
+              "futurePriceInSelectedDirectionPercent": 58.32
+            },
+            {
+              "seconds": 600,
+              "success": 4810,
+              "successPercent": 48.14,
+              "success95Percent": [
+                47.16,
+                49.12
+              ],
+              "ruin": 5167,
+              "ruinPercent": 51.71,
+              "unfinished": 15,
+              "unfinishedPercent": 0.15,
+              "grossTargetReached": 4817,
+              "grossTargetReachedPercent": 48.21,
+              "grossWithoutNetTarget": 7,
+              "futurePriceInSelectedDirectionPercent": 55.33
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 44.9,
+            "median": 72.2,
+            "p90": 215.4
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50366.1
+          }
+        },
+        "last10_3pct": {
+          "selected": 6214,
+          "selectionPercent": 31.07,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 16,
+              "successPercent": 0.26,
+              "success95Percent": [
+                0.16,
+                0.42
+              ],
+              "ruin": 591,
+              "ruinPercent": 9.51,
+              "unfinished": 5607,
+              "unfinishedPercent": 90.23,
+              "grossTargetReached": 16,
+              "grossTargetReachedPercent": 0.26,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 77.1
+            },
+            {
+              "seconds": 60,
+              "success": 1428,
+              "successPercent": 22.98,
+              "success95Percent": [
+                21.95,
+                24.04
+              ],
+              "ruin": 1208,
+              "ruinPercent": 19.44,
+              "unfinished": 3578,
+              "unfinishedPercent": 57.58,
+              "grossTargetReached": 1442,
+              "grossTargetReachedPercent": 23.21,
+              "grossWithoutNetTarget": 14,
+              "futurePriceInSelectedDirectionPercent": 71.9
+            },
+            {
+              "seconds": 120,
+              "success": 2628,
+              "successPercent": 42.29,
+              "success95Percent": [
+                41.07,
+                43.52
+              ],
+              "ruin": 2025,
+              "ruinPercent": 32.59,
+              "unfinished": 1561,
+              "unfinishedPercent": 25.12,
+              "grossTargetReached": 2638,
+              "grossTargetReachedPercent": 42.45,
+              "grossWithoutNetTarget": 10,
+              "futurePriceInSelectedDirectionPercent": 67.2
+            },
+            {
+              "seconds": 240,
+              "success": 3185,
+              "successPercent": 51.26,
+              "success95Percent": [
+                50.01,
+                52.5
+              ],
+              "ruin": 2600,
+              "ruinPercent": 41.84,
+              "unfinished": 429,
+              "unfinishedPercent": 6.9,
+              "grossTargetReached": 3193,
+              "grossTargetReachedPercent": 51.38,
+              "grossWithoutNetTarget": 8,
+              "futurePriceInSelectedDirectionPercent": 62.28
+            },
+            {
+              "seconds": 600,
+              "success": 3408,
+              "successPercent": 54.84,
+              "success95Percent": [
+                53.6,
+                56.08
+              ],
+              "ruin": 2798,
+              "ruinPercent": 45.03,
+              "unfinished": 8,
+              "unfinishedPercent": 0.13,
+              "grossTargetReached": 3415,
+              "grossTargetReachedPercent": 54.96,
+              "grossWithoutNetTarget": 7,
+              "futurePriceInSelectedDirectionPercent": 57.42
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 43.5,
+            "median": 65.6,
+            "p90": 196.9
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 50025.22,
+            "p90": 50387.58
+          }
+        },
+        "last10_5pct": {
+          "selected": 4264,
+          "selectionPercent": 21.32,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 12,
+              "successPercent": 0.28,
+              "success95Percent": [
+                0.16,
+                0.49
+              ],
+              "ruin": 330,
+              "ruinPercent": 7.74,
+              "unfinished": 3922,
+              "unfinishedPercent": 91.98,
+              "grossTargetReached": 12,
+              "grossTargetReachedPercent": 0.28,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 81.78
+            },
+            {
+              "seconds": 60,
+              "success": 1133,
+              "successPercent": 26.57,
+              "success95Percent": [
+                25.27,
+                27.92
+              ],
+              "ruin": 710,
+              "ruinPercent": 16.65,
+              "unfinished": 2421,
+              "unfinishedPercent": 56.78,
+              "grossTargetReached": 1143,
+              "grossTargetReachedPercent": 26.81,
+              "grossWithoutNetTarget": 10,
+              "futurePriceInSelectedDirectionPercent": 76.15
+            },
+            {
+              "seconds": 120,
+              "success": 1965,
+              "successPercent": 46.08,
+              "success95Percent": [
+                44.59,
+                47.58
+              ],
+              "ruin": 1273,
+              "ruinPercent": 29.85,
+              "unfinished": 1026,
+              "unfinishedPercent": 24.06,
+              "grossTargetReached": 1974,
+              "grossTargetReachedPercent": 46.29,
+              "grossWithoutNetTarget": 9,
+              "futurePriceInSelectedDirectionPercent": 69.49
+            },
+            {
+              "seconds": 240,
+              "success": 2312,
+              "successPercent": 54.22,
+              "success95Percent": [
+                52.72,
+                55.71
+              ],
+              "ruin": 1656,
+              "ruinPercent": 38.84,
+              "unfinished": 296,
+              "unfinishedPercent": 6.94,
+              "grossTargetReached": 2320,
+              "grossTargetReachedPercent": 54.41,
+              "grossWithoutNetTarget": 8,
+              "futurePriceInSelectedDirectionPercent": 63.48
+            },
+            {
+              "seconds": 600,
+              "success": 2463,
+              "successPercent": 57.76,
+              "success95Percent": [
+                56.27,
+                59.24
+              ],
+              "ruin": 1795,
+              "ruinPercent": 42.1,
+              "unfinished": 6,
+              "unfinishedPercent": 0.14,
+              "grossTargetReached": 2470,
+              "grossTargetReachedPercent": 57.93,
+              "grossWithoutNetTarget": 7,
+              "futurePriceInSelectedDirectionPercent": 58.4
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 42.6,
+            "median": 62.7,
+            "p90": 193.1
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 50040.24,
+            "p90": 50396.49
+          }
+        },
+        "last20_5pct": {
+          "selected": 6193,
+          "selectionPercent": 30.96,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 15,
+              "successPercent": 0.24,
+              "success95Percent": [
+                0.15,
+                0.4
+              ],
+              "ruin": 730,
+              "ruinPercent": 11.79,
+              "unfinished": 5448,
+              "unfinishedPercent": 87.97,
+              "grossTargetReached": 15,
+              "grossTargetReachedPercent": 0.24,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 74.52
+            },
+            {
+              "seconds": 60,
+              "success": 1323,
+              "successPercent": 21.36,
+              "success95Percent": [
+                20.36,
+                22.4
+              ],
+              "ruin": 1340,
+              "ruinPercent": 21.64,
+              "unfinished": 3530,
+              "unfinishedPercent": 57,
+              "grossTargetReached": 1335,
+              "grossTargetReachedPercent": 21.56,
+              "grossWithoutNetTarget": 12,
+              "futurePriceInSelectedDirectionPercent": 69.74
+            },
+            {
+              "seconds": 120,
+              "success": 2526,
+              "successPercent": 40.79,
+              "success95Percent": [
+                39.57,
+                42.02
+              ],
+              "ruin": 2141,
+              "ruinPercent": 34.57,
+              "unfinished": 1526,
+              "unfinishedPercent": 24.64,
+              "grossTargetReached": 2535,
+              "grossTargetReachedPercent": 40.93,
+              "grossWithoutNetTarget": 9,
+              "futurePriceInSelectedDirectionPercent": 65.43
+            },
+            {
+              "seconds": 240,
+              "success": 3065,
+              "successPercent": 49.49,
+              "success95Percent": [
+                48.25,
+                50.74
+              ],
+              "ruin": 2702,
+              "ruinPercent": 43.63,
+              "unfinished": 426,
+              "unfinishedPercent": 6.88,
+              "grossTargetReached": 3073,
+              "grossTargetReachedPercent": 49.62,
+              "grossWithoutNetTarget": 8,
+              "futurePriceInSelectedDirectionPercent": 61.25
+            },
+            {
+              "seconds": 600,
+              "success": 3283,
+              "successPercent": 53.01,
+              "success95Percent": [
+                51.77,
+                54.25
+              ],
+              "ruin": 2904,
+              "ruinPercent": 46.89,
+              "unfinished": 6,
+              "unfinishedPercent": 0.1,
+              "grossTargetReached": 3289,
+              "grossTargetReachedPercent": 53.11,
+              "grossWithoutNetTarget": 6,
+              "futurePriceInSelectedDirectionPercent": 56.39
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 43.8,
+            "median": 66.8,
+            "p90": 197.6
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 50014.96,
+            "p90": 50382.17
+          }
+        },
+        "last20_10pct": {
+          "selected": 3925,
+          "selectionPercent": 19.63,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 11,
+              "successPercent": 0.28,
+              "success95Percent": [
+                0.16,
+                0.5
+              ],
+              "ruin": 347,
+              "ruinPercent": 8.84,
+              "unfinished": 3567,
+              "unfinishedPercent": 90.88,
+              "grossTargetReached": 11,
+              "grossTargetReachedPercent": 0.28,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 80
+            },
+            {
+              "seconds": 60,
+              "success": 992,
+              "successPercent": 25.27,
+              "success95Percent": [
+                23.94,
+                26.66
+              ],
+              "ruin": 711,
+              "ruinPercent": 18.11,
+              "unfinished": 2222,
+              "unfinishedPercent": 56.61,
+              "grossTargetReached": 1001,
+              "grossTargetReachedPercent": 25.5,
+              "grossWithoutNetTarget": 9,
+              "futurePriceInSelectedDirectionPercent": 73.71
+            },
+            {
+              "seconds": 120,
+              "success": 1735,
+              "successPercent": 44.2,
+              "success95Percent": [
+                42.66,
+                45.76
+              ],
+              "ruin": 1241,
+              "ruinPercent": 31.62,
+              "unfinished": 949,
+              "unfinishedPercent": 24.18,
+              "grossTargetReached": 1743,
+              "grossTargetReachedPercent": 44.41,
+              "grossWithoutNetTarget": 8,
+              "futurePriceInSelectedDirectionPercent": 67.97
+            },
+            {
+              "seconds": 240,
+              "success": 2064,
+              "successPercent": 52.59,
+              "success95Percent": [
+                51.02,
+                54.14
+              ],
+              "ruin": 1590,
+              "ruinPercent": 40.51,
+              "unfinished": 271,
+              "unfinishedPercent": 6.9,
+              "grossTargetReached": 2071,
+              "grossTargetReachedPercent": 52.76,
+              "grossWithoutNetTarget": 7,
+              "futurePriceInSelectedDirectionPercent": 62.62
+            },
+            {
+              "seconds": 600,
+              "success": 2213,
+              "successPercent": 56.38,
+              "success95Percent": [
+                54.83,
+                57.93
+              ],
+              "ruin": 1707,
+              "ruinPercent": 43.49,
+              "unfinished": 5,
+              "unfinishedPercent": 0.13,
+              "grossTargetReached": 2219,
+              "grossTargetReachedPercent": 56.54,
+              "grossWithoutNetTarget": 6,
+              "futurePriceInSelectedDirectionPercent": 57.15
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 42.8,
+            "median": 63.5,
+            "p90": 198.6
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 50035.07,
+            "p90": 50400.77
+          }
+        },
+        "desktop50_10pct": {
+          "selected": 6094,
+          "selectionPercent": 30.47,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 11,
+              "successPercent": 0.18,
+              "success95Percent": [
+                0.1,
+                0.32
+              ],
+              "ruin": 993,
+              "ruinPercent": 16.29,
+              "unfinished": 5090,
+              "unfinishedPercent": 83.52,
+              "grossTargetReached": 11,
+              "grossTargetReachedPercent": 0.18,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 67.76
+            },
+            {
+              "seconds": 60,
+              "success": 1089,
+              "successPercent": 17.87,
+              "success95Percent": [
+                16.93,
+                18.85
+              ],
+              "ruin": 1617,
+              "ruinPercent": 26.53,
+              "unfinished": 3388,
+              "unfinishedPercent": 55.6,
+              "grossTargetReached": 1099,
+              "grossTargetReachedPercent": 18.03,
+              "grossWithoutNetTarget": 10,
+              "futurePriceInSelectedDirectionPercent": 63.73
+            },
+            {
+              "seconds": 120,
+              "success": 2153,
+              "successPercent": 35.33,
+              "success95Percent": [
+                34.14,
+                36.54
+              ],
+              "ruin": 2409,
+              "ruinPercent": 39.53,
+              "unfinished": 1532,
+              "unfinishedPercent": 25.14,
+              "grossTargetReached": 2160,
+              "grossTargetReachedPercent": 35.44,
+              "grossWithoutNetTarget": 7,
+              "futurePriceInSelectedDirectionPercent": 61.08
+            },
+            {
+              "seconds": 240,
+              "success": 2701,
+              "successPercent": 44.32,
+              "success95Percent": [
+                43.08,
+                45.57
+              ],
+              "ruin": 2993,
+              "ruinPercent": 49.11,
+              "unfinished": 400,
+              "unfinishedPercent": 6.56,
+              "grossTargetReached": 2709,
+              "grossTargetReachedPercent": 44.45,
+              "grossWithoutNetTarget": 8,
+              "futurePriceInSelectedDirectionPercent": 57.65
+            },
+            {
+              "seconds": 600,
+              "success": 2904,
+              "successPercent": 47.65,
+              "success95Percent": [
+                46.4,
+                48.91
+              ],
+              "ruin": 3185,
+              "ruinPercent": 52.26,
+              "unfinished": 5,
+              "unfinishedPercent": 0.08,
+              "grossTargetReached": 2910,
+              "grossTargetReachedPercent": 47.75,
+              "grossWithoutNetTarget": 6,
+              "futurePriceInSelectedDirectionPercent": 54.25
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 44.2,
+            "median": 70,
+            "p90": 205.4
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.3
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 50371.8
+          }
+        }
+      }
+    },
+    "short5": {
+      "side": -1,
+      "leverage": 5,
+      "boundaries": {
+        "margin": 9975.062344139651,
+        "openingFee": 24.93765586034913,
+        "grossTargetRatio": 0.19750000000000012,
+        "netTargetRatio": 0.19740129935032494,
+        "liquidationRatio": 1.199400299850075,
+        "targetReachable": true,
+        "shortMaximumCashAtZeroPrice": 59850.37406483791
+      },
+      "conditions": {
+        "all": {
+          "selected": 20000,
+          "selectionPercent": 100,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.02
+              ],
+              "ruin": 24,
+              "ruinPercent": 0.12,
+              "unfinished": 19976,
+              "unfinishedPercent": 99.88,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 49.92
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.02
+              ],
+              "ruin": 2139,
+              "ruinPercent": 10.7,
+              "unfinished": 17861,
+              "unfinishedPercent": 89.31,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 49.88
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.02
+              ],
+              "ruin": 5182,
+              "ruinPercent": 25.91,
+              "unfinished": 14818,
+              "unfinishedPercent": 74.09,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 50.06
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.02
+              ],
+              "ruin": 8199,
+              "ruinPercent": 40.99,
+              "unfinished": 11801,
+              "unfinishedPercent": 59,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 49.96
+            },
+            {
+              "seconds": 600,
+              "success": 46,
+              "successPercent": 0.23,
+              "success95Percent": [
+                0.17,
+                0.31
+              ],
+              "ruin": 12023,
+              "ruinPercent": 60.11,
+              "unfinished": 7931,
+              "unfinishedPercent": 39.66,
+              "grossTargetReached": 46,
+              "grossTargetReachedPercent": 0.23,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 49.49
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 435.2,
+            "median": 516.5,
+            "p90": 586.3
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 0.2
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 34531
+          }
+        },
+        "desktop50": {
+          "selected": 9932,
+          "selectionPercent": 49.66,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 5,
+              "ruinPercent": 0.05,
+              "unfinished": 9927,
+              "unfinishedPercent": 99.95,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 60.91
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 596,
+              "ruinPercent": 6,
+              "unfinished": 9336,
+              "unfinishedPercent": 94,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 58.67
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1880,
+              "ruinPercent": 18.93,
+              "unfinished": 8052,
+              "unfinishedPercent": 81.07,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 57.48
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 3393,
+              "ruinPercent": 34.16,
+              "unfinished": 6539,
+              "unfinishedPercent": 65.84,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 54.99
+            },
+            {
+              "seconds": 600,
+              "success": 31,
+              "successPercent": 0.31,
+              "success95Percent": [
+                0.22,
+                0.44
+              ],
+              "ruin": 5472,
+              "ruinPercent": 55.09,
+              "unfinished": 4429,
+              "unfinishedPercent": 44.59,
+              "grossTargetReached": 31,
+              "grossTargetReachedPercent": 0.31,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 52.41
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 435.2,
+            "median": 510.4,
+            "p90": 578.4
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 1
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 35878.93
+          }
+        },
+        "mobile40": {
+          "selected": 9963,
+          "selectionPercent": 49.81,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 4,
+              "ruinPercent": 0.04,
+              "unfinished": 9959,
+              "unfinishedPercent": 99.96,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 61.94
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 566,
+              "ruinPercent": 5.68,
+              "unfinished": 9397,
+              "unfinishedPercent": 94.32,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 59.43
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1843,
+              "ruinPercent": 18.5,
+              "unfinished": 8120,
+              "unfinishedPercent": 81.5,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 57.75
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 3360,
+              "ruinPercent": 33.72,
+              "unfinished": 6603,
+              "unfinishedPercent": 66.28,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 55.5
+            },
+            {
+              "seconds": 600,
+              "success": 31,
+              "successPercent": 0.31,
+              "success95Percent": [
+                0.22,
+                0.44
+              ],
+              "ruin": 5452,
+              "ruinPercent": 54.72,
+              "unfinished": 4480,
+              "unfinishedPercent": 44.97,
+              "grossTargetReached": 31,
+              "grossTargetReachedPercent": 0.31,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 52.6
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 435.2,
+            "median": 510.4,
+            "p90": 578.4
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 1
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 36005.85
+          }
+        },
+        "last20": {
+          "selected": 9967,
+          "selectionPercent": 49.84,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 4,
+              "ruinPercent": 0.04,
+              "unfinished": 9963,
+              "unfinishedPercent": 99.96,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 64.59
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 434,
+              "ruinPercent": 4.35,
+              "unfinished": 9533,
+              "unfinishedPercent": 95.65,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 61.88
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1633,
+              "ruinPercent": 16.38,
+              "unfinished": 8334,
+              "unfinishedPercent": 83.62,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 60.02
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 3194,
+              "ruinPercent": 32.05,
+              "unfinished": 6773,
+              "unfinishedPercent": 67.95,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 56.94
+            },
+            {
+              "seconds": 600,
+              "success": 32,
+              "successPercent": 0.32,
+              "success95Percent": [
+                0.23,
+                0.45
+              ],
+              "ruin": 5320,
+              "ruinPercent": 53.38,
+              "unfinished": 4615,
+              "unfinishedPercent": 46.3,
+              "grossTargetReached": 32,
+              "grossTargetReachedPercent": 0.32,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 53.49
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 435.2,
+            "median": 510.4,
+            "p90": 578.4
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 1
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 36152.34
+          }
+        },
+        "last10": {
+          "selected": 10008,
+          "selectionPercent": 50.04,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 10008,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 66.74
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 342,
+              "ruinPercent": 3.42,
+              "unfinished": 9666,
+              "unfinishedPercent": 96.58,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 63.65
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1519,
+              "ruinPercent": 15.18,
+              "unfinished": 8489,
+              "unfinishedPercent": 84.82,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 61.31
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 3062,
+              "ruinPercent": 30.6,
+              "unfinished": 6946,
+              "unfinishedPercent": 69.4,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 58.22
+            },
+            {
+              "seconds": 600,
+              "success": 35,
+              "successPercent": 0.35,
+              "success95Percent": [
+                0.25,
+                0.49
+              ],
+              "ruin": 5194,
+              "ruinPercent": 51.9,
+              "unfinished": 4779,
+              "unfinishedPercent": 47.75,
+              "grossTargetReached": 35,
+              "grossTargetReachedPercent": 0.35,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 54.32
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 435.2,
+            "median": 514.2,
+            "p90": 584.9
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 1
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 36430.77
+          }
+        },
+        "last10_3pct": {
+          "selected": 6077,
+          "selectionPercent": 30.39,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 6077,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 77.52
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 159,
+              "ruinPercent": 2.62,
+              "unfinished": 5918,
+              "unfinishedPercent": 97.38,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 72.37
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 760,
+              "ruinPercent": 12.51,
+              "unfinished": 5317,
+              "unfinishedPercent": 87.49,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 67.99
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 1639,
+              "ruinPercent": 26.97,
+              "unfinished": 4438,
+              "unfinishedPercent": 73.03,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 61.95
+            },
+            {
+              "seconds": 600,
+              "success": 30,
+              "successPercent": 0.49,
+              "success95Percent": [
+                0.35,
+                0.7
+              ],
+              "ruin": 2975,
+              "ruinPercent": 48.96,
+              "unfinished": 3072,
+              "unfinishedPercent": 50.55,
+              "grossTargetReached": 30,
+              "grossTargetReachedPercent": 0.49,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 56.54
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 430.7,
+            "median": 509.7,
+            "p90": 578.4
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 1
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 3354.44,
+            "p90": 37209.64
+          }
+        },
+        "last10_5pct": {
+          "selected": 3982,
+          "selectionPercent": 19.91,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.1
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 3982,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 81.97
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.1
+              ],
+              "ruin": 87,
+              "ruinPercent": 2.18,
+              "unfinished": 3895,
+              "unfinishedPercent": 97.82,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 75.97
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.1
+              ],
+              "ruin": 454,
+              "ruinPercent": 11.4,
+              "unfinished": 3528,
+              "unfinishedPercent": 88.6,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 70.17
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.1
+              ],
+              "ruin": 1005,
+              "ruinPercent": 25.24,
+              "unfinished": 2977,
+              "unfinishedPercent": 74.76,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 63.69
+            },
+            {
+              "seconds": 600,
+              "success": 22,
+              "successPercent": 0.55,
+              "success95Percent": [
+                0.37,
+                0.84
+              ],
+              "ruin": 1862,
+              "ruinPercent": 46.76,
+              "unfinished": 2098,
+              "unfinishedPercent": 52.69,
+              "grossTargetReached": 22,
+              "grossTargetReachedPercent": 0.55,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 58.39
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 467.3,
+            "median": 510.4,
+            "p90": 578.4
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 1
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 7340.09,
+            "p90": 37508.57
+          }
+        },
+        "last20_5pct": {
+          "selected": 5928,
+          "selectionPercent": 29.64,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 5928,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 74.9
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 209,
+              "ruinPercent": 3.53,
+              "unfinished": 5719,
+              "unfinishedPercent": 96.47,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 70.55
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 827,
+              "ruinPercent": 13.95,
+              "unfinished": 5101,
+              "unfinishedPercent": 86.05,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 66.28
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 1682,
+              "ruinPercent": 28.37,
+              "unfinished": 4246,
+              "unfinishedPercent": 71.63,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 60.93
+            },
+            {
+              "seconds": 600,
+              "success": 26,
+              "successPercent": 0.44,
+              "success95Percent": [
+                0.3,
+                0.64
+              ],
+              "ruin": 2971,
+              "ruinPercent": 50.12,
+              "unfinished": 2931,
+              "unfinishedPercent": 49.44,
+              "grossTargetReached": 26,
+              "grossTargetReachedPercent": 0.44,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 55.79
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 430.7,
+            "median": 510.4,
+            "p90": 577.4
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 1
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 37152.95
+          }
+        },
+        "last20_10pct": {
+          "selected": 3269,
+          "selectionPercent": 16.35,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.12
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 3269,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 80.73
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.12
+              ],
+              "ruin": 87,
+              "ruinPercent": 2.66,
+              "unfinished": 3182,
+              "unfinishedPercent": 97.34,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 75.1
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.12
+              ],
+              "ruin": 391,
+              "ruinPercent": 11.96,
+              "unfinished": 2878,
+              "unfinishedPercent": 88.04,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 70.08
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.12
+              ],
+              "ruin": 834,
+              "ruinPercent": 25.51,
+              "unfinished": 2435,
+              "unfinishedPercent": 74.49,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 63.57
+            },
+            {
+              "seconds": 600,
+              "success": 19,
+              "successPercent": 0.58,
+              "success95Percent": [
+                0.37,
+                0.91
+              ],
+              "ruin": 1553,
+              "ruinPercent": 47.51,
+              "unfinished": 1697,
+              "unfinishedPercent": 51.91,
+              "grossTargetReached": 19,
+              "grossTargetReachedPercent": 0.58,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 57.69
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 430.7,
+            "median": 510.4,
+            "p90": 576.8
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 1
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 5469.53,
+            "p90": 37946.78
+          }
+        },
+        "desktop50_10pct": {
+          "selected": 5636,
+          "selectionPercent": 28.18,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.07
+              ],
+              "ruin": 2,
+              "ruinPercent": 0.04,
+              "unfinished": 5634,
+              "unfinishedPercent": 99.96,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 67.6
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.07
+              ],
+              "ruin": 301,
+              "ruinPercent": 5.34,
+              "unfinished": 5335,
+              "unfinishedPercent": 94.66,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 64.07
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.07
+              ],
+              "ruin": 960,
+              "ruinPercent": 17.03,
+              "unfinished": 4676,
+              "unfinishedPercent": 82.97,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 61.44
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.07
+              ],
+              "ruin": 1810,
+              "ruinPercent": 32.11,
+              "unfinished": 3826,
+              "unfinishedPercent": 67.89,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 57.26
+            },
+            {
+              "seconds": 600,
+              "success": 24,
+              "successPercent": 0.43,
+              "success95Percent": [
+                0.29,
+                0.63
+              ],
+              "ruin": 2995,
+              "ruinPercent": 53.14,
+              "unfinished": 2617,
+              "unfinishedPercent": 46.43,
+              "grossTargetReached": 24,
+              "grossTargetReachedPercent": 0.43,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 53.76
+            }
+          ],
+          "successfulSeconds": {
+            "p10": 430.7,
+            "median": 510.4,
+            "p90": 577.4
+          },
+          "grossToNetDelaySeconds": {
+            "p10": 0,
+            "median": 0,
+            "p90": 1
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 0,
+            "p90": 36326.84
+          }
+        }
+      }
+    },
+    "short1": {
+      "side": -1,
+      "leverage": 1,
+      "boundaries": {
+        "margin": 9995.002498750626,
+        "openingFee": 4.997501249375313,
+        "grossTargetRatio": -3.0024999999999995,
+        "netTargetRatio": -3.000999500249875,
+        "liquidationRatio": 1.9990004997501252,
+        "targetReachable": false,
+        "shortMaximumCashAtZeroPrice": 19990.00499750125
+      },
+      "conditions": {
+        "all": {
+          "selected": 20000,
+          "selectionPercent": 100,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.02
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 20000,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 49.92
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.02
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 20000,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 49.88
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.02
+              ],
+              "ruin": 1,
+              "ruinPercent": 0.01,
+              "unfinished": 19999,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 50.06
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.02
+              ],
+              "ruin": 446,
+              "ruinPercent": 2.23,
+              "unfinished": 19554,
+              "unfinishedPercent": 97.77,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 49.96
+            },
+            {
+              "seconds": 600,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.02
+              ],
+              "ruin": 3255,
+              "ruinPercent": 16.28,
+              "unfinished": 16745,
+              "unfinishedPercent": 83.73,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 49.49
+            }
+          ],
+          "successfulSeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "grossToNetDelaySeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 9906.82,
+            "p90": 15086.32
+          }
+        },
+        "desktop50": {
+          "selected": 9932,
+          "selectionPercent": 49.66,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 9932,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 60.91
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 9932,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 58.67
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1,
+              "ruinPercent": 0.01,
+              "unfinished": 9931,
+              "unfinishedPercent": 99.99,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 57.48
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 145,
+              "ruinPercent": 1.46,
+              "unfinished": 9787,
+              "unfinishedPercent": 98.54,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 54.99
+            },
+            {
+              "seconds": 600,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1399,
+              "ruinPercent": 14.09,
+              "unfinished": 8533,
+              "unfinishedPercent": 85.91,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 52.41
+            }
+          ],
+          "successfulSeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "grossToNetDelaySeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 10328.14,
+            "p90": 15273.43
+          }
+        },
+        "mobile40": {
+          "selected": 9963,
+          "selectionPercent": 49.81,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 9963,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 61.94
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 9963,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 59.43
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1,
+              "ruinPercent": 0.01,
+              "unfinished": 9962,
+              "unfinishedPercent": 99.99,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 57.75
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 145,
+              "ruinPercent": 1.46,
+              "unfinished": 9818,
+              "unfinishedPercent": 98.54,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 55.5
+            },
+            {
+              "seconds": 600,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1391,
+              "ruinPercent": 13.96,
+              "unfinished": 8572,
+              "unfinishedPercent": 86.04,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 52.6
+            }
+          ],
+          "successfulSeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "grossToNetDelaySeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 10347.3,
+            "p90": 15320.11
+          }
+        },
+        "last20": {
+          "selected": 9967,
+          "selectionPercent": 49.84,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 9967,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 64.59
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 9967,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 61.88
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1,
+              "ruinPercent": 0.01,
+              "unfinished": 9966,
+              "unfinishedPercent": 99.99,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 60.02
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 108,
+              "ruinPercent": 1.08,
+              "unfinished": 9859,
+              "unfinishedPercent": 98.92,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 56.94
+            },
+            {
+              "seconds": 600,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1298,
+              "ruinPercent": 13.02,
+              "unfinished": 8669,
+              "unfinishedPercent": 86.98,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 53.49
+            }
+          ],
+          "successfulSeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "grossToNetDelaySeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 10457.11,
+            "p90": 15327.74
+          }
+        },
+        "last10": {
+          "selected": 10008,
+          "selectionPercent": 50.04,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 10008,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 66.74
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 10008,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 63.65
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1,
+              "ruinPercent": 0.01,
+              "unfinished": 10007,
+              "unfinishedPercent": 99.99,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 61.31
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 101,
+              "ruinPercent": 1.01,
+              "unfinished": 9907,
+              "unfinishedPercent": 98.99,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 58.22
+            },
+            {
+              "seconds": 600,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.04
+              ],
+              "ruin": 1271,
+              "ruinPercent": 12.7,
+              "unfinished": 8737,
+              "unfinishedPercent": 87.3,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 54.32
+            }
+          ],
+          "successfulSeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "grossToNetDelaySeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 10574.11,
+            "p90": 15391
+          }
+        },
+        "last10_3pct": {
+          "selected": 6077,
+          "selectionPercent": 30.39,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 6077,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 77.52
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 6077,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 72.37
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 6077,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 67.99
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 47,
+              "ruinPercent": 0.77,
+              "unfinished": 6030,
+              "unfinishedPercent": 99.23,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 61.95
+            },
+            {
+              "seconds": 600,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 673,
+              "ruinPercent": 11.07,
+              "unfinished": 5404,
+              "unfinishedPercent": 88.93,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 56.54
+            }
+          ],
+          "successfulSeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "grossToNetDelaySeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 10832.06,
+            "p90": 15489.9
+          }
+        },
+        "last10_5pct": {
+          "selected": 3982,
+          "selectionPercent": 19.91,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.1
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 3982,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 81.97
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.1
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 3982,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 75.97
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.1
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 3982,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 70.17
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.1
+              ],
+              "ruin": 27,
+              "ruinPercent": 0.68,
+              "unfinished": 3955,
+              "unfinishedPercent": 99.32,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 63.69
+            },
+            {
+              "seconds": 600,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.1
+              ],
+              "ruin": 412,
+              "ruinPercent": 10.35,
+              "unfinished": 3570,
+              "unfinishedPercent": 89.65,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 58.39
+            }
+          ],
+          "successfulSeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "grossToNetDelaySeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 10979.37,
+            "p90": 15575.57
+          }
+        },
+        "last20_5pct": {
+          "selected": 5928,
+          "selectionPercent": 29.64,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 5928,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 74.9
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 5928,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 70.55
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 1,
+              "ruinPercent": 0.02,
+              "unfinished": 5927,
+              "unfinishedPercent": 99.98,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 66.28
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 49,
+              "ruinPercent": 0.83,
+              "unfinished": 5879,
+              "unfinishedPercent": 99.17,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 60.93
+            },
+            {
+              "seconds": 600,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.06
+              ],
+              "ruin": 709,
+              "ruinPercent": 11.96,
+              "unfinished": 5219,
+              "unfinishedPercent": 88.04,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 55.79
+            }
+          ],
+          "successfulSeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "grossToNetDelaySeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 10732.64,
+            "p90": 15489.9
+          }
+        },
+        "last20_10pct": {
+          "selected": 3269,
+          "selectionPercent": 16.35,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.12
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 3269,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 80.73
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.12
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 3269,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 75.1
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.12
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 3269,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 70.08
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.12
+              ],
+              "ruin": 23,
+              "ruinPercent": 0.7,
+              "unfinished": 3246,
+              "unfinishedPercent": 99.3,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 63.57
+            },
+            {
+              "seconds": 600,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.12
+              ],
+              "ruin": 355,
+              "ruinPercent": 10.86,
+              "unfinished": 2914,
+              "unfinishedPercent": 89.14,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 57.69
+            }
+          ],
+          "successfulSeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "grossToNetDelaySeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 10957.88,
+            "p90": 15626.9
+          }
+        },
+        "desktop50_10pct": {
+          "selected": 5636,
+          "selectionPercent": 28.18,
+          "checkpoints": [
+            {
+              "seconds": 30,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.07
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 5636,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 67.6
+            },
+            {
+              "seconds": 60,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.07
+              ],
+              "ruin": 0,
+              "ruinPercent": 0,
+              "unfinished": 5636,
+              "unfinishedPercent": 100,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 64.07
+            },
+            {
+              "seconds": 120,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.07
+              ],
+              "ruin": 1,
+              "ruinPercent": 0.02,
+              "unfinished": 5635,
+              "unfinishedPercent": 99.98,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 61.44
+            },
+            {
+              "seconds": 240,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.07
+              ],
+              "ruin": 68,
+              "ruinPercent": 1.21,
+              "unfinished": 5568,
+              "unfinishedPercent": 98.79,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 57.26
+            },
+            {
+              "seconds": 600,
+              "success": 0,
+              "successPercent": 0,
+              "success95Percent": [
+                0,
+                0.07
+              ],
+              "ruin": 755,
+              "ruinPercent": 13.4,
+              "unfinished": 4881,
+              "unfinishedPercent": 86.6,
+              "grossTargetReached": 0,
+              "grossTargetReachedPercent": 0,
+              "grossWithoutNetTarget": 0,
+              "futurePriceInSelectedDirectionPercent": 53.76
+            }
+          ],
+          "successfulSeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "grossToNetDelaySeconds": {
+            "p10": null,
+            "median": null,
+            "p90": null
+          },
+          "terminalEquity": {
+            "p10": 0,
+            "median": 10512.68,
+            "p90": 15399.3
+          }
+        }
+      }
+    }
+  }
+}

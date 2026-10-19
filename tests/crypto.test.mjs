@@ -10,6 +10,17 @@ import { createWallClock, createReconciler } from '../gate/games/crypto/live-clo
 
 const near = (actual, expected, tolerance = 1e-7) => assert.ok(Math.abs(actual - expected) < tolerance, `${actual} != ${expected}`);
 
+test('default is 1x while all selectable leverage levels remain available', () => {
+  assert.equal(CONFIG.defaultLeverage, 1);
+  assert.deepEqual(CONFIG.leverage, [1, 2, 5, 10, 20]);
+  const account = createAccount();
+  assert.equal(account.enter(1, 1, CONFIG.defaultLeverage, 100), true);
+  const state = account.snapshot(100);
+  near(state.position.quantity * 100, state.position.margin);
+  near(state.fees, 10000 * .0005 / 1.0005);
+  near(state.liquidationPrice, 0);
+});
+
 test('100% entries reserve margin and the correct notional fee at every leverage', () => {
   for (const leverage of CONFIG.leverage) for (const side of [1, -1]) {
     const a = createAccount();

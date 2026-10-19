@@ -54,12 +54,16 @@ const numeric = text => Number(text.replace(/[^\d.-]/g, ''));
       const page = await open(width);
       assert.equal(await cash(page), 10000);
       assert.equal(await page.locator('#pay').isDisabled(), true);
+      assert.equal(await page.locator('#mobile-leverage').inputValue(), '1');
+      assert.equal(await page.locator('[data-leverage="1"]').getAttribute('aria-pressed'), 'true');
+      assert.deepEqual(await page.locator('#mobile-leverage option').evaluateAll(options => options.map(option => option.value)), ['1', '2', '5', '10', '20']);
       assert.equal(await page.locator('#chart .candle').count(), width < 550 ? 40 : 50);
       assert.equal(await page.evaluate(key => sessionStorage.getItem(key), KEY), null);
       assert.equal(await page.getByRole('button', { name: 'Restart game' }).count(), 1);
       assert.equal(await page.locator('.intro, .eyebrow, .rules, footer, .goal').count(), 0);
       assert.match(await page.locator('#status').getAttribute('class'), /sr-only/);
       await noOverflow(page);
+      await select(page, 'leverage', 5); // Exercise existing 5x accounting explicitly.
       await select(page, 'allocation', .5);
       const before = await chartBars(page), quote = await page.locator('#quote').textContent();
       await click(page, '#long');
@@ -96,7 +100,7 @@ const numeric = text => Number(text.replace(/[^\d.-]/g, ''));
       await click(page, '#restart');
       assert.equal(await cash(page), 10000);
       assert.equal(await page.locator('#elapsed').textContent(), '0:00');
-      assert.equal(await page.locator('#mobile-leverage').inputValue(), '5');
+      assert.equal(await page.locator('#mobile-leverage').inputValue(), '1');
       assert.equal(await page.locator('#mobile-allocation').inputValue(), '1');
       assert.equal(await page.locator('#position-name').textContent(), 'Flat');
       assert.equal(await page.evaluate(key => sessionStorage.getItem(key), KEY), null);
@@ -190,6 +194,7 @@ const numeric = text => Number(text.replace(/[^\d.-]/g, ''));
     console.log('PASS unseen liquidation / bankruptcy and touch retry');
 
     async function win(page, blocked) {
+      await select(page, 'leverage', 5); // Pacing fixture deliberately uses 5x, not the default.
       const session = createSession(3), policy = createPolicy('trend', 3);
       let goal = false;
       for (let step = 0; step < 300; step++) {

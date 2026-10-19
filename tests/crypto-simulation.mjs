@@ -1,5 +1,5 @@
 // Seeded policies see only completed candles and the current executable quote.
-// Usage: node tests/crypto-simulation.mjs [runs=1000] [horizonSeconds=600] [startSeed=1001]
+// Usage: node tests/crypto-simulation.mjs [runs=1000] [horizonSeconds=600] [startSeed=1001] [leverages=5,10,20]
 import { createSession } from '../gate/games/crypto/session.js';
 import { seededRandom } from '../gate/games/crypto/market.js';
 import { CONFIG } from '../gate/games/crypto/config.js';
@@ -78,9 +78,11 @@ export function summarize(results) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const runs = Number(process.argv[2] || 1000), horizonSeconds = Number(process.argv[3] || 600), startSeed = Number(process.argv[4] || 1001);
+  const leverages = (process.argv[5] || '5,10,20').split(',').map(Number);
   if (!Number.isInteger(runs) || runs < 1 || !Number.isInteger(horizonSeconds) || horizonSeconds < 2 || horizonSeconds % 2 || !Number.isInteger(startSeed)) throw new Error('Use positive runs, an even horizon in seconds and an integer starting seed.');
-  const report = { seedRange: [startSeed, startSeed + runs - 1], horizonSeconds, decisionSeconds: 2, entryAllocation: 1, config: CONFIG, strategies: {} };
-  for (const leverage of [5, 10, 20]) for (const name of ['random', 'trend', 'range']) {
+  if (leverages.some(value => !CONFIG.leverage.includes(value)) || new Set(leverages).size !== leverages.length) throw new Error('Use distinct supported leverage levels.');
+  const report = { seedRange: [startSeed, startSeed + runs - 1], horizonSeconds, decisionSeconds: 2, entryAllocation: 1, leverages, config: CONFIG, strategies: {} };
+  for (const leverage of leverages) for (const name of ['random', 'trend', 'range']) {
     const results = Array.from({ length: runs }, (_, index) => simulate(name, index + startSeed, horizonSeconds, leverage));
     report.strategies[`${name}-${leverage}x`] = summarize(results);
   }

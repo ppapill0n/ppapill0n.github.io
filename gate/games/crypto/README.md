@@ -16,7 +16,7 @@ Open `http://127.0.0.1:8765/gate/games/crypto/`. This is a local preview, not a 
 
 - Start with $10,000; get flat with at least $50,000 cash, then explicitly press **Pay $50,000**. Payment deducts fictional cash and uses the existing `enterPersonal` / one-hour session-pass interface to navigate to `/personal/`. A storage failure leaves the money untouched. Merely reaching the goal never issues a pass.
 - One linear isolated-margin position. Long profits on a rise; Short profits on a fall. Opposite-direction entry is disabled until the position is fully closed. Same-direction adds combine quantity, collateral, and quantity-weighted entry price.
-- Leverage: 1/2/5/10/20, initially 5×. Locked while holding. Order size: 25/50/75/100%, initially 100%. Entries allocate that percentage of available cash; closes release that percentage of position quantity and collateral.
+- Leverage: 1/2/5/10/20, initially 1×. Locked while holding. Order size: 25/50/75/100%, initially 100%. Entries allocate that percentage of available cash; closes release that percentage of position quantity and collateral.
 - Each side costs 0.05% of notional. For cash budget `B`, leverage `L`, fee rate `f`, margin is `B/(1+L*f)` and opening fee is `margin*L*f`. Thus 100% entry fits available cash.
 - Partial-close cash is proportional margin plus realized linear P&L, minus exit fee. Equity is cash plus nonnegative collateral/P&L before closing fees. Position P&L excludes fees. The goal uses cash, never an unclosed mark-to-market gain.
 - Every price tick checks whether margin plus unrealized P&L still covers the exit fee. A gap wipes at most isolated collateral, never idle cash and never creates debt. A flat account below the $1 minimum order ends the run and offers **Try again**.
@@ -38,7 +38,7 @@ Catch-up processes at most 1,000 ticks per callback, yields through timers betwe
 
 ## Pacing evidence
 
-The goal is a **2–4 minute successful run**, not a guaranteed duration. Initial drift of 0.16%/second gave the 5× trend policy only 36.3% success and a 6m44s successful-run median (300 seeds, 10-minute horizon). Small sweeps at 0.20/0.24/0.28/0.32% used 200 calibration seeds. The final 0.32%/second trend drift (~0.64% per two-second candle before noise) makes direction more readable without changing the noise, reacting to trades, or selecting favorable paths.
+The original goal was a **2–4 minute successful run**, not a guaranteed duration. The initial leverage is now 1×; the market parameters were not retuned. The historical table below explicitly tests 5×/10×/20×, not the new default. See [initial-history analysis](../../../tests/crypto-history-analysis.md) for the new default's pacing and one-entry strategy results. Initial drift of 0.16%/second gave the 5× trend policy only 36.3% success and a 6m44s successful-run median (300 seeds, 10-minute horizon). Small sweeps at 0.20/0.24/0.28/0.32% used 200 calibration seeds. The final 0.32%/second trend drift (~0.64% per two-second candle before noise) makes direction more readable without changing the noise, reacting to trades, or selecting favorable paths.
 
 Final validation: **1,000 previously unused seeds, 1001–2000, per policy/leverage; 600-second horizon; decisions every two seconds; 100% cash entries.** Policies use only completed candles and the executable current price. They use actual fees, tick-by-tick liquidation, and full closing costs to qualify for payment.
 

@@ -1,4 +1,4 @@
-import { CONFIG } from './config.js';
+import { CONFIG } from './config.js?v=20261019-default1';
 import { createSession } from './session.js';
 import { drawChart } from './chart.js';
 import { createWallClock, createReconciler } from './live-clock.js';
@@ -24,8 +24,8 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}) 
       <div class="account-stats"><div><span class="label" aria-label="Available cash">Cash</span><strong id="cash"></strong></div><div><span class="label" aria-label="Position profit and loss">P&amp;L</span><strong id="pnl">—</strong></div><div><span class="label" aria-label="Entry and liquidation prices">Entry / Liq.</span><strong id="levels">— / —</strong></div></div>
     </section>
     <section class="controls" aria-label="Trading controls">
-      <div class="selectors"><fieldset><legend>Leverage <span id="leverage-note" class="sr-only">· more risk, more reward</span></legend><div class="segments" id="leverage">${CONFIG.leverage.map(n => `<button type="button" data-leverage="${n}" aria-pressed="${n === 5}">${n}×</button>`).join('')}</div></fieldset><fieldset><legend>Order size <span class="sr-only">· cash in / position out</span></legend><div class="segments" id="allocation">${CONFIG.allocations.map(n => `<button type="button" data-allocation="${n}" aria-pressed="${n === 1}">${n * 100}%</button>`).join('')}</div></fieldset></div>
-      <div class="mobile-selectors"><label>Leverage <select id="mobile-leverage" aria-describedby="leverage-note">${CONFIG.leverage.map(n => `<option value="${n}" ${n === 5 ? 'selected' : ''}>${n}×</option>`).join('')}</select></label><label>Order size <select id="mobile-allocation" aria-describedby="order-hint">${CONFIG.allocations.map(n => `<option value="${n}" ${n === 1 ? 'selected' : ''}>${n * 100}%</option>`).join('')}</select></label></div>
+      <div class="selectors"><fieldset><legend>Leverage <span id="leverage-note" class="sr-only">· more risk, more reward</span></legend><div class="segments" id="leverage">${CONFIG.leverage.map(n => `<button type="button" data-leverage="${n}" aria-pressed="${n === CONFIG.defaultLeverage}">${n}×</button>`).join('')}</div></fieldset><fieldset><legend>Order size <span class="sr-only">· cash in / position out</span></legend><div class="segments" id="allocation">${CONFIG.allocations.map(n => `<button type="button" data-allocation="${n}" aria-pressed="${n === 1}">${n * 100}%</button>`).join('')}</div></fieldset></div>
+      <div class="mobile-selectors"><label>Leverage <select id="mobile-leverage" aria-describedby="leverage-note">${CONFIG.leverage.map(n => `<option value="${n}" ${n === CONFIG.defaultLeverage ? 'selected' : ''}>${n}×</option>`).join('')}</select></label><label>Order size <select id="mobile-allocation" aria-describedby="order-hint">${CONFIG.allocations.map(n => `<option value="${n}" ${n === 1 ? 'selected' : ''}>${n * 100}%</option>`).join('')}</select></label></div>
       <div class="trade-buttons" role="group" aria-describedby="order-hint"><button id="long" type="button">Long</button><button id="short" type="button">Short</button><button id="close" type="button" disabled>Close</button></div>
       <p id="order-hint" class="sr-only"></p>
       <p id="status" class="sr-only" role="status" aria-live="polite"></p>

@@ -1,0 +1,184 @@
+{
+  "seedRange": [
+    20001,
+    21000
+  ],
+  "horizonSeconds": 600,
+  "decisionSeconds": 2,
+  "entryAllocation": 1,
+  "leverages": [
+    1,
+    5
+  ],
+  "config": {
+    "startingCash": 10000,
+    "target": 50000,
+    "feeRate": 0.0005,
+    "minimumOrder": 1,
+    "leverage": [
+      1,
+      2,
+      5,
+      10,
+      20
+    ],
+    "allocations": [
+      0.25,
+      0.5,
+      0.75,
+      1
+    ],
+    "defaultLeverage": 1,
+    "tickMs": 100,
+    "candleMs": 2000,
+    "historyCandles": 50,
+    "visibleCandles": 60,
+    "startingPrice": 100,
+    "meanRegimeSeconds": 60,
+    "trendDrift": 0.0032,
+    "driftResponseSeconds": 4,
+    "rangeReversion": 0.055,
+    "calmSigma": 0.0042,
+    "volatileSigma": 0.0071,
+    "volatilityResponseSeconds": 15,
+    "volatileProbability": 0.25,
+    "meanJumpSeconds": 110,
+    "jumpSigma": 0.009,
+    "catchupChunkTicks": 1000,
+    "catchupNoticeMs": 1000
+  },
+  "strategies": {
+    "random-1x": {
+      "runs": 1000,
+      "success": 0,
+      "ruin": 0,
+      "censored": 1000,
+      "successPercent": 0,
+      "ruinPercent": 0,
+      "depletedBelow1000Percent": 0,
+      "successfulSeconds": {
+        "p10": null,
+        "p25": null,
+        "median": null,
+        "p75": null,
+        "p90": null
+      },
+      "successesWithin120to240Seconds": 0,
+      "successBy240Percent": 0,
+      "allRunTerminalEquity": {
+        "p10": 6947.21,
+        "median": 9159.71
+      }
+    },
+    "trend-1x": {
+      "runs": 1000,
+      "success": 6,
+      "ruin": 0,
+      "censored": 994,
+      "successPercent": 0.6,
+      "ruinPercent": 0,
+      "depletedBelow1000Percent": 0,
+      "successfulSeconds": {
+        "p10": 500,
+        "p25": 522,
+        "median": 566,
+        "p75": 578,
+        "p90": 596
+      },
+      "successesWithin120to240Seconds": 0,
+      "successBy240Percent": 0,
+      "allRunTerminalEquity": {
+        "p10": 14503.97,
+        "median": 23644.51
+      }
+    },
+    "range-1x": {
+      "runs": 1000,
+      "success": 0,
+      "ruin": 0,
+      "censored": 1000,
+      "successPercent": 0,
+      "ruinPercent": 0,
+      "depletedBelow1000Percent": 0,
+      "successfulSeconds": {
+        "p10": null,
+        "p25": null,
+        "median": null,
+        "p75": null,
+        "p90": null
+      },
+      "successesWithin120to240Seconds": 0,
+      "successBy240Percent": 0,
+      "allRunTerminalEquity": {
+        "p10": 2592.54,
+        "median": 3920.01
+      }
+    },
+    "random-5x": {
+      "runs": 1000,
+      "success": 30,
+      "ruin": 0,
+      "censored": 970,
+      "successPercent": 3,
+      "ruinPercent": 0,
+      "depletedBelow1000Percent": 11.2,
+      "successfulSeconds": {
+        "p10": 178,
+        "p25": 238,
+        "median": 382,
+        "p75": 456,
+        "p90": 564
+      },
+      "successesWithin120to240Seconds": 8,
+      "successBy240Percent": 0.8,
+      "allRunTerminalEquity": {
+        "p10": 907.42,
+        "median": 3847.52
+      }
+    },
+    "trend-5x": {
+      "runs": 1000,
+      "success": 906,
+      "ruin": 0,
+      "censored": 94,
+      "successPercent": 90.6,
+      "ruinPercent": 0,
+      "depletedBelow1000Percent": 0,
+      "successfulSeconds": {
+        "p10": 126,
+        "p25": 162,
+        "median": 238,
+        "p75": 348,
+        "p90": 456
+      },
+      "successesWithin120to240Seconds": 392,
+      "successBy240Percent": 45.6,
+      "allRunTerminalEquity": {
+        "p10": 50007.41,
+        "median": 50860.43
+      }
+    },
+    "range-5x": {
+      "runs": 1000,
+      "success": 0,
+      "ruin": 4,
+      "censored": 996,
+      "successPercent": 0,
+      "ruinPercent": 0.4,
+      "depletedBelow1000Percent": 93.7,
+      "successfulSeconds": {
+        "p10": null,
+        "p25": null,
+        "median": null,
+        "p75": null,
+        "p90": null
+      },
+      "successesWithin120to240Seconds": 0,
+      "successBy240Percent": 0,
+      "allRunTerminalEquity": {
+        "p10": 6.26,
+        "median": 60.06
+      }
+    }
+  }
+}

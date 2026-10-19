@@ -1,4 +1,4 @@
-import { createCryptoGame } from './game.js?v=20261019-minimal';
+import { createCryptoGame } from './game.js?v=20261019-default1';
 import { CONFIG } from './config.js';
 import { enterPersonal } from '../../common/entry.js';
 
