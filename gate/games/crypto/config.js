@@ -22,6 +22,22 @@ export const CONFIG = Object.freeze({
   volatileProbability: 0.25,
   meanJumpSeconds: 110,
   jumpSigma: 0.009,
+  sweeps: Object.freeze({
+    enabled: true,
+    meanEligibleSeconds: 240,
+    reversalShockProbability: 0.85,
+    cooldownSeconds: 20,
+    amplitude: Object.freeze([0.065, 0.085]), // Log-price distance, before background drift/noise
+    largeAmplitude: Object.freeze([0.12, 0.14]),
+    largeProbability: 0.12,
+    attackSeconds: Object.freeze([3, 5]),
+    holdSeconds: Object.freeze([0, 1.5]),
+    recoverySeconds: Object.freeze([8, 18]),
+    recoveryShape: Object.freeze([0.75, 1.75]),
+    fullRecoveryProbability: 0.20,
+    partialRecoveryProbability: 0.30,
+    retainedFraction: Object.freeze([0.35, 0.75]),
+  }),
   catchupChunkTicks: 1_000,
   catchupNoticeMs: 1_000,
 });

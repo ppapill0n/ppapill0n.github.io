@@ -8,6 +8,7 @@ const path = require('node:path');
 const base = (process.env.SITE_URL || 'http://127.0.0.1:8765').replace(/\/?$/, '/');
 const output = process.env.ARTIFACT_DIR || '/tmp/crypto-review';
 const KEY = 'personal-gate-pass';
+const WIN_SEED = 4; // Functional payment fixture; seed 3 is now censored at 600s.
 const numeric = text => Number(text.replace(/[^\d.-]/g, ''));
 
 (async () => {
@@ -176,6 +177,29 @@ const numeric = text => Number(text.replace(/[^\d.-]/g, ''));
     await absent.context().close();
     console.log('PASS one-hour hidden catch-up, bounded chunks, liquidation, repeated lifecycle callbacks, restart cancels old work');
 
+    // Production parameters: this sweep crosses liquidation and then recovers
+    // above entry. The paired background path never liquidates this position.
+    const swept = await open(390, { seed: 11 });
+    const { CONFIG } = await import('../gate/games/crypto/config.js');
+    const sweepModel = createSession(11), sweepBaseline = createSession(11, { ...CONFIG, sweeps: { ...CONFIG.sweeps, enabled: false } });
+    const entry = sweepModel.snapshot().market.price;
+    sweepModel.enter(1, .5, 20); sweepBaseline.enter(1, .5, 20);
+    await select(swept, 'leverage', 20); await select(swept, 'allocation', .5); await click(swept, '#long');
+    const sweepStart = await swept.evaluate(() => Date.now());
+    await hidden(swept, true);
+    await swept.clock.setSystemTime(new Date(sweepStart + 30000));
+    await hidden(swept, false); await swept.clock.runFor(64);
+    sweepModel.advance(30064); sweepBaseline.advance(30064);
+    assert.ok(sweepModel.snapshot().market.price > entry);
+    assert.equal(sweepModel.snapshot().liquidations, 1);
+    assert.equal(sweepBaseline.snapshot().liquidations, 0);
+    assert.equal(await cash(swept), 5000);
+    assert.equal(await swept.locator('#position-name').textContent(), 'Flat');
+    assert.equal(numeric(await swept.locator('#quote').textContent()), +sweepModel.snapshot().market.price.toFixed(2));
+    await swept.screenshot({ path: path.join(output, 'crypto-sweep-recovered.png'), fullPage: true });
+    await swept.context().close();
+    console.log('PASS production sweep liquidates while hidden despite recovery above entry; paired background position survives');
+
     const bankrupt = await open(390);
     await select(bankrupt, 'leverage', 20); await click(bankrupt, '#long');
     await hidden(bankrupt, true);
@@ -195,7 +219,7 @@ const numeric = text => Number(text.replace(/[^\d.-]/g, ''));
 
     async function win(page, blocked) {
       await select(page, 'leverage', 5); // Pacing fixture deliberately uses 5x, not the default.
-      const session = createSession(3), policy = createPolicy('trend', 3);
+      const session = createSession(WIN_SEED), policy = createPolicy('trend', WIN_SEED);
       let goal = false;
       for (let step = 0; step < 300; step++) {
         let state = session.snapshot();
@@ -237,8 +261,8 @@ const numeric = text => Number(text.replace(/[^\d.-]/g, ''));
         assert.match(page.url(), /crypto/);
       }
     }
-    const winner = await open(1280, { seed: 3 }); await win(winner, false); await winner.context().close();
-    const deniedStorage = await open(390, { seed: 3, storageBlocked: true }); await win(deniedStorage, true); await deniedStorage.context().close();
+    const winner = await open(1280, { seed: WIN_SEED }); await win(winner, false); await winner.context().close();
+    const deniedStorage = await open(390, { seed: WIN_SEED, storageBlocked: true }); await win(deniedStorage, true); await deniedStorage.context().close();
     console.log('PASS real seeded 5x UI strategy reaches goal, explicit Pay issues existing pass and navigates; unavailable storage does not spend');
 
     // Real (unmocked) timer smoke check complements controlled-time tests.

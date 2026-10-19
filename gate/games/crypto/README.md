@@ -24,9 +24,11 @@ Open `http://127.0.0.1:8765/gate/games/crypto/`. This is a local preview, not a 
 
 ## Market and time
 
-`config.js` holds tunables; `market.js` owns only price generation; `account.js` owns accounting; `session.js` joins them in fixed 100ms ticks; `live-clock.js` reconciles elapsed time; `chart.js` and `game.js` render/interact; `prototype.js` connects the existing entry flow.
+`config.js` holds tunables; `market.js` owns price generation and `sweeps.js` supplies independent mixed shocks; `account.js` owns accounting; `session.js` joins them in fixed 100ms ticks; `live-clock.js` reconciles elapsed time; `chart.js` and `game.js` render/interact; `prototype.js` connects the existing entry flow.
 
 The seeded log-price model has hidden up/down/range states with exponentially distributed dwell averaging 60 seconds. Transitions choose a different state. Trend strength varies by ±25%; drift eases over four seconds. Range states mean-revert toward an anchor. Volatility eases over 15 seconds toward calm (~0.59% candle-scale diffusion, varied ±15%) or volatile (~1.00%) targets. Independent jumps average one per 110 seconds, with 0.9% standard deviation capped at ±3.5%. These are stylized game parameters, not calibrated financial data. Numeric price bounds are $0.01–$1 billion for arbitrarily long runs.
+
+Mixed shocks use a separate seeded stream and never alter those background draws or regime timings. Ordinary countertrend arrivals have a 240s mean eligible-time clock; 85% of idle/outside-cooldown direct up↔down transitions also receive a shock in the new direction. Both have the same onset distributions: 0.065–0.085 log amplitude (12% use 0.12–0.14), 3–5s outbound, 0–1.5s peak hold, then 8–18s settling with randomized easing. Only 20% fully remove their offset; 30% retain 35–75%, and 50% retain all. There is a 20s cooldown and no overlap. Natural regime changes continue throughout. Similar sharp moves can therefore recover, partly remain, or accompany lasting trend reversals. Component recovery is not a promise that the observed price returns: drift and noise continue independently. See [mixed-shock analysis](../../../tests/crypto-sweeps-analysis.md) for exact parameters, measured predictability and tradeoffs.
 
 Fifty historical candles are generated from 1,000 real warmup ticks. Live OHLC includes every subsequent tick, including the still-forming candle. Snapshots expose observed prices and candles only, never regime labels, RNG state, or precomputed future candles. The market receives no position/account information. Review seeds are reproducible, not an anti-cheat mechanism.
 
@@ -36,9 +38,15 @@ Catch-up processes at most 1,000 ticks per callback, yields through timers betwe
 
 `Date.now()` supplies wall elapsed time, with `performance.now()` as a monotonic floor. Sleep counts even where the performance clock stops. Backward wall-clock adjustments re-anchor without rewinding and preserve subsequent sleep accounting. Forward adjustments count as elapsed time. There is no server clock, so manually changing device time can affect this local prototype. There is no manual pause control.
 
-## Pacing evidence
+## Current mixed-shock pacing
 
-The original goal was a **2–4 minute successful run**, not a guaranteed duration. The initial leverage is now 1×; the market parameters were not retuned. The historical table below explicitly tests 5×/10×/20×, not the new default. See [initial-history analysis](../../../tests/crypto-history-analysis.md) for the new default's pacing and one-entry strategy results. Initial drift of 0.16%/second gave the 5× trend policy only 36.3% success and a 6m44s successful-run median (300 seeds, 10-minute horizon). Small sweeps at 0.20/0.24/0.28/0.32% used 200 calibration seeds. The final 0.32%/second trend drift (~0.64% per two-second candle before noise) makes direction more readable without changing the noise, reacting to trades, or selecting favorable paths.
+Held-out comparison: 2,000 seeds 60001–62000, 600s horizon, shared background paths. Active 5× trend trading succeeds in 71.85%, with 0% ruin / 28.15% censored and a 292s successful median; 26.9% of all starts win by four minutes. At 10×, the same policy has 79.20% success / 1.70% ruin / 19.10% censored, a 170s successful median and 52.3% winning by four minutes. The 1× default remains unchanged. The 2–4 minute aim is not guaranteed and the new shocks slow 5× progress.
+
+Of 5,556 detected sharp moves, 48.72% are back in the old direction after 20s; only 42.69% regain the pre-move price within 60s. Nevertheless, a confirmed-bounce 20× bot has a residual edge: 7.55% success / 0.40% ruin / 92.05% censored, with a 456s successful median. This is not a claim of exploit resistance. Full distributions, conditional/paired comparisons, calibration history and reproduction commands are in [the report](../../../tests/crypto-sweeps-analysis.md).
+
+## Historical pacing evidence (before mixed shocks)
+
+The original goal was a **2–4 minute successful run**, not a guaranteed duration. The following results predate mixed shocks and explicitly test 5×/10×/20×. The later change of default to 1× did not retune that original market; [initial-history analysis](../../../tests/crypto-history-analysis.md) records its pacing and one-entry results at that time. Initial drift of 0.16%/second gave the 5× trend policy only 36.3% success and a 6m44s successful-run median (300 seeds, 10-minute horizon). Parameter trials at 0.20/0.24/0.28/0.32% used 200 calibration seeds. The selected 0.32%/second trend drift (~0.64% per two-second candle before noise) makes direction more readable without changing the noise, reacting to trades, or selecting favorable paths.
 
 Final validation: **1,000 previously unused seeds, 1001–2000, per policy/leverage; 600-second horizon; decisions every two seconds; 100% cash entries.** Policies use only completed candles and the executable current price. They use actual fees, tick-by-tick liquidation, and full closing costs to qualify for payment.
 
@@ -62,7 +70,7 @@ Policy definitions are in `tests/crypto-simulation.mjs`: random flips/reopens ev
 
 ```sh
 node --test tests/*.test.mjs
-node tests/crypto-simulation.mjs 1000 600 1001
+node tests/crypto-sweeps-simulation.mjs 2000 60001
 SITE_URL=http://127.0.0.1:8765 ARTIFACT_DIR=/tmp/crypto-review node tests/crypto-browser.cjs
 ```
 

@@ -1,5 +1,5 @@
-import { createCryptoGame } from './game.js?v=20261019-default1';
-import { CONFIG } from './config.js';
+import { createCryptoGame } from './game.js?v=20261019-sweeps';
+import { CONFIG } from './config.js?v=20261019-sweeps';
 import { enterPersonal } from '../../common/entry.js';
 
 const root = document.querySelector('#game');

@@ -1,5 +1,5 @@
-import { CONFIG } from './config.js?v=20261019-default1';
-import { createSession } from './session.js';
+import { CONFIG } from './config.js?v=20261019-sweeps';
+import { createSession } from './session.js?v=20261019-sweeps';
 import { drawChart } from './chart.js';
 import { createWallClock, createReconciler } from './live-clock.js';
 

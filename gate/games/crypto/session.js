@@ -1,6 +1,6 @@
-import { CONFIG } from './config.js';
+import { CONFIG } from './config.js?v=20261019-sweeps';
 import { createAccount } from './account.js';
-import { createMarket } from './market.js';
+import { createMarket } from './market.js?v=20261019-sweeps';
 
 // Fixed-time simulation clock, separate from rendering and trading input.
 export function createSession(seed, config = CONFIG) {

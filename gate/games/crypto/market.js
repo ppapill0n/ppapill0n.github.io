@@ -1,4 +1,5 @@
-import { CONFIG } from './config.js';
+import { CONFIG } from './config.js?v=20261019-sweeps';
+import { createSweeps } from './sweeps.js?v=20261019-sweeps';
 
 export function seededRandom(seed) {
   let value = seed >>> 0;
@@ -12,6 +13,7 @@ export function seededRandom(seed) {
 
 export function createMarket(seed, config = CONFIG) {
   const random = seededRandom(seed);
+  const sweeps = createSweeps(seededRandom(seed ^ 0xC01D5EED), config);
   const normal = () => Math.sqrt(-2 * Math.log(1 - random())) * Math.cos(2 * Math.PI * random());
   const dt = config.tickMs / 1000, ticksPerCandle = config.candleMs / config.tickMs;
   const warmupTicks = config.historyCandles * ticksPerCandle;
@@ -30,6 +32,7 @@ export function createMarket(seed, config = CONFIG) {
   }
   chooseRegime();
   function step() {
+    const previousRegime = regime;
     if (random() < 1 - Math.exp(-dt / config.meanRegimeSeconds)) chooseRegime();
     const targetDrift = regime === 0
       ? Math.max(-config.trendDrift * 1.5, Math.min(config.trendDrift * 1.5, (anchor - logPrice) * config.rangeReversion))
@@ -41,7 +44,10 @@ export function createMarket(seed, config = CONFIG) {
     const previous = price;
     // Bounds protect numeric precision on arbitrarily long sessions, not account outcomes.
     logPrice = Math.max(Math.log(0.01), Math.min(Math.log(1e9), logPrice + drift * dt + sigma * Math.sqrt(dt) * normal() + jump));
-    price = Math.exp(logPrice);
+    // Keep the original process (including its range anchor and RNG) untouched.
+    // Observed shocks can retain a level change, but never feed back into it.
+    const offset = sweeps.step(regime, previousRegime, drift);
+    price = Math.exp(Math.max(Math.log(0.01), Math.min(Math.log(1e9), logPrice + offset)));
     if (!candle) candle = { time: tick * config.tickMs, open: previous, high: previous, low: previous, close: previous };
     candle.high = Math.max(candle.high, price);
     candle.low = Math.min(candle.low, price);
