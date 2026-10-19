@@ -1,4 +1,4 @@
-import { createCryptoGame } from './game.js';
+import { createCryptoGame } from './game.js?v=20261019-minimal';
 import { CONFIG } from './config.js';
 import { enterPersonal } from '../../common/entry.js';
 
@@ -11,7 +11,7 @@ const game = createCryptoGame(root, () => {}, () => {
     return result === 'entered';
   });
   if (paid) window.location.assign('../../../personal/');
-  if (result === 'unavailable') game.message('Session storage is unavailable. Enable it to enter; your cash has not been spent.');
+  if (result === 'unavailable') game.message('Session storage is unavailable.', true);
 });
 document.querySelector('#restart').addEventListener('click', () => game.reset());
 // A seed URL is useful for a reproducible review. Restart always draws a new path.
