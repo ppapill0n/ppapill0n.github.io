@@ -2,6 +2,8 @@
 
 Direct route: `/gate/games/crypto/`. Optional reproducible review path: `/gate/games/crypto/?seed=3` (unsigned 32-bit integer). No registry, random entry selection, gallery, existing game, or personal-page files are changed. No runtime dependencies, API calls, real money, external prices, or external assets.
 
+Public test link: <https://ppapill0n.github.io/gate/games/crypto/>. This isolated route is published through the site's existing GitHub Pages deployment from `main`. It remains available until explicitly removed; it has no automatic expiration.
+
 From the repository root:
 
 ```sh
@@ -66,4 +68,4 @@ SITE_URL=http://127.0.0.1:8765 ARTIFACT_DIR=/tmp/crypto-review node tests/crypto
 
 The browser script needs Playwright and Chromium (`CHROMIUM` can override `/usr/bin/chromium`); the game itself needs no installation or build. It covers 320/390/768/1280px layouts, Chromium mouse/touch and keyboard controls, fees/partial closes/adds, locked leverage, restart, a complete seeded run, successful Pay and storage failure, an hour of chunked hidden catch-up, liquidation while away, rejected stale-price inputs, lifecycle duplication, and restart during catch-up. It writes actual screenshots. Unit tests independently verify accounting conservation, gaps, market OHLC, path independence, render-rate independence, sleep/clock correction behavior, and an interim liquidation followed by price recovery.
 
-Validation was performed in Chromium, with controlled-clock tests plus an unmocked timer smoke test. Hidden state and sleep are simulated in these tests; no actual handset, OS suspend/resume, Safari or Firefox testing was performed. Screenshots were visually inspected. No production deployment or remote push is part of this prototype.
+Validation was performed in Chromium, with controlled-clock tests plus an unmocked timer smoke test. Hidden state and sleep are simulated in these tests; no actual handset, OS suspend/resume, Safari or Firefox testing was performed. Screenshots were visually inspected. Publishing this test route does not add it to the random gate selector or freeplay gallery.
