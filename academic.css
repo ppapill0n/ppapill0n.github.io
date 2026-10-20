@@ -45,6 +45,7 @@ section:not(.intro) { margin-top:6.5rem; }
 .paper-links a { font-size:.76rem; font-weight:600; color:var(--green); }
 .details-grid { display:grid; grid-template-columns:1fr 1fr; gap:4.5rem; }
 .details-grid > div { min-width:0; }
+.details-grid .section-heading { margin-bottom:.75rem; }
 .timeline { margin:0; }
 .timeline > div { display:grid; grid-template-columns:78px 1fr; gap:1rem; padding:.75rem 0; border-bottom:1px solid var(--line); }
 .timeline dt { color:#77837b; font-size:.72rem; }
