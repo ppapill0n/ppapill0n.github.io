@@ -1,4 +1,4 @@
-import { createCryptoGame } from './game.js?v=20261019-orders';
+import { createCryptoGame } from './game.js?v=20261022-render';
 import { CONFIG } from './config.js?v=20261019-sweeps';
 import { enterPersonal } from '../../common/entry.js';
 

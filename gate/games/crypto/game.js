@@ -38,7 +38,7 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, 
   const events = new AbortController();
   const listen = (target, type, callback) => target.addEventListener(type, callback, { signal: events.signal });
   let session, reconciler, orders, state, leverage = CONFIG.defaultLeverage, allocation = 1, catching = false, destroyed = false, suspended = false;
-  let timer = 0, frame = 0, generation = 0, notified = '', priorLiquidations = 0;
+  let timer = 0, generation = 0, notified = '', priorLiquidations = 0, chartKey = '';
   let status = '';
   function message(text, visible = false) {
     status = text;
@@ -101,7 +101,11 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, 
       message(a.bankrupt ? 'Liquidated. Your isolated collateral is gone. Try again with a fresh $10,000.' : 'Liquidated.', !a.bankrupt);
     }
     if (a.bankrupt && !status.startsWith('Liquidated')) message('No tradeable cash remains. Try again with a fresh $10,000.');
-    drawChart(el('chart'), m, a);
+    const chart = el('chart');
+    const nextChartKey = JSON.stringify([m.time, m.price, p?.entry, a.liquidationPrice, chart.clientWidth, chart.clientHeight]);
+    // Polls, selectors and order notifications often share the same chart.
+    // Keep its SVG nodes intact unless a tick, position marker or size changed.
+    if (nextChartKey !== chartKey) { drawChart(chart, m, a); chartKey = nextChartKey; }
     const next = JSON.stringify(getState());
     if (next !== notified) { notified = next; changed(getState()); }
   }
@@ -112,28 +116,17 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, 
   }
   function pump() {
     if (destroyed || suspended || !session) return;
-    clearTimeout(timer); cancelAnimationFrame(frame);
+    clearTimeout(timer);
     const result = reconciler.reconcile(CONFIG.catchupChunkTicks);
     orders.flush();
-    if (result.lagMs >= CONFIG.catchupNoticeMs || document.hidden) catching = true;
+    // Show only substantial work still remaining after this bounded chunk.
+    // A delay already reconciled, or a tick due during rendering, is ordinary
+    // foreground work and must not flash an overlay or wait for extra paints.
+    catching = !session.ended && result.remainingMs >= CONFIG.catchupNoticeMs;
     render();
     if (session.ended && !orders.pending) return;
-    if (reconciler.pending() || orders.pending) { catching = true; render(); schedule(0); return; }
-    if (document.hidden) { schedule(CONFIG.tickMs); return; }
-    if (!catching) { schedule(CONFIG.tickMs / 2); return; }
-    // Catch-up may yield between chunks, but accepted orders stay queued and
-    // trading controls remain usable. Painting is never a condition for a fill.
-    const current = generation;
-    frame = requestAnimationFrame(() => {
-      if (destroyed || current !== generation) return;
-      frame = requestAnimationFrame(() => {
-        if (destroyed || current !== generation) return;
-        if (reconciler.pending() || document.hidden) { pump(); return; }
-        catching = false;
-        render();
-        schedule(CONFIG.tickMs / 2);
-      });
-    });
+    if (reconciler.pending() || orders.pending) { schedule(0); return; }
+    schedule(document.hidden ? CONFIG.tickMs : CONFIG.tickMs / 2);
   }
   const readyForInput = () => !destroyed && !suspended && !!session && !document.hidden && !session.ended;
   function trade(action) {
@@ -157,22 +150,22 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, 
   listen(el('mobile-allocation'), 'change', () => { if (readyForInput()) allocation = Number(el('mobile-allocation').value); render(); });
   listen(el('pay'), 'click', () => { if (readyForInput()) { if (mode === 'freeplay') pay(); else tryEnter(); } });
   listen(el('retry'), 'click', () => reset());
-  listen(document, 'visibilitychange', () => { catching = true; pump(); });
-  listen(window, 'pagehide', () => { suspended = true; generation++; orders?.cancel(); clearTimeout(timer); cancelAnimationFrame(frame); });
+  listen(document, 'visibilitychange', pump);
+  listen(window, 'pagehide', () => { suspended = true; generation++; orders?.cancel(); clearTimeout(timer); });
   listen(window, 'pageshow', event => {
     if (event.persisted) {
       if (suspended) orders = createOrderQueue(session, reconciler);
-      suspended = false; catching = true; pump();
+      suspended = false; pump();
     }
   });
   const observer = new ResizeObserver(() => render()); observer.observe(root);
   function reset({ seed = freshSeed() } = {}) {
     if (destroyed) return;
-    generation++; orders?.cancel(); clearTimeout(timer); cancelAnimationFrame(frame);
+    generation++; orders?.cancel(); clearTimeout(timer);
     session = createSession(seed); reconciler = createReconciler(session, createWallClock());
     orders = createOrderQueue(session, reconciler); suspended = false;
     leverage = CONFIG.defaultLeverage; allocation = 1; catching = document.hidden;
-    priorLiquidations = 0; notified = '';
+    priorLiquidations = 0; notified = ''; chartKey = '';
     message('');
     root.dataset.seed = String(seed);
     render();
@@ -188,6 +181,6 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, 
     });
   }
   return { reset, getState, message, pay,
-    destroy() { destroyed = true; generation++; orders?.cancel(); clearTimeout(timer); cancelAnimationFrame(frame); observer.disconnect(); events.abort(); root.classList.remove('crypto-game'); root.replaceChildren(); },
+    destroy() { destroyed = true; generation++; orders?.cancel(); clearTimeout(timer); observer.disconnect(); events.abort(); root.classList.remove('crypto-game'); root.replaceChildren(); },
   };
 }

@@ -122,7 +122,7 @@ const numeric = text => Number(text.replace(/[^\d.-]/g, ''));
     await click(stale, '#long');
     assert.equal(await stale.locator('#position-name').textContent(), 'Long · 1×');
     assert.equal(await cash(stale), 0);
-    assert.equal(await phase(stale), 'catching-up');
+    assert.equal(await phase(stale), 'trading', 'A delay reconciled in one callback needs no catch-up overlay');
     assert.notEqual(await stale.locator('#quote').textContent(), oldPrice);
     assert.match(await stale.locator('#status').textContent(), /Opened long/);
     assert.match(await stale.locator('#status').getAttribute('class'), /sr-only/, 'Successful orders add no explanatory UI');

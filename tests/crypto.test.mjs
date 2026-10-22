@@ -10,6 +10,19 @@ import { createWallClock, createReconciler } from '../gate/games/crypto/live-clo
 
 const near = (actual, expected, tolerance = 1e-7) => assert.ok(Math.abs(actual - expected) < tolerance, `${actual} != ${expected}`);
 
+test('standalone, gate and freeplay invalidate the foreground-render fix together', async () => {
+  const graph = [
+    ['gate/games/crypto/index.html', './prototype.js'], ['gate/games/crypto/prototype.js', './game.js'],
+    ['gate/index.html', 'gate.js'], ['gate/gate.js', './registry.js'],
+    ['play/index.html', 'play.js'], ['play/play.js', '../gate/registry.js'],
+    ['gate/registry.js', './games/crypto/game.js'],
+  ];
+  for (const [file, dependency] of graph) {
+    const source = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.ok(source.includes(`${dependency}?v=20261022-render`), `${file} must invalidate ${dependency}`);
+  }
+});
+
 test('default is 1x while all selectable leverage levels remain available', () => {
   assert.equal(CONFIG.defaultLeverage, 1);
   assert.deepEqual(CONFIG.leverage, [1, 2, 5, 10, 20]);

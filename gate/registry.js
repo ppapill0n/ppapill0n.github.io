@@ -7,7 +7,7 @@ import { createCube2Game } from './games/cube2/game.js?v=20261009-orbit';
 import { scramble } from './common/cube-engine.js';
 import { createSlotsGame } from './games/slots/game.js';
 import { createGomokuGame } from './games/gomoku/game.js';
-import { createCryptoGame } from './games/crypto/game.js?v=20261019-orders';
+import { createCryptoGame } from './games/crypto/game.js?v=20261022-render';
 import { CONFIG as CRYPTO } from './games/crypto/config.js';
 export { chooseGame, createGameSelector } from './common/selection.js';
 export function createRegistry(random = Math.random) {
