@@ -4,6 +4,7 @@ This is the central index for third-party components deliberately incorporated i
 
 | Component | Use | Pinned source | License and complete notice |
 | --- | --- | --- | --- |
+| Three.js r180 | WebGL renderer used only by the isolated studio preview | [three.js 0.180.0](https://github.com/mrdoob/three.js/tree/r180), npm `three@0.180.0`; unmodified minified ES modules | MIT; [complete copyright and license](personal/studio-preview/vendor/LICENSE). Procedural room geometry and textures are original to this preview. |
 | HTML5-Gomoku by Yao Yujian | Adapted incremental five-cell-window evaluator for the Gomoku gate's bounded AI | [yyjhao/HTML5-Gomoku, a664ec1e7788c7cbdfbe223fb86f34162f9e006d](https://github.com/yyjhao/HTML5-Gomoku/tree/a664ec1e7788c7cbdfbe223fb86f34162f9e006d), `js/ai-worker.js` | MIT; [complete copyright and license](gate/games/gomoku/vendor/LICENSE.txt). The same complete notice is retained in the shipped derivative [evaluator.js](gate/games/gomoku/vendor/evaluator.js). |
 
 The upstream user interface, jQuery, and jQuery Mobile are not distributed. The evaluator has no third-party runtime imports. Our adapter, rules, UI, and bounded move chooser are separate from the adapted code. [Adaptation and replacement notes](gate/games/gomoku/README.md).

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#eee8dc">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23304b3a'/%3E%3Cpath d='M8 24V14a8 8 0 0 1 16 0v10M16 7v17M8 16h16' fill='none' stroke='%23eee8dc' stroke-width='2'/%3E%3C/svg%3E">
+  <title>작은 작업실 · 3D preview — Yonghee Kim</title>
+  <link rel="stylesheet" href="studio.css">
+  <script type="module" src="studio.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <div><p class="eyebrow">YONGHEE'S PERSONAL SPACE</p><h1>작은 작업실<span class="period">.</span></h1></div>
+    <span class="edition"><span></span> 공간 시안 01</span>
+  </header>
+  <main id="room" aria-label="3D 작업실">
+    <canvas id="scene" tabindex="0" aria-label="작업실 둘러보기. 드래그 또는 방향키로 시선을 바꾸고 Home 키로 처음 시점으로 돌아갑니다." aria-describedby="instructions"></canvas>
+    <div id="labels" aria-label="공간 속 오브젝트 링크"></div>
+    <div class="room-caption" aria-hidden="true"><span>오후의 빛, 아직 비어 있는 방.</span><span>천천히 채워갈 공간</span></div>
+    <div id="loading" role="status">작업실 문을 여는 중…</div>
+    <div id="fallback" hidden><h2>이 기기에서는 3D를 열 수 없어요.</h2><p>아래 바로가기에서 기존 페이지를 이용할 수 있어요.</p><button type="button" onclick="location.reload()">다시 열기</button></div>
+  </main>
+  <footer class="toolbar">
+    <div class="view-help"><span class="drag-icon" aria-hidden="true">↔</span><p id="instructions">드래그해서 둘러보기<span>위치는 그대로, 시선만 움직여요</span></p></div>
+    <div class="actions">
+      <button id="home-view" type="button" title="처음 시점 (Home)"><span aria-hidden="true">↶</span><span>처음 시점</span></button>
+      <button id="edit" type="button" class="primary" disabled><span aria-hidden="true">＋</span> 공간 편집</button>
+      <details id="quick-links"><summary>바로가기 <span aria-hidden="true">↗</span></summary><nav aria-label="기존 페이지"><p>기존 페이지로 이동</p><a href="/">연구 프로필 ↗</a><a href="/personal/">개인 페이지 ↗</a><a href="/play/">게임 ↗</a><small>개인 페이지·게임은 기존 입장 절차를 따릅니다.</small></nav></details>
+    </div>
+  </footer>
+  <p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
+  <dialog id="editor" aria-labelledby="editor-title">
+    <div class="dialog-head"><div><p class="eyebrow">MAKE A LITTLE SPACE</p><h2 id="editor-title">공간에 놓아보기</h2></div><button id="close-editor" type="button" aria-label="편집 닫기">×</button></div>
+    <p class="local-note">이 브라우저에만 저장되는 배치 실험이에요. 사이트 전체를 수정하거나 공개하는 관리 기능은 아닙니다.</p>
+    <form id="add-form">
+      <div class="form-row"><label>오브젝트<select id="object-type"><option value="plant">작은 화분</option><option value="books">책과 낮은 선반</option><option value="game">게임 테이블</option></select></label><label>연결할 곳<select id="destination"><option value="profile">연구 프로필</option><option value="personal">개인 페이지</option><option value="play">게임</option></select></label></div>
+      <label>이름<input id="object-name" maxlength="48" placeholder="예: 영감이 자라는 곳" required value="작은 화분"></label>
+      <button id="add-object" type="submit" class="primary">＋ 오브젝트 놓기</button>
+    </form>
+    <div class="list-heading"><h3>지금 놓인 것들 <span id="object-count">0 / 6</span></h3><button id="empty-room" type="button" disabled>모두 비우기</button></div>
+    <p id="empty-note">아직 비어 있어요. 하나씩 천천히 놓아보세요.</p>
+    <ul id="object-list"></ul>
+    <div id="reset-confirm" hidden><p>이 브라우저의 배치를 모두 비울까요?</p><button id="confirm-reset" type="button">모두 비우기</button><button id="cancel-reset" type="button">취소</button></div>
+    <p id="storage-status" role="status"></p>
+    <p class="editor-footnote">최대 6개 · 정해진 위치에 배치됩니다.<br>방 안 오브젝트를 누르면 연결된 페이지로 이동해요.</p>
+  </dialog>
+  <noscript><style>#loading,#scene,.room-caption{display:none}#room{display:grid;place-items:center}</style><p class="noscript-note">3D 작업실에는 JavaScript가 필요합니다. 바로가기 링크는 그대로 사용할 수 있어요.</p></noscript>
+</body>
+</html>

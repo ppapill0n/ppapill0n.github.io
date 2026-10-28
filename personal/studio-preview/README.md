@@ -1,30 +1,42 @@
-# Studio preview groundwork — visual implementation blocked
+# Personal studio — isolated 3D preview
 
-This directory is reserved for an isolated `/personal/studio-preview/` prototype. It does **not** yet contain a page or a room renderer and must not be described as a completed preview. Existing homepage, `/personal/`, access guard, games and navigation are unchanged.
+Preview route: `/personal/studio-preview/`. It is directly accessible for review and has `noindex, nofollow`; it is not access control. The homepage, current `/personal/` page, gate, games and their existing links/guards are unchanged.
 
-The required reference is Library `libfile_37cb302f7d948191aad24dc04ca87540`, `empty-courtyard-studio-concept.png` (1536 × 1024). On 2026-10-28 Library resolved the authorized file and returned a signed transfer, but the current Library transfer helper failed with `library file transfer failed: download failed`. One bounded retry with a second destination in this executor failed identically. Neither attempt produced readable image bytes. The underlying HTTP/network reason was not exposed by the helper. This is a failed transfer, not a denied approval or an uncertain write. Visual implementation is explicitly contingent on inspecting the actual reference pixels.
+## Behavior
 
-## Independent work completed
+The initial layout is empty. The real WebGL room includes a timber plank floor, a pitched roof with exposed beams, cream walls and green trim, a left courtyard opening and window seat, an arched far window, a recessed shelf niche, a closed panel door and warm sconces. The room continues behind the camera; it is not a panorama or a cutout.
 
-- `view-controls.js`: pointer and touch look-direction input with a fixed-position camera contract; full horizontal rotation, bounded pitch, drag threshold, click/drag separation even when dragging back to the starting point, multi-touch/cancel suppression, scoped arrow keys and Home, and explicit cleanup. The future renderer must apply the emitted direction to its own fixed camera position. This module contains no orbit or walking controls.
-- `object-store.js`: empty initial layout; at most six optional groups; validated destinations to existing site routes; repeated add/delete/reset; versioned local persistence with in-memory operation if storage is blocked or full. Reset affects only the prototype key. The future interface must confirm reset and label editing as local to this browser, neither global publishing nor secure administration.
-- Tests for the state and direction math, plus actual Chromium pointer/touch event tests using a minimal input fixture. These do not test a room, picking geometry, mobile layout, navigation, rendering performance or Android hardware.
+The camera position stays at `[0, 1.6, 2.7]`. Mouse/touch drag rotates viewing direction with full yaw and bounded pitch. It never orbits or walks. Arrow keys work while the canvas is focused, and Home / 처음 시점 restores the initial direction. A drag that returns to its origin still cannot activate navigation. Multi-touch and canceled gestures do not click.
 
-## Resume after reference access is restored
+공간 편집 adds up to six plant/book/game groups to predetermined floor positions. Each has a name and one of three existing site destinations. Clicking geometry uses ray picking with architecture occlusion; visible name links and the editor list provide keyboard alternatives. The footer also contains native fallback links usable without WebGL or JavaScript. Existing personal/game destinations retain their normal gate behavior.
 
-1. Make the exact required reference readable in this executor through a supported Library route and inspect its pixels before creating the room.
-2. Add the static page, warm wood/green materials, pitched beams, arched window or recesses, left garden opening, and a mostly empty room. Use actual 3D geometry and keep the camera position fixed.
-3. Connect optional object groups to ray picking and accessible fallback links; implement add/delete, confirmed reset, persistence status and mobile layout. Preserve existing access semantics at existing destinations.
-4. Test the rendered scene, mouse/touch look, picking, repeated edits/reset, persistence failures, keyboard alternatives, browser Back, narrow layouts, fallback behavior, and repository checks. Capture desktop/mobile screenshots for review and save approved deliverables to Library.
-5. Publishing the scoped test route is now authorized, but only after implementation and tests pass. Push and verify the exact remote commit and Pages deployment; return the public URL and disclose live-browser limits. Do not replace the homepage or current `/personal/` destination.
+The editor stores only its versioned layout in localStorage key `personal-studio-preview:v1`. It is local to one browser/origin, not global publishing or secure administration. Unsupported, malformed, unavailable or full storage does not prevent in-memory editing. Reset requires an explicit second action and touches only the preview key. Labels are text, and destinations are an allowlist rather than arbitrary URLs.
 
-## Checks
+## Implementation and limits
+
+- Static HTML/CSS/ES modules, no build pipeline, backend, CDN or runtime network dependency. Three.js 0.180.0 is pinned and vendored with its MIT license; see the central third-party notice.
+- Procedural geometry/materials and deterministic canvas wood grain. Lighting is stylized, without physically accurate global illumination or photorealistic assets.
+- Rendering happens on view/layout/visibility changes, not a continuous animation loop. Floor boards are instanced, pixel ratio is capped at 1.5, only one light casts shadows, and removed object geometry is disposed.
+- WebGL 2 is required for the room. Initialization/context loss falls back to readable navigation. Device-specific GPU performance and physical Android/iOS behavior remain unverified; mobile tests use Chromium touch emulation.
+- Object positions, shape choices and destinations are deliberately limited for this prototype. There is no arbitrary object upload, move/rotate gizmo, synchronized editing or admin account.
+- `?inspect` enables explicit QA diagnostics for fixed camera coordinates, direction, object count, GPU geometry count and picking. Normal loads do not expose these diagnostics.
+
+## Reference provenance
+
+The original concept is Library `libfile_37cb302f7d948191aad24dc04ca87540`, `empty-courtyard-studio-concept.png`. Its supported transfer and one bounded retry failed in this executor. The parent inspected the pixels and explicitly authorized substituting its verified visual specification: warm empty attic/studio, honey wood floor, cream plaster, forest-green trim, gable beams, left glazed garden opening/window seat, far arched window and recessed niche, right panel door, amber sconces. No additional transfer retry or restriction bypass was used. Final original-image comparison is delegated to the parent using the review screenshots.
+
+## Verification
 
 ```sh
 node --test tests/*.test.mjs
 python3 -m http.server 8765 --bind 127.0.0.1
-# In another terminal, with Playwright available:
+# Separate terminal, Playwright + Chromium installed:
 node tests/studio-controls-browser.cjs
+node tests/studio-preview-browser.cjs
+node tests/freeplay-browser.cjs
+node tests/academic-browser.cjs
 ```
 
-The server is for local verification only; it is not a user-accessible preview or a deployment.
+The studio browser suite covers actual WebGL rendering, fixed camera position through mouse/touch/keyboard rotation, a full rear view, real geometry picking, drag/click separation, navigation and Back, refresh persistence, repeated add/delete/reset/cancel, geometry cleanup, safe text labels, mobile portrait/landscape layouts, keyboard dialog behavior, storage failures, corrupt data, no JavaScript, no WebGL and context-loss fallback. The existing freeplay suite verifies eight game routes, their guards and session expiry.
+
+Review screenshots are included under `review/` as explicit deliverables and are not loaded by the application. Library upload was attempted through the required batch helper but failed at tool discovery with a network error; no Library file IDs were created or claimed. The served screenshot paths provide the alternative delivery route.
