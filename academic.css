@@ -7,8 +7,10 @@ a { color:inherit; text-underline-offset:.2em; text-decoration-color:#8eaa99; }
 .skip-link:focus { top:1rem; }
 header, main, footer, .personal-cue { width:min(920px, calc(100% - 3rem)); margin-inline:auto; }
 header { height:84px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); }
-.mark { font:700 1.25rem/1 "Manrope",sans-serif; letter-spacing:-.08em; text-decoration:none; }
-.mark span, h1 span { color:#6caa7e; }
+.mark { display:flex; align-items:center; width:36px; height:20px; text-decoration:none; }
+.mark:focus-visible { outline:2px solid var(--green); outline-offset:6px; }
+.antler-mark { display:block; flex:none; object-fit:contain; }
+h1 span { color:#6caa7e; }
 nav { display:flex; align-items:center; gap:1.6rem; font-size:.82rem; }
 nav > a { text-decoration:none; }
 nav > a:hover { color:var(--green); }
@@ -27,7 +29,7 @@ h1 { margin:0 0 1.7rem; font-size:clamp(2.8rem,6vw,4.6rem); line-height:1; font-
 .lead { font-size:clamp(1.15rem,2.5vw,1.42rem); line-height:1.6; margin:0 0 1rem; }
 .research-goal { color:var(--muted); max-width:680px; }
 .academic-portrait { grid-area:portrait; aspect-ratio:4/5; border:1px solid #c7d3ca; background:linear-gradient(145deg,#f2f5ef,#dfe9e1); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.4rem; color:var(--green); }
-.academic-portrait span { font:600 3.2rem/1 "Manrope",sans-serif; letter-spacing:-.1em; opacity:.5; }
+.academic-portrait .antler-mark { width:64px; height:3.2rem; opacity:.5; }
 .academic-portrait small { color:#718078; font-size:.62rem; text-transform:uppercase; letter-spacing:.1em; }
 .topics { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:1.7rem; }
 .topics span { padding:.32rem .7rem; border:1px solid #bfd0c4; border-radius:100px; color:#456452; font-size:.72rem; }

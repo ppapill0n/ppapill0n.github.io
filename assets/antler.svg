@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 90" fill="none" stroke="#18563e" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+  <g id="antler">
+    <path d="M42 80C30 76 20 64 20 48C20 33 28 24 27 12"/>
+    <path d="M20 48C13 45 9 38 9 30M25 66C15 65 9 59 7 52"/>
+  </g>
+  <use href="#antler" transform="translate(100 0) scale(-1 1)"/>
+</svg>
