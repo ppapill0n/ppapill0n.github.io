@@ -1,4 +1,4 @@
-import { createRegistry } from '../gate/registry.js?v=20261022-render';
+import { createRegistry } from '../gate/registry.js?v=20261029-ticker';
 import { canEnter, formatValue } from '../gate/common/engine.js';
 import { readPass } from '../gate/common/session-pass.js';
 import { createAccessGuard } from '../gate/common/access-guard.js';

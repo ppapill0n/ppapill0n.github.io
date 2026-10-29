@@ -14,6 +14,8 @@ Open `http://127.0.0.1:8765/gate/games/crypto/`. This is a local preview, not a 
 
 ## Play and accounting
 
+Each new run draws a four-letter uppercase fictional ticker, shared by the heading, position quantity, order hint, and accessible chart labels. It stays fixed during the run and differs from the previous run in the same game root, including freeplay restarts. Cosmetic randomness is separate from the seeded market path.
+
 - Start with $10,000; get flat with at least $50,000 cash, then explicitly press **Pay $50,000**. At the gate or direct route, payment deducts fictional cash and uses the existing `enterPersonal` / one-hour session-pass interface to navigate to `/personal/`. A storage failure leaves the money untouched. Merely reaching the goal never issues a pass. In freeplay, payment completes the fictional run without navigation, issuing a pass, or extending the existing pass.
 - One linear isolated-margin position. Long profits on a rise; Short profits on a fall. Opposite-direction entry is disabled until the position is fully closed. Same-direction adds combine quantity, collateral, and quantity-weighted entry price.
 - Leverage: 1/2/5/10/20, initially 1×. Locked while holding. Order size: 25/50/75/100%, initially 100%. Entries allocate that percentage of available cash; closes release that percentage of position quantity and collateral.
@@ -80,6 +82,7 @@ node tests/crypto-sweeps-simulation.mjs 2000 60001
 SITE_URL=http://127.0.0.1:8765 ARTIFACT_DIR=/tmp/crypto-review node tests/crypto-browser.cjs
 SITE_URL=http://127.0.0.1:8765 node tests/crypto-integration-browser.cjs
 SITE_URL=http://127.0.0.1:8765 node tests/crypto-foreground-browser.cjs
+SITE_URL=http://127.0.0.1:8765 node tests/crypto-ticker-browser.cjs
 ```
 
 The browser scripts need Playwright and Chromium (`CHROMIUM` can override `/usr/bin/chromium`); the game itself needs no installation or build. They cover 320/390/768/1280px layouts, Chromium mouse/touch and keyboard controls, fees/partial closes/adds, locked leverage, restart, complete seeded runs, successful Pay and storage failure, an hour of chunked hidden catch-up, liquidation while away, current-price execution of delayed inputs, repeated clicks, lifecycle duplication, and restart/navigation during catch-up. The integration suite additionally checks the gate's single payment button, eight-card gallery, freeplay payment isolation, and pass preservation. Both write actual screenshots. Unit tests independently verify accounting conservation, gaps, market OHLC, path independence, render-rate independence, sleep/clock correction behavior, and an interim liquidation followed by price recovery. See [integration verification](../../../tests/crypto-integration-verification.md).

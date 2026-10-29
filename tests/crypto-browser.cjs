@@ -210,9 +210,13 @@ const numeric = text => Number(text.replace(/[^\d.-]/g, ''));
     assert.equal(await cash(bankrupt), 0);
     assert.equal(await bankrupt.locator('#retry').isVisible(), true);
     await bankrupt.screenshot({ path: path.join(output, 'crypto-bankrupt.png'), fullPage: true });
+    const endedTicker = await bankrupt.locator('#ticker').textContent();
     await click(bankrupt, '#retry');
     assert.equal(await cash(bankrupt), 10000);
     assert.equal(await phase(bankrupt), 'trading');
+    const retryTicker = await bankrupt.locator('#ticker').textContent();
+    assert.match(retryTicker, /^[A-Z]{4}$/); assert.notEqual(retryTicker, endedTicker);
+    assert.equal(await bankrupt.locator('#chart title').textContent(), `Fictional ${retryTicker} / USD candlestick chart`);
     await bankrupt.context().close();
     console.log('PASS unseen liquidation / bankruptcy and touch retry');
 

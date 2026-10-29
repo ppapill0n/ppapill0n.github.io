@@ -3,7 +3,7 @@ import { CONFIG } from './config.js';
 const priceLabel = value => value >= 100_000 ? `${(value / 1000).toFixed(1)}k` : value.toFixed(2);
 const timeLabel = ms => `${ms < 0 ? '−' : ''}${Math.floor(Math.abs(ms) / 60000)}:${String(Math.floor(Math.abs(ms) / 1000) % 60).padStart(2, '0')}`;
 
-export function drawChart(svg, market, account) {
+export function drawChart(svg, market, account, ticker) {
   const width = Math.max(280, svg.clientWidth), height = svg.clientHeight || 240;
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
   const left = 8, right = width - 76, top = 14, bottom = height - 27;
@@ -29,7 +29,7 @@ export function drawChart(svg, market, account) {
   markers.sort((a, b) => a.py - b.py);
   for (let i = 1; i < markers.length; i++) markers[i].ly = Math.max(markers[i].ly, markers[i - 1].ly + 21);
   for (let i = markers.length - 1; i >= 0; i--) markers[i].ly = Math.min(markers[i].ly, bottom - 9 - (markers.length - i - 1) * 21);
-  let content = '<title>Fictional MOTH / USD candlestick chart</title>';
+  let content = `<title>Fictional ${ticker} / USD candlestick chart</title>`;
   for (let i = 0; i <= 4; i++) {
     const value = lo + (hi - lo) * i / 4, py = y(value);
     content += `<path class="grid-line" d="M${left},${py}H${right}"/>`;
@@ -46,5 +46,5 @@ export function drawChart(svg, market, account) {
   }
   svg.innerHTML = content;
   const last = bars.at(-1);
-  svg.setAttribute('aria-label', `MOTH / USD, two-second candles. Price ${market.price.toFixed(2)}. Latest open ${last.open.toFixed(2)}, high ${last.high.toFixed(2)}, low ${last.low.toFixed(2)}, close ${last.close.toFixed(2)}.`);
+  svg.setAttribute('aria-label', `${ticker} / USD, two-second candles. Price ${market.price.toFixed(2)}. Latest open ${last.open.toFixed(2)}, high ${last.high.toFixed(2)}, low ${last.low.toFixed(2)}, close ${last.close.toFixed(2)}.`);
 }

@@ -1,6 +1,6 @@
 import { CONFIG } from './config.js?v=20261019-sweeps';
 import { createSession } from './session.js?v=20261019-orders';
-import { drawChart } from './chart.js';
+import { drawChart } from './chart.js?v=20261029-ticker';
 import { createWallClock, createReconciler } from './live-clock.js';
 import { createOrderQueue } from './orders.js?v=20261019-orders';
 
@@ -8,6 +8,16 @@ const money = value => value.toLocaleString('en-US', { style: 'currency', curren
 const signedMoney = value => `${value > 0 ? '+' : value < 0 ? '−' : ''}${money(Math.abs(value))}`;
 const priceText = price => price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const freshSeed = () => crypto.getRandomValues(new Uint32Array(1))[0];
+// Freeplay recreates the adapter on restart. Remember only the label per root,
+// independently of market seeds, so even a repeated draw gets a new ticker.
+const previousTickers = new WeakMap();
+function freshTicker(root) {
+  const letters = Array.from(crypto.getRandomValues(new Uint8Array(4)), n => String.fromCharCode(65 + n % 26));
+  if (letters.join('') === previousTickers.get(root)) letters[3] = String.fromCharCode(65 + (letters[3].charCodeAt(0) - 64) % 26);
+  const ticker = letters.join('');
+  previousTickers.set(root, ticker);
+  return ticker;
+}
 
 export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, { mode = 'standalone' } = {}) {
   root.classList.add('crypto-game');
@@ -17,7 +27,7 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, 
     </section>
     <progress id="goal-progress" max="50000" value="10000" aria-label="Equity toward $50,000 goal"></progress>
     <section class="market" aria-label="Fictional market">
-      <div class="market-heading"><div><strong>MOTH <span>/ USD</span></strong><span class="market-meta" aria-label="Two-second candles">2s</span><span id="market-state" class="sr-only">live</span></div><div class="quote"><strong id="quote"></strong><span id="price-change"></span></div></div>
+      <div class="market-heading"><div><strong id="ticker"></strong><strong> <span>/ USD</span></strong><span class="market-meta" aria-label="Two-second candles">2s</span><span id="market-state" class="sr-only">live</span></div><div class="quote"><strong id="quote"></strong><span id="price-change"></span></div></div>
       <div class="chart-wrap"><svg id="chart" role="img"></svg><div id="catchup-layer" hidden aria-describedby="catchup-help"><strong id="catchup-title">Catching up</strong><span id="catchup-help" class="sr-only">The market kept moving while you were away.</span><button id="retry" type="button" hidden>Retry</button></div></div>
       <div class="chart-footer"><span><span class="live-dot" aria-hidden="true"></span><span id="elapsed" aria-label="Elapsed market time">0:00</span></span></div>
     </section>
@@ -39,7 +49,7 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, 
   const listen = (target, type, callback) => target.addEventListener(type, callback, { signal: events.signal });
   let session, reconciler, orders, state, leverage = CONFIG.defaultLeverage, allocation = 1, catching = false, destroyed = false, suspended = false;
   let timer = 0, generation = 0, notified = '', priorLiquidations = 0, chartKey = '';
-  let status = '';
+  let status = '', ticker = '';
   function message(text, visible = false) {
     status = text;
     el('status').textContent = text;
@@ -66,7 +76,7 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, 
     el('elapsed').textContent = `${Math.floor(state.elapsed / 60000)}:${String(Math.floor(state.elapsed / 1000) % 60).padStart(2, '0')}`;
     el('position-name').textContent = p ? `${p.side === 1 ? 'Long' : 'Short'} · ${p.leverage}×` : 'Flat';
     el('position-name').setAttribute('aria-label', p ? el('position-name').textContent : 'No open position');
-    el('position-size').textContent = p ? `${p.quantity.toFixed(3)} MOTH` : '';
+    el('position-size').textContent = p ? `${p.quantity.toFixed(3)} ${ticker}` : '';
     el('levels').textContent = p ? `$${priceText(p.entry)} / ${a.liquidationPrice > 0 ? `$${priceText(a.liquidationPrice)}` : 'none'}` : '— / —';
     el('leverage-note').textContent = p ? '· locked while holding' : '· more risk, more reward';
     const stopped = document.hidden || suspended || a.bankrupt || a.paid;
@@ -88,7 +98,7 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, 
     el('pay').disabled = stopped || !a.canPay;
     el('pay').hidden = mode === 'gate';
     el('pay-help').textContent = a.paid ? 'Paid. Goal complete.' : a.canPay ? 'Goal reached. Payment is available.' : p && a.cashAfterClose >= CONFIG.target ? 'Goal in reach. Close 100% to secure your cash.' : 'Close your position and hold $50,000 cash to pay.';
-    el('order-hint').textContent = p ? `${allocation * 100}% close · ${(p.quantity * allocation).toFixed(3)} MOTH · ${money(p.quantity * allocation * m.price * CONFIG.feeRate)} fee`
+    el('order-hint').textContent = p ? `${allocation * 100}% close · ${(p.quantity * allocation).toFixed(3)} ${ticker} · ${money(p.quantity * allocation * m.price * CONFIG.feeRate)} fee`
       : `${money(a.cash * allocation)} cash · ${leverage}× leverage · entry fee included`;
     el('market-state').textContent = a.bankrupt ? 'ended' : a.paid ? 'complete' : catching ? 'catching up' : 'live';
     root.dataset.phase = a.bankrupt ? 'bankrupt' : a.paid ? 'paid' : catching ? 'catching-up' : 'trading';
@@ -105,7 +115,7 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, 
     const nextChartKey = JSON.stringify([m.time, m.price, p?.entry, a.liquidationPrice, chart.clientWidth, chart.clientHeight]);
     // Polls, selectors and order notifications often share the same chart.
     // Keep its SVG nodes intact unless a tick, position marker or size changed.
-    if (nextChartKey !== chartKey) { drawChart(chart, m, a); chartKey = nextChartKey; }
+    if (nextChartKey !== chartKey) { drawChart(chart, m, a, ticker); chartKey = nextChartKey; }
     const next = JSON.stringify(getState());
     if (next !== notified) { notified = next; changed(getState()); }
   }
@@ -166,6 +176,8 @@ export function createCryptoGame(root, changed = () => {}, tryEnter = () => {}, 
     orders = createOrderQueue(session, reconciler); suspended = false;
     leverage = CONFIG.defaultLeverage; allocation = 1; catching = document.hidden;
     priorLiquidations = 0; notified = ''; chartKey = '';
+    ticker = freshTicker(root);
+    el('ticker').textContent = ticker;
     message('');
     root.dataset.seed = String(seed);
     render();
